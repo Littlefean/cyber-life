@@ -20,7 +20,7 @@ class MainWindow(QWidget):
         super().__init__()
 
         # 设置窗口的基本属性
-        self.setWindowTitle("赛博像素生态缸")
+        self.setWindowTitle("赛博生态缸")
         # 将背景设置为透明
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(

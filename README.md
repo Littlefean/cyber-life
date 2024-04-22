@@ -1,6 +1,6 @@
 # 赛博生态缸
 
-
+![demo](./doc/demo.png)
 
 桌面小应用，休闲，小型生态缸
 
@@ -28,7 +28,9 @@
 
 小生物球也会进行呼吸作用，在生物球变成黄色的时候才会进行呼吸作用。
 
+## 设计草稿
 
+https://www.figma.com/file/AJAs3WzQTwpwTTEZR5hjdu/%E8%B5%9B%E5%8D%9A%E7%94%9F%E6%80%81%E7%BC%B8
 
 
 
