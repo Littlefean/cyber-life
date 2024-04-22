@@ -92,7 +92,7 @@ class _LifeTank:
             wave_amplitude = 10
             wave_frequency = 0.1
 
-        return wave_amplitude * sin((x + self.time * wave_speed) * wave_frequency)
+        return wave_amplitude * sin((x + self.time * wave_speed) * wave_frequency * 0.2)  # x 前面的参数才能改变频率
 
     def paint(self, painter: QPainter):
         # 绘制顶部灯光
@@ -104,42 +104,30 @@ class _LifeTank:
         painter.setPen(Qt.green)
         painter.setBrush(Qt.NoBrush)
         painter.drawRect(0, 0, self.width - 1, self.height)
-        # 绘制水位线
-        painter.setPen(Qt.blue)
-        painter.drawLine(
-            0,
-            round(self.water_level_height),
-            self.width,
-            round(self.water_level_height)
-        )
-        # 绘制波浪水面
-        painter.setPen(Qt.cyan)
-        x, x_next = 0, 10
+
+        # 填充波浪形水，（定积分画法）
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(get_water_color())
+        dx = 10
+        # x, x_next = 0, 10
+        x, x_next = -dx, 0  # 不知道为啥第一个和之后的颜色不一样，只好让第一个画不出来
         recv_speed = COMPUTER_INFO["network_speed"]["recv_speed"]
         y, y_next = round(
             self.water_level_height + self.get_wave_height(x, recv_speed)
         ), 0
         while x < self.width:
             y_next = round(self.water_level_height + self.get_wave_height(x_next, recv_speed))
-            painter.drawLine(x, y, x_next, y_next)
-            x, x_next = x_next, x + 10
+            painter.drawRect(
+                x, y,
+                dx, self.height - y
+            )
+            x, x_next = x_next, x + dx
             y, y_next = y_next, 0
-
-        # 填充水的颜色
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(get_water_color())
-        painter.drawRect(
-            0,
-            round(self.water_level_height),
-            self.width - 1,
-            self.height - round(self.water_level_height)
-        )
 
         # 绘制矩形，使用渐变填充
         painter.fillRect(0, 0, self.width, self.height, gradient)
 
         painter.end()
-        # painter.drawRect(0, 0, self.width - 1, 10)
         pass
 
 
@@ -159,7 +147,7 @@ def get_water_color() -> QColor:
     red = int(red_good * c_disk_usage + (1 - c_disk_usage) * red_bad)
     green = int(green_good * c_disk_usage + (1 - c_disk_usage) * green_bad)
     blue = int(blue_good * c_disk_usage + (1 - c_disk_usage) * blue_bad)
-    return QColor(red, green, blue, 100)
+    return QColor(red, green, blue, 40)
 
 
 LIFE_TANK = _LifeTank(300, 1000, 0, "normal")
