@@ -7,7 +7,10 @@ from life_tank import LIFE_TANK
 
 
 class LifePlantNode:
-    """水草节点类"""
+    """
+    水草节点类
+    每个节点都类似 “V” 的样子，一节一节，构成链条状结构
+    """
 
     def __init__(self, x, y, can_move):
         self.location = Vector(x, y)
@@ -26,6 +29,7 @@ class LifePlantNode:
         self.status_in_range = False
 
         self.radius = 2
+        # 调试用，显示节点的拉力、斥力范围
         self._show_range = False
         self._show_velocity = False
 
@@ -45,6 +49,7 @@ class LifePlantNode:
         更新节点状态
         首先会将自己的下一个节点拉向自己的位置，然后更新自己的位置和速度
         具体拉的原理就如同引力，但过近会有斥力
+        如果在合适范围内，则随机漂浮
         :return:
         """
         if self.can_move:
@@ -76,29 +81,33 @@ class LifePlantNode:
         # 计算下一个节点与自己之间的距离
         distance = self.location.distance(self.next_node.location)
 
+        # 过远，直接将下一个节点拉过来
         if distance >= self.pull_radius:
-            # 计算拉力
-            force = (self.location - self.next_node.location).normalize() * 0.1
-            self.next_node.velocity = force * 5
+            v = (self.location - self.next_node.location).normalize() * 0.1
+            self.next_node.velocity = v * 5
             self.next_node.acceleration = Vector(0, 0)
+
+        # 过近，排斥
         if distance <= self.repel_radius:
-            # 计算排斥力
-            force = (self.next_node.location - self.location).normalize() * 0.1
+            v = (self.next_node.location - self.location).normalize() * 0.1
             self.next_node.acceleration = Vector(0, 0)
-            self.next_node.velocity = force * 5
+            self.next_node.velocity = v * 5
+
+        # 恰好在拉力和排斥力范围内，开始随机漂移
         if self.repel_radius < distance < self.pull_radius:
-            # 如果距离拉力边缘更近
             if distance - self.repel_radius < self.pull_radius - distance:
-                # 排斥优先
+                # 如果距离斥力半径更近，获取斥力方向 单位向量
                 self.next_node.acceleration = (self.next_node.location - self.location).normalize()
             else:
-                # 拉力优先
+                # 如果距离拉力半径更近，获取拉力方向 单位向量
                 self.next_node.acceleration = (self.location - self.next_node.location).normalize()
-            # 随机偏转
+            # 将获取到的单位向量 随机偏转，并赋予到加速度上。
             self.next_node.acceleration = self.next_node.acceleration.rotate(random() * 90) * 0.01
 
     def paint(self, painter: QPainter):
-        """绘制节点"""
+        """
+        绘制节点
+        """
         # 绘制速度矢量
         if self._show_velocity:
             painter.setBrush(Qt.NoBrush)
@@ -112,7 +121,7 @@ class LifePlantNode:
                 round(self.location.x + self.velocity.x * 50),
                 round(self.location.y + self.velocity.y * 50)
             )
-        # 绘制引力斥力范围
+        # 绘制引力、斥力范围
         if self._show_range:
             painter.setBrush(Qt.NoBrush)
             painter.setPen(Qt.red)
@@ -149,7 +158,7 @@ class LifePlantNode:
                 round(self.next_node.location.x),
                 round(self.next_node.location.y)
             )
-        # 绘制叶子
+        # 绘制针状线，模拟叶子
         if self.next_node:
             line_pen = QPen(Qt.darkGreen)
             line_pen.setWidth(1)

@@ -7,8 +7,16 @@ from life_tank import LIFE_TANK
 
 
 class LifeBall:
+    """
+    生物球，用于反应CPU每个核的使用状态
+    可以看作生物球是一个绿色植物细胞
+    当CPU核处于运算状态时，生物球的呼吸作用会显著，颜色变黄，移动速度增加，体积变大，表示兴奋。
+    当CPU核处于空闲状态时，生物球没有呼吸作用，光合作用主导，颜色变绿。
+    """
+
     def __init__(self):
         x, y = randint(0, LIFE_TANK.width), randint(0, LIFE_TANK.height)
+        # 球心坐标
         self.location = Vector(x, y)
         self.radius = 4
         # 随机速度
@@ -22,8 +30,8 @@ class LifeBall:
         if isinstance(activity, float):
             self.activity = activity
         else:
-            print("""Error: activity must be a float number.""")
-            self.activity = 0.0
+            print("Error: activity must be a float number.")
+            raise TypeError
 
     def tick(self):
         self.velocity += self.acceleration
@@ -42,7 +50,7 @@ class LifeBall:
             self.velocity.y = -abs(self.velocity.y)
 
     def paint(self, painter: QPainter):
-        # 画出球，左上角为原点，宽度和高度
+        # 画出球
         painter.setPen(Qt.NoPen)
         painter.setBrush(get_color_by_activity(self.activity))
         painter.drawEllipse(
@@ -57,6 +65,7 @@ class LifeBall:
 def get_color_by_activity(activity) -> QColor:
     """
     根据活跃度返回颜色，活跃度越大，颜色越黄，不活跃度越绿
+    todo 有待集成在一个线性过渡的颜色工具函数中
     :param activity: 活跃度
     :return:
     """

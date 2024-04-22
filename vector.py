@@ -22,10 +22,15 @@ class Vector:
             raise TypeError("unsupported operand type(s) for -: 'Vector' and '{}'".format(type(other).__name__))
         return Vector(self.x - other.x, self.y - other.y)
 
-    def distance(self, other):
+    def distance(self, other) -> float:
         return (self - other).__abs__()
 
     def limit(self, max_length):
+        """
+        将向量限制在最大长度范围内
+        :param max_length:
+        :return:
+        """
         if abs(self) > max_length:
             new_self = self.normalize() * max_length
             self.x = new_self.x
@@ -50,7 +55,7 @@ class Vector:
     # 角度偏转
     def rotate(self, angle):
         """
-        Rotate the vector by the given angle in degrees.
+        旋转向量
         :param angle: 单位：度
         :return:
         """
@@ -66,6 +71,10 @@ class Vector:
 
     # 归一化
     def normalize(self):
+        """
+        将长度归一化，即变成单位向量
+        :return:
+        """
         length = abs(self)
         if length == 0:
             return Vector(0, 0)

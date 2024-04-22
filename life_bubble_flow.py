@@ -19,7 +19,7 @@ class LifeBubbleFlow:
     def bubble_interval(self):
         """
         每隔多少帧生成一个新的气泡
-        根据网速来决定
+        根据当前上传的网速来决定
         :return:
         """
         sent_speed = COMPUTER_INFO["network_speed"]["sent_speed"]  # bits/s

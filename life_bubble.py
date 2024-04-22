@@ -6,11 +6,17 @@ from PyQt5.QtCore import Qt
 
 
 class LifeBubble:
+    """
+    单个气泡的类
+    """
+
     def __init__(self, x):
         self.location = Vector(x, LIFE_TANK.height)
         self.velocity = Vector(0, 0)
+        # 默认有一个向上的加速度，因为有浮力
         self.acceleration = Vector(0, -0.01)
-        # 气泡的半径大小由自身位置在生态缸中的位置决定
+
+        # 规定气泡大小的变化动态范围
         self.radius_min = 2
         self.radius_max = 4
         # 当气泡脱离生态缸时，气泡变为死亡状态
@@ -18,7 +24,11 @@ class LifeBubble:
 
     @property
     def radius(self):
-        # 气泡到达水面的进度
+        """
+        气泡的半径大小，由自身位置在生态缸中的位置决定
+        因为越接近水面，压强越小，气泡的半径越大。
+        """
+        # 气泡到达水面的进度 0~1
         rate = (LIFE_TANK.height - self.location.y) / (LIFE_TANK.height - LIFE_TANK.water_level_height)
         return self.radius_min + (self.radius_max - self.radius_min) * rate
 

@@ -29,7 +29,7 @@ def update_computer_info():
     for i in range(len(new_cpu_percent)):
         COMPUTER_INFO["cpu"][i] = new_cpu_percent[i] / 100.0
     COMPUTER_INFO["c_disk_usage"] = psutil.disk_usage('C:').percent / 100
-    # 通过PIL截图，随机抽取10个像素点，来判断当前屏幕内容的亮度
+    # 通过PIL截图，随机抽取一些像素点，来判断当前屏幕内容的亮度
 
     im = ImageGrab.grab()
     width, height = im.size

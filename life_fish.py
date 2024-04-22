@@ -7,20 +7,29 @@ from random import randint, uniform
 
 class LifeFish:
     def __init__(self):
+        # 鱼的位置坐标，其位置是贴图的中心点
         self.location = Vector(
             randint(30, LIFE_TANK.width - 30),
             randint(LIFE_TANK.water_level_height, LIFE_TANK.height - 30)
         )
+
         self.time = 0
+
+        # 动画序列图
         self.img_list_swim_left = [QPixmap(f"assert/fish_{i}.png") for i in range(10)]
 
-        self.img_list_swim_right = [QPixmap(f"assert/fish_{i}.png").transformed(QTransform().scale(-1, 1)) for i in
-                                    range(10)]
+        self.img_list_swim_right = [
+            QPixmap(f"assert/fish_{i}.png").transformed(QTransform().scale(-1, 1)) for i in range(10)
+        ]
 
+        # 当前游泳状态的动画 帧索引
         self.img_index_swim = 0
+        # 大小就是图片的宽高
         self.width = 33
         self.height = 33
+        # 移动的目标位置
         self.location_goal = self.get_random_location()
+        # 移动速度
         self.speed = 0.1
         pass
 
@@ -45,7 +54,6 @@ class LifeFish:
         try:
             x = uniform(30, LIFE_TANK.width - 30)
             y = uniform(LIFE_TANK.water_level_height + 30, LIFE_TANK.height - 30)
-            print(f"随机位置{x},{y}")
         except Exception as e:
             print(f"鱼无法找到合适的位置 {e}")
             return None

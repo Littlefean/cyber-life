@@ -31,7 +31,7 @@ class MainWindow(QWidget):
             Qt.WindowStaysOnTopHint
         )
         # 设置icon
-        self.setWindowIcon(QIcon('icon.ico'))
+        self.setWindowIcon(QIcon('assert/icon.ico'))
         # 设置大小
         self.resize(300, LIFE_TANK.height + 1)
 
