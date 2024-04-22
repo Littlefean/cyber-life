@@ -1,9 +1,9 @@
 from random import random
 from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtCore import Qt
-from vector import Vector
+from tools.vector import Vector
 
-from life_tank import LIFE_TANK
+from .tank import LIFE_TANK
 
 
 class LifePlantNode:

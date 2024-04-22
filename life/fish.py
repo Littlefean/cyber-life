@@ -1,7 +1,6 @@
-from vector import Vector
-from PyQt5.QtGui import QPainter, QPixmap, QColor, QIcon, QTransform
-from PyQt5.QtCore import Qt, QPoint
-from life_tank import LIFE_TANK
+from tools.vector import Vector
+from PyQt5.QtGui import QPainter, QPixmap, QTransform
+from .tank import LIFE_TANK
 from random import randint, uniform
 
 

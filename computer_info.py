@@ -3,7 +3,6 @@ import psutil
 import time
 from PIL import ImageGrab
 from random import randint
-from typing import Tuple
 
 
 def get_memory_usage_percent():
@@ -24,13 +23,17 @@ COMPUTER_INFO = {
 
 
 def update_computer_info():
+    # 内存
     COMPUTER_INFO["memory"] = get_memory_usage_percent()
+
+    # CPU
     new_cpu_percent = psutil.cpu_percent(interval=None, percpu=True)
     for i in range(len(new_cpu_percent)):
         COMPUTER_INFO["cpu"][i] = new_cpu_percent[i] / 100.0
     COMPUTER_INFO["c_disk_usage"] = psutil.disk_usage('C:').percent / 100
-    # 通过PIL截图，随机抽取一些像素点，来判断当前屏幕内容的亮度
 
+    # 屏幕亮度
+    # 通过PIL截图，随机抽取一些像素点，来判断当前屏幕内容的亮度
     im = ImageGrab.grab()
     width, height = im.size
     for i in range(100):
@@ -39,10 +42,10 @@ def update_computer_info():
         r, g, b = im.getpixel((x, y))
         COMPUTER_INFO["screen_light"] += (r + g + b) / 3.0 / 255.0
     COMPUTER_INFO["screen_light"] /= 100.0
-    # 获取网络速度
+
+    # 网络速度
     network_speeds = get_network_speed()
     COMPUTER_INFO["network_speed"] = network_speeds['WLAN']
-    print(COMPUTER_INFO["network_speed"]["recv_speed"])
 
 
 def get_network_speed(interval=1.0):  # 时间间隔单位为秒
@@ -65,18 +68,8 @@ def get_network_speed(interval=1.0):  # 时间间隔单位为秒
     return network_speeds
 
 
-def get_network_speed_average() -> Tuple[float, float]:
-    # 获取实时网速
-    speeds = get_network_speed()
-    upload, download = 0.0, 0.0
-    for interface, speed in speeds.items():
-        if interface == 'WLAN':
-            upload += speed['sent_speed']
-            download += speed['recv_speed']
-    return upload, download
-
-
 def update_computer_info_timer():
+    """更新的定时器，用于其他子线程调用"""
     while True:
         update_computer_info()
         time.sleep(2)

@@ -1,11 +1,14 @@
 """
 存放关于生态缸的数据
 """
+from math import sin
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor, QLinearGradient
-from computer_info import COMPUTER_INFO
 from PIL import ImageGrab
-from math import sin
+
+from computer_info import COMPUTER_INFO
+from tools.color import get_color_by_linear_ratio
 
 
 class _LifeTank:
@@ -30,7 +33,9 @@ class _LifeTank:
         self.water_level_color = "blue"
 
         # 生态缸颜色
-        self.water_color = get_water_color()
+        self.water_color_best = QColor(40, 100, 255, 40)
+        self.water_color_worst = QColor(200, 150, 50, 40)
+
         # 顶部灯光亮度 0 表示黑 1表示最亮
         self.light_brightness_target = 1
         self.light_brightness_current = 0
@@ -91,15 +96,26 @@ class _LifeTank:
             wave_speed = 10
             wave_amplitude = 10
             wave_frequency = 0.1
-
-        return wave_amplitude * sin((x + self.time * wave_speed) * wave_frequency * 0.2)  # x 前面的参数才能改变频率
+        # x 前面的参数才能改变频率
+        return wave_amplitude * sin((x + self.time * wave_speed) * wave_frequency * 0.2)
 
     def paint(self, painter: QPainter):
         # 绘制顶部灯光
         painter.setPen(Qt.NoPen)
         gradient = QLinearGradient(0, 0, 0, self.water_level_height)
-        gradient.setColorAt(0.0, QColor(255, 255, 255, round(255 * self.light_brightness_current)))  # 开始颜色
-        gradient.setColorAt(1.0, QColor(255, 255, 255, 0))  # 结束颜色
+        gradient.setColorAt(
+            0.0,
+            QColor(
+                255,
+                255,
+                255,
+                round(255 * self.light_brightness_current)
+            )
+        )  # 开始颜色
+        gradient.setColorAt(
+            1.0,
+            QColor(255, 255, 255, 0)
+        )  # 结束颜色
         # 绘制生态缸边框
         painter.setPen(Qt.green)
         painter.setBrush(Qt.NoBrush)
@@ -107,7 +123,13 @@ class _LifeTank:
 
         # 填充波浪形水，（定积分画法）
         painter.setPen(Qt.NoPen)
-        painter.setBrush(get_water_color())
+        painter.setBrush(
+            get_color_by_linear_ratio(
+                self.water_color_best,
+                self.water_color_worst,
+                COMPUTER_INFO["c_disk_usage"]
+            )
+        )
         dx = 10
         # x, x_next = 0, 10
         x, x_next = -dx, 0  # 不知道为啥第一个和之后的颜色不一样，只好让第一个画不出来
@@ -129,25 +151,6 @@ class _LifeTank:
 
         painter.end()
         pass
-
-
-def get_water_color() -> QColor:
-    """
-    获取生态缸水的颜色，采用线性插值计算，根据C盘使用率来确定颜色
-    todo: 有待改成更改色相
-    :return:
-    """
-    red_good = 40
-    green_good = 100
-    blue_good = 255
-    red_bad = 200
-    green_bad = 150
-    blue_bad = 50
-    c_disk_usage = COMPUTER_INFO["c_disk_usage"]
-    red = int(red_good * c_disk_usage + (1 - c_disk_usage) * red_bad)
-    green = int(green_good * c_disk_usage + (1 - c_disk_usage) * green_bad)
-    blue = int(blue_good * c_disk_usage + (1 - c_disk_usage) * blue_bad)
-    return QColor(red, green, blue, 40)
 
 
 LIFE_TANK = _LifeTank(300, 1000, 0, "normal")

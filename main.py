@@ -1,19 +1,18 @@
 import sys
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPainter, QColor, QIcon, QPixmap
+from PyQt5.QtGui import QPainter, QColor, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget
 import random
 import psutil
 
-from vector import Vector
-from computer_info import COMPUTER_INFO, get_memory_usage_percent, update_computer_info, update_computer_info_timer
+from computer_info import COMPUTER_INFO, update_computer_info_timer
 
-from life_ball import LifeBall
-from life_plant_node import LifePlantNode
-from life_tank import LIFE_TANK
-from life_bubble_flow import LifeBubbleFlow
-from life_fish import LifeFish
+from life.ball import LifeBall
+from life.plant_node import LifePlantNode
+from life.tank import LIFE_TANK
+from life.bubble_flow import LifeBubbleFlow
+from life.fish import LifeFish
 
 
 class MainWindow(QWidget):
@@ -45,7 +44,7 @@ class MainWindow(QWidget):
         # 窗口是否被拖动
         self.m_drag = False
         # 窗口被拖动的位置
-        self.m_DragPosition = None
+        self.m_drag_position = None
         self.life_data = {
             "balls": [LifeBall() for _ in range(psutil.cpu_count())],
             "plants": [LifePlantNode.get_root_node()],
@@ -70,14 +69,14 @@ class MainWindow(QWidget):
         """重写mousePressEvent方法，用于拖动窗口"""
         if event.button() == Qt.LeftButton:
             self.m_drag = True
-            self.m_DragPosition = event.globalPos() - self.pos()
-            print(self.m_DragPosition)
+            self.m_drag_position = event.globalPos() - self.pos()
+            print(self.m_drag_position)
             event.accept()
 
     def mouseMoveEvent(self, event):
         """重写mouseMoveEvent方法，用于拖动窗口"""
         if Qt.LeftButton and self.m_drag:
-            self.move(event.globalPos() - self.m_DragPosition)
+            self.move(event.globalPos() - self.m_drag_position)
             event.accept()
 
     def mouseReleaseEvent(self, event):

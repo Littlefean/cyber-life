@@ -1,6 +1,6 @@
 from typing import List
 
-from life_bubble import LifeBubble
+from .bubble import LifeBubble
 from PyQt5.QtGui import QPainter
 from computer_info import COMPUTER_INFO
 

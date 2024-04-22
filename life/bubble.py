@@ -1,6 +1,6 @@
-from vector import Vector
+from tools.vector import Vector
 from random import random
-from life_tank import LIFE_TANK
+from .tank import LIFE_TANK
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
 

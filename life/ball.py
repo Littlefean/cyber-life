@@ -1,9 +1,10 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor
 
-from vector import Vector
+from tools.vector import Vector
+from tools.color import get_color_by_linear_ratio
 from random import random, randint
-from life_tank import LIFE_TANK
+from .tank import LIFE_TANK
 
 
 class LifeBall:
@@ -25,6 +26,9 @@ class LifeBall:
 
         # 活跃程度，越大越活跃 0 ~ 1.0
         self.activity = 0.0
+        # 界定颜色变化的范围
+        self.color_default = QColor(10, 150, 10)
+        self.color_active = QColor(255, 255, 0)
 
     def set_activity(self, activity):
         if isinstance(activity, float):
@@ -52,7 +56,13 @@ class LifeBall:
     def paint(self, painter: QPainter):
         # 画出球
         painter.setPen(Qt.NoPen)
-        painter.setBrush(get_color_by_activity(self.activity))
+        painter.setBrush(
+            get_color_by_linear_ratio(
+                self.color_default,
+                self.color_active,
+                self.activity
+            )
+        )
         painter.drawEllipse(
             round(self.location.x - self.radius),
             round(self.location.y - self.radius),
@@ -60,19 +70,3 @@ class LifeBall:
             round(self.radius * 2 + (self.activity * 20))
         )
         pass
-
-
-def get_color_by_activity(activity) -> QColor:
-    """
-    根据活跃度返回颜色，活跃度越大，颜色越黄，不活跃度越绿
-    todo 有待集成在一个线性过渡的颜色工具函数中
-    :param activity: 活跃度
-    :return:
-    """
-    green: QColor = QColor(10, 150, 10)
-    yellow: QColor = QColor(255, 255, 0)
-    # 线性过渡
-    r = (yellow.red() - green.red()) * activity + green.red()
-    g = (yellow.green() - green.green()) * activity + green.green()
-    b = (yellow.blue() - green.blue()) * activity + green.blue()
-    return QColor(round(r), round(g), round(b))
