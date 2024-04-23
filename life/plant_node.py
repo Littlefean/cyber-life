@@ -1,5 +1,5 @@
 from random import random
-from PyQt5.QtGui import QPainter, QPen
+from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtCore import Qt
 from tools.vector import Vector
 
@@ -10,6 +10,7 @@ class LifePlantNode:
     """
     水草节点类
     每个节点都类似 “V” 的样子，一节一节，构成链条状结构
+    当前物理模型非常糟糕，看起来很抽搐，以后有机会再改进
     """
 
     def __init__(self, x, y, can_move):
@@ -38,7 +39,7 @@ class LifePlantNode:
         """获取根节点"""
         return cls(random() * LIFE_TANK.width, LIFE_TANK.height, False)
 
-    def add_child(self, child):
+    def add_child(self, child: 'LifePlantNode'):
         if not self.next_node and isinstance(child, LifePlantNode):
             self.next_node = child
         else:
@@ -138,8 +139,8 @@ class LifePlantNode:
                 round(self.repel_radius * 2)
             )
         # 绘制节点
-        painter.setBrush(Qt.darkGreen)
-        painter.setPen(Qt.darkGreen)
+        painter.setBrush(QColor(69, 79, 56, 220))
+        painter.setPen(QColor(69, 79, 56, 220))
         painter.drawEllipse(
             round(self.location.x - self.radius),
             round(self.location.y - self.radius),
@@ -148,7 +149,7 @@ class LifePlantNode:
         )
 
         # 绘制与下一个节点之间的连线
-        line_pen = QPen(Qt.darkGreen)
+        line_pen = QPen(QColor(69, 79, 56, 220))
         line_pen.setWidth(3)
         painter.setPen(line_pen)
         if self.next_node:
@@ -160,11 +161,11 @@ class LifePlantNode:
             )
         # 绘制针状线，模拟叶子
         if self.next_node:
-            line_pen = QPen(Qt.darkGreen)
+            line_pen = QPen(QColor(29, 156, 10, 200))
             line_pen.setWidth(1)
             painter.setPen(line_pen)
             # 张角 和速度有关
-            edge = 10 * abs(self.velocity)
+            edge = 10 * abs(self.velocity) + 5
             length = 20
             for i in range(-5, 5 + 1):
                 if i == 0:

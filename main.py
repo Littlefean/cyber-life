@@ -10,6 +10,7 @@ from computer_info import COMPUTER_INFO, update_computer_info_timer
 
 from life.ball import LifeBall
 from life.plant_node import LifePlantNode
+from life.plant import LifePlant
 from life.tank import LIFE_TANK
 from life.bubble_flow import LifeBubbleFlow
 from life.fish import LifeFish
@@ -47,22 +48,25 @@ class MainWindow(QWidget):
         self.m_drag_position = None
         self.life_data = {
             "balls": [LifeBall() for _ in range(psutil.cpu_count())],
-            "plants": [LifePlantNode.get_root_node()],
+            "plants": [
+                # LifePlantNode.get_root_node()
+                LifePlant()
+            ],
             "bubble_flows": [LifeBubbleFlow(LIFE_TANK.width / 2)],
             "fish": [LifeFish()]
         }
         # 生长植物节点
-        for plant_root in self.life_data["plants"]:
-            current_node = plant_root
-            for i in range(3):
-                current_node.add_child(
-                    LifePlantNode(
-                        random.randint(0, LIFE_TANK.width - 1),
-                        random.randint(0, LIFE_TANK.height - 1),
-                        True,
-                    )
-                )
-                current_node = current_node.next_node
+        # for plant_root in self.life_data["plants"]:
+        #     current_node = plant_root
+        #     for i in range(3):
+        #         current_node.add_child(
+        #             LifePlantNode(
+        #                 random.randint(0, LIFE_TANK.width - 1),
+        #                 random.randint(0, LIFE_TANK.height - 1),
+        #                 True,
+        #             )
+        #         )
+        #         current_node = current_node.next_node
         pass
 
     def mousePressEvent(self, event):
@@ -100,11 +104,13 @@ class MainWindow(QWidget):
         for fish in self.life_data["fish"]:
             fish.paint(painter)
         # 绘制生长植物
-        for plant_root_node in self.life_data["plants"]:
-            current_node = plant_root_node
-            while current_node is not None:
-                current_node.paint(painter)
-                current_node = current_node.next_node
+        for plant in self.life_data["plants"]:
+            # current_node = plant_root_node
+            # while current_node is not None:
+            #     current_node.paint(painter)
+            #     current_node = current_node.next_node
+            plant.paint(painter)
+            pass
         # 绘制生态缸
         LIFE_TANK.paint(painter)
 
@@ -120,11 +126,13 @@ class MainWindow(QWidget):
         # 更新生态缸
         LIFE_TANK.tick()
         # 更新水草
-        for plant_root_node in self.life_data["plants"]:
-            current_node = plant_root_node
-            while current_node is not None:
-                current_node.tick()
-                current_node = current_node.next_node
+        # for plant_root_node in self.life_data["plants"]:
+        #     current_node = plant_root_node
+        #     while current_node is not None:
+        #         current_node.tick()
+        #         current_node = current_node.next_node
+        for plant in self.life_data["plants"]:
+            plant.tick()
         # 更新气泡流
         for bubble_flow in self.life_data["bubble_flows"]:
             bubble_flow.tick()
