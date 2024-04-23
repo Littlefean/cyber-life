@@ -34,14 +34,17 @@ def update_computer_info():
 
     # 屏幕亮度
     # 通过PIL截图，随机抽取一些像素点，来判断当前屏幕内容的亮度
-    im = ImageGrab.grab()
-    width, height = im.size
-    for i in range(100):
-        x = randint(0, width - 1)
-        y = randint(0, height - 1)
-        r, g, b = im.getpixel((x, y))
-        COMPUTER_INFO["screen_light"] += (r + g + b) / 3.0 / 255.0
-    COMPUTER_INFO["screen_light"] /= 100.0
+    try:  # 因为发现休眠后会因为捕捉不到屏幕而报错，线程终止，无法更新系统信息
+        im = ImageGrab.grab()
+        width, height = im.size
+        for i in range(100):
+            x = randint(0, width - 1)
+            y = randint(0, height - 1)
+            r, g, b = im.getpixel((x, y))
+            COMPUTER_INFO["screen_light"] += (r + g + b) / 3.0 / 255.0
+        COMPUTER_INFO["screen_light"] /= 100.0
+    except OSError:
+        print('screen grab failed')
 
     # 网络速度
     network_speeds = get_network_speed()
