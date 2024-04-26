@@ -15,14 +15,12 @@ class _LifeTank:
     """
     单例模式，存放关于生态缸的数据
     """
-    _COLOR_DEBUG = True
+    _COLOR_DEBUG = False
 
     def __init__(self, width, capacity, level, status):
         self.width = int(width)
         # 获取屏幕的宽度和高度
         w, h = ImageGrab.grab().size
-        # w =
-        # h =
         self.height = int(self.width * (h / w))
         self.capacity = capacity
         self.level = level
@@ -36,6 +34,7 @@ class _LifeTank:
 
         # 生态缸颜色
         self.water_color_best = QColor(40, 100, 255, 40)
+        # 将棕色作为最差颜色，不太好，容易和沙子颜色混淆
         # self.water_color_worst = QColor(200, 150, 50, 40)
         self.water_color_worst = QColor(22, 135, 67, 40)
 
@@ -51,25 +50,16 @@ class _LifeTank:
         生态缸更新一次
         """
         # 更新内存信息
-        # self.sand_surface_height = self.height * COMPUTER_INFO["physical_memory"]["total"] / (
-        #         COMPUTER_INFO["physical_memory"]["total"] + COMPUTER_INFO["swap_memory"]["total"]
-        # )
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
         self.sand_surface_height = self.height * memory_info.physical_memory_total / (
                 memory_info.physical_memory_total + memory_info.swap_memory_total
         )
-        # self.water_level_height = self.sand_surface_height * COMPUTER_INFO["physical_memory"]["percent"]
         self.water_level_height = self.sand_surface_height * memory_info.physical_memory_percent
-
-        # self.sand_base_height = self.sand_surface_height + (
-        #         self.height - self.sand_surface_height
-        # ) * COMPUTER_INFO["swap_memory"]["percent"]
 
         self.sand_base_height = self.sand_surface_height + (
                 self.height - self.sand_surface_height
         ) * memory_info.swap_memory_percent
         # 更新亮度
-        # self.light_brightness_target = COMPUTER_INFO["screen_light"]
         self.light_brightness_target = SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result()
         self.light_brightness_current = self.light_brightness_target * 0.01 + self.light_brightness_current * 0.99
         self.time += 1
@@ -155,9 +145,7 @@ class _LifeTank:
         ))
         # 绘制水面
         dx = 10
-        # x, x_next = 0, 10
         x, x_next = -dx, 0  # 不知道为啥第一个和之后的颜色不一样，只好让第一个画不出来
-        # recv_speed = COMPUTER_INFO["network_speed"]["recv_speed"]
         recv_speed = SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
         y, y_next = round(
             self.water_level_height + self.get_wave_height(x, recv_speed)

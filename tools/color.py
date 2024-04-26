@@ -28,6 +28,7 @@ def get_color_by_linear_ratio(color_start: QColor, color_end: QColor, ratio: flo
 def get_color_by_hsv_ratio(color_start: QColor, color_end: QColor, ratio: float) -> QColor:
     """
     色彩空间过渡，获取一个颜色
+    此代码由AI生成，还未经过测试
     :param color_start:
     :param color_end:
     :param ratio:

@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPainter, QColor, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget
 import psutil
 
-from computer_info.manager import update_computer_info_timer, SYSTEM_INFO_MANAGER
+from computer_info.manager import SYSTEM_INFO_MANAGER
 
 from life.ball import LifeBall
 from life.plant import LifePlant
@@ -114,9 +114,6 @@ class MainWindow(QWidget):
 
 
 def main():
-    from threading import Thread
-    # Thread(target=update_computer_info_timer, daemon=True).start()
-
     # 启动系统信息管理器
     SYSTEM_INFO_MANAGER.start()
 

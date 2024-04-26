@@ -34,7 +34,6 @@ class InspectorNetwork(Inspector):
         for interface in set(first_stats.keys()).intersection(second_stats.keys()):
             sent_diff = second_stats[interface].bytes_sent - first_stats[interface].bytes_sent
             recv_diff = second_stats[interface].bytes_recv - first_stats[interface].bytes_recv
-            # self.network_speeds = NetworkSpeed(sent_diff / interval, recv_diff / interval)
             network_speeds[interface] = {
                 'sent_speed': sent_diff / interval,
                 'recv_speed': recv_diff / interval,
