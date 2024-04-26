@@ -30,7 +30,14 @@ class InspectorNetwork(Inspector):
         time.sleep(interval)  # 等待指定时间间隔
         second_stats = psutil.net_io_counters(pernic=True)
 
+        network_speeds = {}
         for interface in set(first_stats.keys()).intersection(second_stats.keys()):
             sent_diff = second_stats[interface].bytes_sent - first_stats[interface].bytes_sent
             recv_diff = second_stats[interface].bytes_recv - first_stats[interface].bytes_recv
-            self.network_speeds = NetworkSpeed(sent_diff / interval, recv_diff / interval)
+            # self.network_speeds = NetworkSpeed(sent_diff / interval, recv_diff / interval)
+            network_speeds[interface] = {
+                'sent_speed': sent_diff / interval,
+                'recv_speed': recv_diff / interval,
+            }
+
+        self.network_speeds = NetworkSpeed(**network_speeds["WLAN"])
