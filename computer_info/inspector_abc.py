@@ -1,10 +1,10 @@
 """
 这是一个抽象类，用于检测计算机信息。
 """
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABCMeta
 
 
-class Inspector(ABC):
+class Inspector(metaclass=ABCMeta):
     """
     抽象类，用于检测计算机信息。
     每一个检测者都将会开启一个线程，每隔一段时间（INSPECTION_INTERVAL）检测一次。

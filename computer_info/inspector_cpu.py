@@ -1,7 +1,6 @@
 from typing import List
 
 import psutil
-
 from .inspector_abc import Inspector
 
 

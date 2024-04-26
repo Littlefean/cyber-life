@@ -44,6 +44,7 @@ class MainWindow(QWidget):
         self.m_drag = False
         # 窗口被拖动的位置
         self.m_drag_position = None
+        # 有待集成在一个 life_manager 单例中
         self.life_data = {
             "balls": [LifeBall() for _ in range(psutil.cpu_count())],
             "plants": [LifePlant()],

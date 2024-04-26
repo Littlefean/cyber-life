@@ -9,11 +9,12 @@ from PIL import ImageGrab
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
 from tools.color import get_color_by_linear_ratio
+from tools.singleton import SingletonMeta
 
 
-class _LifeTank:
+class _LifeTank(metaclass=SingletonMeta):
     """
-    单例模式，存放关于生态缸的数据
+    存放关于生态缸的数据
     """
     _COLOR_DEBUG = False
 

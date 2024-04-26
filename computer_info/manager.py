@@ -2,7 +2,7 @@ from threading import Thread
 
 import time
 from typing import List, Callable
-
+from tools.singleton import SingletonMeta
 from .inspector_abc import Inspector
 from .inspector_cpu import InspectorCpu
 from .inspector_memory import InspectorMemory
@@ -11,9 +11,8 @@ from .inspector_screen import InspectorScreen
 from .inspector_network import InspectorNetwork
 
 
-class _SystemInfoManager:
+class _SystemInfoManager(metaclass=SingletonMeta):
     """
-    单例模式 + 外观模式 + 策略模式
     管理系统信息的各个模块，包括CPU、内存、磁盘、屏幕、网络等，并提供统一的接口
     """
     INSPECTOR_CPU = InspectorCpu()
