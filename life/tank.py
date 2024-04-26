@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor, QLinearGradient
 from PIL import ImageGrab
 
-from computer_info.manager import COMPUTER_INFO, SYSTEM_INFO_MANAGER
+from computer_info.manager import SYSTEM_INFO_MANAGER
 from tools.color import get_color_by_linear_ratio
 
 
@@ -15,6 +15,7 @@ class _LifeTank:
     """
     单例模式，存放关于生态缸的数据
     """
+    _COLOR_DEBUG = True
 
     def __init__(self, width, capacity, level, status):
         self.width = int(width)
@@ -35,7 +36,8 @@ class _LifeTank:
 
         # 生态缸颜色
         self.water_color_best = QColor(40, 100, 255, 40)
-        self.water_color_worst = QColor(200, 150, 50, 40)
+        # self.water_color_worst = QColor(200, 150, 50, 40)
+        self.water_color_worst = QColor(22, 135, 67, 40)
 
         # 顶部灯光亮度 0 表示黑 1表示最亮
         self.light_brightness_target = 1
@@ -140,14 +142,18 @@ class _LifeTank:
 
         # 填充波浪形水，（定积分画法）
         painter.setPen(Qt.NoPen)
-        painter.setBrush(
-            get_color_by_linear_ratio(
-                self.water_color_best,
-                self.water_color_worst,
-                # COMPUTER_INFO["c_disk_usage"]
-                SYSTEM_INFO_MANAGER.INSPECTOR_DISK.get_current_result()
-            )
-        )
+        if self._COLOR_DEBUG:
+            # water_color_ratio = 0.5 * sin(self.time * 0.01) + 0.5
+            water_color_ratio = (0.005 * self.time) % 1
+        else:
+            water_color_ratio = SYSTEM_INFO_MANAGER.INSPECTOR_DISK.get_current_result()
+
+        painter.setBrush(get_color_by_linear_ratio(
+            self.water_color_best,
+            self.water_color_worst,
+            water_color_ratio
+        ))
+        # 绘制水面
         dx = 10
         # x, x_next = 0, 10
         x, x_next = -dx, 0  # 不知道为啥第一个和之后的颜色不一样，只好让第一个画不出来
