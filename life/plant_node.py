@@ -90,9 +90,9 @@ class LifePlantNode:
 
         # 过近，排斥
         if distance <= self.repel_radius:
-            v = (self.next_node.location - self.location).normalize() * 0.1
+            # v = (self.next_node.location - self.location).normalize() * 0.1
             self.next_node.acceleration = Vector(0, 0)
-            self.next_node.velocity = v * 5
+            # self.next_node.velocity = v * 5
 
         # 恰好在拉力和排斥力范围内，开始随机漂移
         if self.repel_radius < distance < self.pull_radius:
@@ -104,6 +104,9 @@ class LifePlantNode:
                 self.next_node.acceleration = (self.location - self.next_node.location).normalize()
             # 将获取到的单位向量 随机偏转，并赋予到加速度上。
             self.next_node.acceleration = self.next_node.acceleration.rotate(random() * 90) * 0.01
+
+        # 取消掉斥力，通过acceleration增加水草浮力
+        self.next_node.acceleration += Vector(0, -0.01)
 
     def paint(self, painter: QPainter):
         """
