@@ -6,9 +6,10 @@ from tools.singleton import SingletonMeta
 from .inspector_abc import Inspector
 from .inspector_cpu import InspectorCpu
 from .inspector_memory import InspectorMemory
-from .inspector_disk import InspectorDisk
+from .inspector_disk_usage import InspectorDiskUsage
 from .inspector_screen import InspectorScreen
 from .inspector_network import InspectorNetwork
+from .inspector_disk_io import InspectorDiskIO
 
 
 class _SystemInfoManager(metaclass=SingletonMeta):
@@ -17,9 +18,10 @@ class _SystemInfoManager(metaclass=SingletonMeta):
     """
     INSPECTOR_CPU = InspectorCpu()
     INSPECTOR_MEMORY = InspectorMemory()
-    INSPECTOR_DISK = InspectorDisk()
+    INSPECTOR_DISK_USAGE = InspectorDiskUsage()
     INSPECTOR_SCREEN = InspectorScreen()
     INSPECTOR_NETWORK = InspectorNetwork()
+    INSPECTOR_DISK_IO = InspectorDiskIO()
 
     def __init__(self):
         self.interval_functions: List[Callable] = []

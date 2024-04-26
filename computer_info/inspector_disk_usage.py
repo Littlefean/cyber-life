@@ -3,7 +3,7 @@ import psutil
 from .inspector_abc import Inspector
 
 
-class InspectorDisk(Inspector):
+class InspectorDiskUsage(Inspector):
     INSPECTION_INTERVAL = 10
 
     def __init__(self):

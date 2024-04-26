@@ -2,12 +2,15 @@
 存放关于生态缸的数据
 """
 from math import sin
+from typing import List
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor, QLinearGradient
 from PIL import ImageGrab
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
+from life.sand_wave import SandWave
+from life.sand_wave_flow import SandWaveFlow
 from tools.color import get_color_by_linear_ratio
 from tools.singleton import SingletonMeta
 
@@ -30,7 +33,10 @@ class _LifeTank(metaclass=SingletonMeta):
         # 水位线高度线，y值
         self.water_level_height = 0
         # 底部沙子高度，y值
-        self.sand_surface_height = 0
+        memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
+        self.sand_surface_height = self.height * memory_info.physical_memory_total / (
+                memory_info.physical_memory_total + memory_info.swap_memory_total
+        )
         self.sand_base_height = 0
 
         # 生态缸颜色
@@ -43,6 +49,13 @@ class _LifeTank(metaclass=SingletonMeta):
         self.light_brightness_target = 1
         self.light_brightness_current = 0
 
+        # 震荡圆圈特效
+        # 向外扩散的是写入磁盘的速度，向内扩散的是读取磁盘的速度
+        # 因为扩散波像是某个东西掉入地上，成为了地面的一部分，可以代表写入
+        # 实际上沙子地面代表了硬盘
+        self.sand_wave_outer = SandWaveFlow(self.width / 2, self.sand_surface_height, 1)
+        self.sand_wave_inner = SandWaveFlow(self.width / 2, self.sand_surface_height, -1)
+
         self.time = 0
         self.tick()  # 初始化的时候就将高度信息更新好
 
@@ -52,9 +65,7 @@ class _LifeTank(metaclass=SingletonMeta):
         """
         # 更新内存信息
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
-        self.sand_surface_height = self.height * memory_info.physical_memory_total / (
-                memory_info.physical_memory_total + memory_info.swap_memory_total
-        )
+
         self.water_level_height = self.sand_surface_height * memory_info.physical_memory_percent
 
         self.sand_base_height = self.sand_surface_height + (
@@ -64,6 +75,16 @@ class _LifeTank(metaclass=SingletonMeta):
         self.light_brightness_target = SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result()
         self.light_brightness_current = self.light_brightness_target * 0.01 + self.light_brightness_current * 0.99
         self.time += 1
+        # 更新震荡数据
+        self.sand_wave_outer.set_frequency_by_disk_io(
+            SYSTEM_INFO_MANAGER.INSPECTOR_DISK_IO.get_current_result().write_bytes
+        )
+        self.sand_wave_inner.set_frequency_by_disk_io(
+            SYSTEM_INFO_MANAGER.INSPECTOR_DISK_IO.get_current_result().read_bytes
+        )
+        # 更新震荡圆圈列表
+        self.sand_wave_outer.tick()
+        self.sand_wave_inner.tick()
 
     def get_wave_height(self, x, recv_speed):
         """
@@ -137,7 +158,7 @@ class _LifeTank(metaclass=SingletonMeta):
             # water_color_ratio = 0.5 * sin(self.time * 0.01) + 0.5
             water_color_ratio = (0.005 * self.time) % 1
         else:
-            water_color_ratio = SYSTEM_INFO_MANAGER.INSPECTOR_DISK.get_current_result()
+            water_color_ratio = SYSTEM_INFO_MANAGER.INSPECTOR_DISK_USAGE.get_current_result()
 
         painter.setBrush(get_color_by_linear_ratio(
             self.water_color_best,
@@ -183,6 +204,9 @@ class _LifeTank(metaclass=SingletonMeta):
             round(self.width),
             round(self.height - self.sand_base_height),
         )
+        # 绘制波浪圆圈
+        self.sand_wave_outer.paint(painter)
+        self.sand_wave_inner.paint(painter)
         # 绘制生态缸边框
         painter.setPen(Qt.green)
         painter.setBrush(Qt.NoBrush)
