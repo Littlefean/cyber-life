@@ -27,10 +27,11 @@ class _LifeTank:
         self.level = level
         self.status = status
 
-        # 水位线高度
+        # 水位线高度线，y值
         self.water_level_height = 0
-        # 水位线颜色
-        self.water_level_color = "blue"
+        # 底部沙子高度，y值
+        self.sand_surface_height = 0
+        self.sand_base_height = 0
 
         # 生态缸颜色
         self.water_color_best = QColor(40, 100, 255, 40)
@@ -41,12 +42,21 @@ class _LifeTank:
         self.light_brightness_current = 0
 
         self.time = 0
+        self.tick()  # 初始化的时候就将高度信息更新好
 
     def tick(self):
         """
         生态缸更新一次
         """
-        self.water_level_height = self.height * COMPUTER_INFO["memory"]
+        # 更新内存信息
+        self.sand_surface_height = self.height * COMPUTER_INFO["physical_memory"]["total"] / (
+                COMPUTER_INFO["physical_memory"]["total"] + COMPUTER_INFO["swap_memory"]["total"]
+        )
+        self.water_level_height = self.sand_surface_height * COMPUTER_INFO["physical_memory"]["percent"]
+        self.sand_base_height = self.sand_surface_height + (
+                self.height - self.sand_surface_height
+        ) * COMPUTER_INFO["swap_memory"]["percent"]
+        # 更新亮度
         self.light_brightness_target = COMPUTER_INFO["screen_light"]
         self.light_brightness_current = self.light_brightness_target * 0.01 + self.light_brightness_current * 0.99
         self.time += 1
@@ -116,10 +126,6 @@ class _LifeTank:
             1.0,
             QColor(255, 255, 255, 0)
         )  # 结束颜色
-        # 绘制生态缸边框
-        painter.setPen(Qt.green)
-        painter.setBrush(Qt.NoBrush)
-        painter.drawRect(0, 0, self.width - 1, self.height)
 
         # 填充波浪形水，（定积分画法）
         painter.setPen(Qt.NoPen)
@@ -149,6 +155,30 @@ class _LifeTank:
         # 绘制矩形，使用渐变填充
         painter.fillRect(0, 0, self.width, self.height, gradient)
 
+        # 表层颜色应该更深，浅层颜色应该更浅，因为表层是污染层，深层有石英石
+
+        # 绘制表面层
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor(62, 53, 28))
+        painter.drawRect(
+            0,
+            round(self.sand_surface_height),
+            round(self.width),
+            round(self.height - self.sand_surface_height),
+        )
+        # 绘制深层
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor(92, 73, 36))
+        painter.drawRect(
+            0,
+            round(self.sand_base_height) + 1,  # 加1是为了防止两层完全重合，表层看不到
+            round(self.width),
+            round(self.height - self.sand_base_height),
+        )
+        # 绘制生态缸边框
+        painter.setPen(Qt.green)
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRect(0, 0, self.width - 1, self.height)
         painter.end()
         pass
 

@@ -9,7 +9,10 @@ class LifeFish:
         # 鱼的位置坐标，其位置是贴图的中心点
         self.location = Vector(
             randint(30, LIFE_TANK.width - 30),
-            randint(LIFE_TANK.water_level_height, LIFE_TANK.height - 30)
+            randint(
+                round(LIFE_TANK.water_level_height),
+                round(LIFE_TANK.sand_surface_height)
+            )
         )
 
         self.time = 0
@@ -52,7 +55,7 @@ class LifeFish:
     def get_random_location():
         try:
             x = uniform(30, LIFE_TANK.width - 30)
-            y = uniform(LIFE_TANK.water_level_height + 30, LIFE_TANK.height - 30)
+            y = uniform(LIFE_TANK.water_level_height + 30, LIFE_TANK.sand_surface_height - 30)
         except Exception as e:
             print(f"鱼无法找到合适的位置 {e}")
             return None

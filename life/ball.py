@@ -16,7 +16,11 @@ class LifeBall:
     """
 
     def __init__(self):
-        x, y = randint(0, LIFE_TANK.width), randint(0, LIFE_TANK.height)
+        x = randint(0, LIFE_TANK.width)
+        y = randint(
+            round(LIFE_TANK.water_level_height),
+            round(LIFE_TANK.sand_surface_height)
+        )
         # 球心坐标
         self.location = Vector(x, y)
         self.radius = 4
@@ -50,7 +54,7 @@ class LifeBall:
         if self.location.y < LIFE_TANK.water_level_height:
             self.velocity.y = abs(self.velocity.y)
         # 低于缸底，必须让球回到缸底
-        if self.location.y > LIFE_TANK.height - self.radius:
+        if self.location.y > LIFE_TANK.sand_surface_height - self.radius:
             self.velocity.y = -abs(self.velocity.y)
 
     def paint(self, painter: QPainter):

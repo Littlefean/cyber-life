@@ -37,7 +37,7 @@ class LifePlantNode:
     @classmethod
     def get_root_node(cls):
         """获取根节点"""
-        return cls(random() * LIFE_TANK.width, LIFE_TANK.height, False)
+        return cls(random() * LIFE_TANK.width, LIFE_TANK.sand_surface_height, False)
 
     def add_child(self, child: 'LifePlantNode'):
         if not self.next_node and isinstance(child, LifePlantNode):
@@ -72,7 +72,7 @@ class LifePlantNode:
                 self.velocity.y = abs(self.velocity.y)
                 return
             # 低于缸底，必须让球回到缸底
-            if self.location.y > LIFE_TANK.height:
+            if self.location.y > LIFE_TANK.sand_surface_height:
                 self.velocity.y = -abs(self.velocity.y)
                 return
 

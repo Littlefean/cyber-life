@@ -11,7 +11,7 @@ class LifeBubble:
     """
 
     def __init__(self, x):
-        self.location = Vector(x, LIFE_TANK.height)
+        self.location = Vector(x, LIFE_TANK.sand_surface_height)
         self.velocity = Vector(0, 0)
         # 默认有一个向上的加速度，因为有浮力
         self.acceleration = Vector(0, -0.01)
@@ -29,7 +29,8 @@ class LifeBubble:
         因为越接近水面，压强越小，气泡的半径越大。
         """
         # 气泡到达水面的进度 0~1
-        rate = (LIFE_TANK.height - self.location.y) / (LIFE_TANK.height - LIFE_TANK.water_level_height)
+        rate = (LIFE_TANK.sand_surface_height - self.location.y) / (
+                    LIFE_TANK.sand_surface_height - LIFE_TANK.water_level_height)
         return self.radius_min + (self.radius_max - self.radius_min) * rate
 
     def tick(self):

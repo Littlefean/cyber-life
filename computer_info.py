@@ -5,13 +5,22 @@ from PIL import ImageGrab
 from random import randint
 
 
-def get_memory_usage_percent():
+def get_memory_usage_percent() -> float:
+    """获取内存使用率"""
     mem_info = psutil.virtual_memory()
     return mem_info.percent / 100.0
 
 
 COMPUTER_INFO = {
     "memory": get_memory_usage_percent(),
+    "physical_memory": {
+        "total": psutil.virtual_memory().total,
+        "percent": psutil.virtual_memory().percent / 100.0
+    },
+    "swap_memory": {
+        "total": psutil.swap_memory().total,
+        "percent": psutil.swap_memory().percent / 100.0
+    },
     "cpu": [0.0 for _ in range(psutil.cpu_count())],
     "c_disk_usage": psutil.disk_usage('C:').percent / 100,
     "screen_light": 0.0,
@@ -25,6 +34,8 @@ COMPUTER_INFO = {
 def update_computer_info():
     # 内存
     COMPUTER_INFO["memory"] = get_memory_usage_percent()
+    COMPUTER_INFO["physical_memory"]["percent"] = psutil.virtual_memory().percent / 100.0
+    COMPUTER_INFO["swap_memory"]["percent"] = psutil.swap_memory().percent / 100.0
 
     # CPU
     new_cpu_percent = psutil.cpu_percent(interval=None, percpu=True)

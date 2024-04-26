@@ -26,7 +26,7 @@ class LifePlant:
         产生一个新的水草节点
         """
         if not self.nodes:
-            node = LifePlantNode(self.x, LIFE_TANK.height, False)
+            node = LifePlantNode(self.x, LIFE_TANK.sand_surface_height, False)
             self.nodes.append(node)
         else:
             # 获取最后一个节点，并在上面随机位置产生一个子节点
