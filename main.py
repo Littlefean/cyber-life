@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPainter, QColor, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget
 import psutil
 
-from computer_info import COMPUTER_INFO, update_computer_info_timer
+from computer_info.manager import update_computer_info_timer, SYSTEM_INFO_MANAGER
 
 from life.ball import LifeBall
 from life.plant import LifePlant
@@ -100,7 +100,7 @@ class MainWindow(QWidget):
             fish.tick()
         # 更新生物球位置
         for i, ball in enumerate(self.life_data["balls"]):
-            ball.set_activity(COMPUTER_INFO["cpu"][i])
+            ball.set_activity(SYSTEM_INFO_MANAGER.INSPECTOR_CPU.get_current_result()[i])
             ball.tick()
         # 更新生态缸
         LIFE_TANK.tick()
@@ -115,7 +115,10 @@ class MainWindow(QWidget):
 
 def main():
     from threading import Thread
-    Thread(target=update_computer_info_timer, daemon=True).start()
+    # Thread(target=update_computer_info_timer, daemon=True).start()
+
+    # 启动系统信息管理器
+    SYSTEM_INFO_MANAGER.start()
 
     app = QApplication(sys.argv)
 

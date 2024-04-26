@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor, QLinearGradient
 from PIL import ImageGrab
 
-from computer_info import COMPUTER_INFO
+from computer_info.manager import COMPUTER_INFO, SYSTEM_INFO_MANAGER
 from tools.color import get_color_by_linear_ratio
 
 
@@ -49,15 +49,26 @@ class _LifeTank:
         生态缸更新一次
         """
         # 更新内存信息
-        self.sand_surface_height = self.height * COMPUTER_INFO["physical_memory"]["total"] / (
-                COMPUTER_INFO["physical_memory"]["total"] + COMPUTER_INFO["swap_memory"]["total"]
+        # self.sand_surface_height = self.height * COMPUTER_INFO["physical_memory"]["total"] / (
+        #         COMPUTER_INFO["physical_memory"]["total"] + COMPUTER_INFO["swap_memory"]["total"]
+        # )
+        memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
+        self.sand_surface_height = self.height * memory_info.physical_memory_total / (
+                memory_info.physical_memory_total + memory_info.swap_memory_total
         )
-        self.water_level_height = self.sand_surface_height * COMPUTER_INFO["physical_memory"]["percent"]
+        # self.water_level_height = self.sand_surface_height * COMPUTER_INFO["physical_memory"]["percent"]
+        self.water_level_height = self.sand_surface_height * memory_info.physical_memory_percent
+
+        # self.sand_base_height = self.sand_surface_height + (
+        #         self.height - self.sand_surface_height
+        # ) * COMPUTER_INFO["swap_memory"]["percent"]
+
         self.sand_base_height = self.sand_surface_height + (
                 self.height - self.sand_surface_height
-        ) * COMPUTER_INFO["swap_memory"]["percent"]
+        ) * memory_info.swap_memory_percent
         # 更新亮度
-        self.light_brightness_target = COMPUTER_INFO["screen_light"]
+        # self.light_brightness_target = COMPUTER_INFO["screen_light"]
+        self.light_brightness_target = SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result()
         self.light_brightness_current = self.light_brightness_target * 0.01 + self.light_brightness_current * 0.99
         self.time += 1
 
@@ -133,13 +144,15 @@ class _LifeTank:
             get_color_by_linear_ratio(
                 self.water_color_best,
                 self.water_color_worst,
-                COMPUTER_INFO["c_disk_usage"]
+                # COMPUTER_INFO["c_disk_usage"]
+                SYSTEM_INFO_MANAGER.INSPECTOR_DISK.get_current_result()
             )
         )
         dx = 10
         # x, x_next = 0, 10
         x, x_next = -dx, 0  # 不知道为啥第一个和之后的颜色不一样，只好让第一个画不出来
-        recv_speed = COMPUTER_INFO["network_speed"]["recv_speed"]
+        # recv_speed = COMPUTER_INFO["network_speed"]["recv_speed"]
+        recv_speed = SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
         y, y_next = round(
             self.water_level_height + self.get_wave_height(x, recv_speed)
         ), 0

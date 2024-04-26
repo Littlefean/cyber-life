@@ -2,7 +2,7 @@ from typing import List
 
 from .bubble import LifeBubble
 from PyQt5.QtGui import QPainter
-from computer_info import COMPUTER_INFO
+from computer_info.manager import SYSTEM_INFO_MANAGER
 
 
 class LifeBubbleFlow:
@@ -22,7 +22,7 @@ class LifeBubbleFlow:
         根据当前上传的网速来决定
         :return:
         """
-        sent_speed = COMPUTER_INFO["network_speed"]["sent_speed"]  # bits/s
+        sent_speed = SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().sent_speed
         if sent_speed < 1:
             return 999999
         if sent_speed < 1000:
