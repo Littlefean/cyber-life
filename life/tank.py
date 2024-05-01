@@ -18,6 +18,7 @@ from tools.singleton import SingletonMeta
 class _LifeTank(metaclass=SingletonMeta):
     """
     存放关于生态缸的数据
+    绘制水面、沙子表面层和深层、沙层中的震荡波，并进行更新
     """
     _COLOR_DEBUG = False
 
@@ -32,7 +33,7 @@ class _LifeTank(metaclass=SingletonMeta):
 
         # 水位线高度线，y值
         self.water_level_height = 0
-        # 底部沙子高度，y值
+        # 底部沙子高度，y值，为固定值，不进行更新
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
         self.sand_surface_height = self.height * memory_info.physical_memory_total / (
                 memory_info.physical_memory_total + memory_info.swap_memory_total
@@ -66,8 +67,10 @@ class _LifeTank(metaclass=SingletonMeta):
         # 更新内存信息
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
 
+        # 水的深度表示物理内存剩余
         self.water_level_height = self.sand_surface_height * memory_info.physical_memory_percent
 
+        # 沙子深层厚度表示交换内存剩余
         self.sand_base_height = self.sand_surface_height + (
                 self.height - self.sand_surface_height
         ) * memory_info.swap_memory_percent
@@ -184,7 +187,7 @@ class _LifeTank(metaclass=SingletonMeta):
         # 绘制矩形，使用渐变填充
         painter.fillRect(0, 0, self.width, self.height, gradient)
 
-        # 表层颜色应该更深，浅层颜色应该更浅，因为表层是污染层，深层有石英石
+        # 表层颜色应该更深，深层颜色应该更浅，因为表层是污染层，深层有石英石
 
         # 绘制表面层
         painter.setPen(Qt.NoPen)

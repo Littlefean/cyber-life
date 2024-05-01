@@ -1,4 +1,7 @@
 class SingletonMeta(type):
+    '''
+    单例元类，继承该类的类只能实例化出同一个对象
+    '''
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

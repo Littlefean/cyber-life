@@ -7,7 +7,9 @@ from computer_info.manager import SYSTEM_INFO_MANAGER
 
 class LifeBubbleFlow:
     """
-    气泡流
+    气泡流类，由main控制
+    控制气泡生成和消失
+    对气泡状态进行更新
     """
 
     def __init__(self, x):
