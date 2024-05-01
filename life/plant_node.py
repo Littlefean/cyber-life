@@ -8,7 +8,7 @@ from .tank import LIFE_TANK
 
 class LifePlantNode:
     """
-    水草节点类
+    水草节点类，由main控制
     每个节点都类似 “V” 的样子，一节一节，构成链条状结构
     当前物理模型非常糟糕，看起来很抽搐，以后有机会再改进
     """
@@ -36,7 +36,11 @@ class LifePlantNode:
 
     @classmethod
     def get_root_node(cls):
-        """获取根节点"""
+        """
+        获取根节点
+        @classmethod：类方法，不需要实例化对象即可调用
+        @staticmethod：静态方法，同样不需要实例化即可调用，但不适合写与类成员变量或成员函数有关的功能
+        """
         return cls(random() * LIFE_TANK.width, LIFE_TANK.sand_surface_height, False)
 
     def add_child(self, child: 'LifePlantNode'):

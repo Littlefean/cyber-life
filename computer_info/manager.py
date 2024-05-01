@@ -33,12 +33,12 @@ class _SystemInfoManager(metaclass=SingletonMeta):
         :return:
         """
         # 先初始化所有监测者的线程调用函数
-        for attr in dir(self):
-            if attr.startswith('INSPECTOR_'):
-                instance = getattr(self, attr)
-                if isinstance(instance, Inspector):
+        for attr in dir(self):  # 获取实例的属性、方法列表（字符串形式）
+            if attr.startswith('INSPECTOR_'):  # 找到'INSPECTOR_'开头的属性和方法
+                instance = getattr(self, attr)  # 得到实例'INSPECTOR_'开头的属性和方法（对象形式）
+                if isinstance(instance, Inspector):  # 进一步确认是所需对象，即各个监控类的实例
                     self.interval_functions.append(
-                        self.get_interval_function(
+                        self.get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
                             instance.inspect,
                             instance.INSPECTION_INTERVAL,
                         )
