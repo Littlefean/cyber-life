@@ -1,5 +1,5 @@
 """
-存放关于生态缸的数据
+存放关于小鱼缸的数据
 """
 from math import sin
 
@@ -16,14 +16,14 @@ from tools.singleton import SingletonMeta
 
 class _LifeTank(metaclass=SingletonMeta):
     """
-    存放关于生态缸的数据
+    存放关于小鱼缸的数据
     绘制水面、沙子表面层和深层、沙层中的震荡波，并进行更新
     """
     _COLOR_DEBUG = False
 
     def __init__(self, width: int):
         """
-        初始化生态缸数据
+        初始化小鱼缸数据
         :param width: 界面大小宽度，px
         """
         self.width = int(width)
@@ -36,7 +36,7 @@ class _LifeTank(metaclass=SingletonMeta):
         # 底部沙子高度，y值，为固定值，不进行更新
         self.sand_base_height = 0
 
-        # 生态缸颜色
+        # 小鱼缸颜色
         self.water_color_best = QColor(40, 100, 255, 40)
         # 将棕色作为最差颜色，不太好，容易和沙子颜色混淆
         # self.water_color_worst = QColor(200, 150, 50, 40)
@@ -68,7 +68,7 @@ class _LifeTank(metaclass=SingletonMeta):
 
     def tick(self):
         """
-        生态缸更新一次
+        小鱼缸更新一次
         """
         # 更新内存信息
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
@@ -216,7 +216,7 @@ class _LifeTank(metaclass=SingletonMeta):
         # 绘制波浪圆圈
         self.sand_wave_outer.paint(painter)
         self.sand_wave_inner.paint(painter)
-        # 绘制生态缸边框
+        # 绘制小鱼缸边框
         painter.setPen(Qt.green)
         painter.setBrush(Qt.NoBrush)
         painter.drawRect(0, 0, self.width - 1, self.height)

@@ -21,7 +21,7 @@ class MainWindow(QWidget):
         super().__init__()
 
         # 设置窗口的基本属性
-        self.setWindowTitle("赛博生态缸")
+        self.setWindowTitle("赛博小鱼缸")
         # 将背景设置为透明
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(
@@ -120,7 +120,7 @@ class MainWindow(QWidget):
         for plant in self.life_data["plants"]:
             plant.paint(painter)
             pass
-        # 绘制生态缸
+        # 绘制小鱼缸
         LIFE_TANK.paint(painter)
 
     def tick(self):
@@ -132,7 +132,7 @@ class MainWindow(QWidget):
         for i, ball in enumerate(self.life_data["balls"]):
             ball.set_activity(SYSTEM_INFO_MANAGER.INSPECTOR_CPU.get_current_result()[i])
             ball.tick()
-        # 更新生态缸
+        # 更新小鱼缸
         LIFE_TANK.tick()
         # 更新水草
         for plant in self.life_data["plants"]:

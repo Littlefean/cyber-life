@@ -19,13 +19,13 @@ class LifeBubble:
         # 规定气泡大小的变化动态范围
         self.radius_min = 2
         self.radius_max = 4
-        # 当气泡脱离生态缸时，气泡变为死亡状态
+        # 当气泡脱离小鱼缸时，气泡变为死亡状态
         self.is_alive = True
 
     @property
     def radius(self):
         """
-        气泡的半径大小，由自身位置在生态缸中的位置决定
+        气泡的半径大小，由自身位置在小鱼缸中的位置决定
         因为越接近水面，压强越小，气泡的半径越大。
         """
         # 气泡到达水面的进度 0~1
