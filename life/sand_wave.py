@@ -5,9 +5,8 @@ from PyQt5.QtCore import Qt
 class SandWave:
     MAX_RADIUS = 300 / 2
 
-    def __init__(self, x, y, radius, radius_variation):
+    def __init__(self, x, radius, radius_variation):
         self.x = x
-        self.y = y
         self.radius = radius
         self.radius_variation: float = radius_variation
 
@@ -24,10 +23,11 @@ class SandWave:
         painter.setPen(line_pen)
         painter.setBrush(Qt.NoBrush)
         # 应该画一个下半圆
+        from .tank import LIFE_TANK  # 避免循环依赖，底层导入顶层模块
 
         painter.drawArc(
             round(self.x - self.radius),
-            round(self.y - self.radius + 4),  # 下移动4像素，防止弧线边角看起来突出地面
+            round(LIFE_TANK.sand_surface_height - self.radius + 4),  # 下移动4像素，防止弧线边角看起来突出地面
             round(2 * self.radius),
             round(2 * self.radius),
             180 * 16,

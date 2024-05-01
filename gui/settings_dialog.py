@@ -11,20 +11,34 @@ class SettingsDialog(QDialog):
         self.setGeometry(400, 400, 400, 400)
         # 设置icon
         self.setWindowIcon(QIcon('assert/icon.ico'))
-        # 一个勾选框，默认是勾选的状态
-        self.checkBox = QCheckBox("显示小鱼", self)
-        self.checkBox.move(10, 10)
-        self.checkBox.setChecked(True)
-        self.checkBox.stateChanged.connect(self.change_settings_display_fish)
-
+        # 小鱼
+        self.check_box_fish = QCheckBox("显示小鱼", self)
+        self.check_box_fish.move(10, 10)
+        self.check_box_fish.setChecked(SETTINGS.is_fish_visible)
+        self.check_box_fish.stateChanged.connect(self.change_settings_display_fish)
+        # 内存
+        self.check_box_memory = QCheckBox("将交换内存固定在总高度的1/8", self)
+        self.check_box_memory.move(10, 40)
+        self.check_box_memory.setChecked(SETTINGS.is_swap_memory_fixed)
+        self.check_box_memory.stateChanged.connect(self.change_settings_display_memory)
         pass
 
     def change_settings_display_fish(self, state):
         if state == Qt.Checked:
             print("""显示小鱼""")
-            self.checkBox.setChecked(True)
+            self.check_box_fish.setChecked(True)
             SETTINGS.is_fish_visible = True
         else:
             print("""不显示小鱼""")
-            self.checkBox.setChecked(False)
+            self.check_box_fish.setChecked(False)
             SETTINGS.is_fish_visible = False
+
+    def change_settings_display_memory(self, state):
+        if state == Qt.Checked:
+            print("""将交换内存固定在总高度的1/8""")
+            self.check_box_memory.setChecked(True)
+            SETTINGS.is_swap_memory_fixed = True
+        else:
+            print("""不将交换内存固定在总高度的1/8""")
+            self.check_box_memory.setChecked(False)
+            SETTINGS.is_swap_memory_fixed = False

@@ -2,15 +2,14 @@
 存放关于生态缸的数据
 """
 from math import sin
-from typing import List
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor, QLinearGradient
 from PIL import ImageGrab
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
-from life.sand_wave import SandWave
 from life.sand_wave_flow import SandWaveFlow
+from service.settings import SETTINGS
 from tools.color import get_color_by_linear_ratio
 from tools.singleton import SingletonMeta
 
@@ -22,22 +21,19 @@ class _LifeTank(metaclass=SingletonMeta):
     """
     _COLOR_DEBUG = False
 
-    def __init__(self, width, capacity, level, status):
+    def __init__(self, width: int):
+        """
+        初始化生态缸数据
+        :param width: 界面大小宽度，px
+        """
         self.width = int(width)
         # 获取屏幕的宽度和高度
         w, h = ImageGrab.grab().size
         self.height = int(self.width * (h / w))
-        self.capacity = capacity
-        self.level = level
-        self.status = status
 
         # 水位线高度线，y值
         self.water_level_height = 0
         # 底部沙子高度，y值，为固定值，不进行更新
-        memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
-        self.sand_surface_height = self.height * memory_info.physical_memory_total / (
-                memory_info.physical_memory_total + memory_info.swap_memory_total
-        )
         self.sand_base_height = 0
 
         # 生态缸颜色
@@ -54,11 +50,21 @@ class _LifeTank(metaclass=SingletonMeta):
         # 向外扩散的是写入磁盘的速度，向内扩散的是读取磁盘的速度
         # 因为扩散波像是某个东西掉入地上，成为了地面的一部分，可以代表写入
         # 实际上沙子地面代表了硬盘
-        self.sand_wave_outer = SandWaveFlow(self.width / 2, self.sand_surface_height, 1)
-        self.sand_wave_inner = SandWaveFlow(self.width / 2, self.sand_surface_height, -1)
+        self.sand_wave_outer = SandWaveFlow(self.width / 2, 1)
+        self.sand_wave_inner = SandWaveFlow(self.width / 2, -1)
 
         self.time = 0
         self.tick()  # 初始化的时候就将高度信息更新好
+
+    @property
+    def sand_surface_height(self):
+        if SETTINGS.is_swap_memory_fixed:
+            return self.height * (1 - 1 / 4)
+        else:
+            memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
+            return self.height * memory_info.physical_memory_total / (
+                    memory_info.physical_memory_total + memory_info.swap_memory_total
+            )
 
     def tick(self):
         """
@@ -218,4 +224,4 @@ class _LifeTank(metaclass=SingletonMeta):
         pass
 
 
-LIFE_TANK = _LifeTank(300, 1000, 0, "normal")
+LIFE_TANK = _LifeTank(300)
