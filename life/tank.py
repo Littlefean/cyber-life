@@ -59,7 +59,7 @@ class _LifeTank(metaclass=SingletonMeta):
     @property
     def sand_surface_height(self):
         if SETTINGS.is_swap_memory_fixed:
-            return self.height * (1 - 1 / 4)
+            return self.height * (1 - SETTINGS.swap_memory_height_rate)
         else:
             memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
             return self.height * memory_info.physical_memory_total / (

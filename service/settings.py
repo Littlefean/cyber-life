@@ -11,6 +11,7 @@ class SettingsObject(metaclass=SingletonMeta):
         self.plant_growth_speed = 100
         # 交换内存高度固定
         self.is_swap_memory_fixed = False
+        self.swap_memory_height_rate = 0.125
         # 检测开关
         self.is_cpu_detectable = True
         self.is_disk_detectable = True
