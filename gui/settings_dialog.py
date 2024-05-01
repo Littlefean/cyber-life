@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider
+from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from service.settings import SETTINGS
@@ -26,8 +26,26 @@ class SettingsDialog(QDialog):
         self.slider_memory.setGeometry(10, 70, 380, 30)
         self.slider_memory.setMinimum(0)
         self.slider_memory.setMaximum(99)  # 最大值不要调100，顶部剩余距离为0导致程序崩溃
-        self.slider_memory.setValue(12)  # 默认值为大约1/8
+        self.slider_memory.setValue(int(SETTINGS.swap_memory_height_rate * 100))
         self.slider_memory.valueChanged.connect(self.change_memory_height)
+
+        # 底部的保存设置按钮
+        self.button_save = QPushButton("保存设置", self)
+        self.button_save.move(10, 110)
+        self.button_save.clicked.connect(self.save_settings)
+
+    @staticmethod
+    def save_settings():
+        SETTINGS.save_to_json()
+
+        # 弹出保存成功的消息框
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle("保存成功")
+        msg_box.setWindowIcon(QIcon('assert/icon.ico'))
+        msg_box.setText("设置已成功保存。")
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec_()
         pass
 
     def change_settings_display_fish(self, state):

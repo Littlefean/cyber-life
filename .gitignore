@@ -4,3 +4,7 @@ __pycache__/
 
 .idea/
 _test.py
+
+
+# 一些特殊文件的设置
+user_settings.json
