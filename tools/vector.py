@@ -3,12 +3,18 @@ from math import cos, sin
 
 
 class Vector:
-    '''
+    """
     向量类，可以用于存放一个点的x、y坐标信息，可以当作向量并进行操作
     可以进行向量间的加减乘、判断相等、计算距离
     可以对向量取模、旋转、归一化
     GUI普遍以左上角为坐标原点
-    '''
+    坐标轴：
+    ┌─────────► x
+    │
+    ▼
+    y
+    """
+
     def __init__(self, x, y):
         if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
             raise TypeError("Vector components must be numerical")
