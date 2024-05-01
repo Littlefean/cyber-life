@@ -10,7 +10,7 @@ class LifePlantNode:
     """
     水草节点类，由main控制
     每个节点都类似 “V” 的样子，一节一节，构成链条状结构
-    当前物理模型非常糟糕，看起来很抽搐，以后有机会再改进
+    当前水草生长过高，会超越水面，飘到天空上，后续可能考虑优化
     """
 
     def __init__(self, x, y, can_move):
@@ -79,6 +79,9 @@ class LifePlantNode:
             if self.location.y > LIFE_TANK.sand_surface_height:
                 self.velocity.y = -abs(self.velocity.y)
                 return
+        else:
+            # 当前节点是根节点，可能要根据动态的surface_height来调整位置
+            self.location.y = LIFE_TANK.sand_surface_height
 
         # 将下一个节点拉向自己
         if not self.next_node:
@@ -98,7 +101,7 @@ class LifePlantNode:
             self.next_node.acceleration = Vector(0, 0)
             # self.next_node.velocity = v * 5
 
-        # 恰好在拉力和排斥力范围内，开始随机漂移
+        # 恰好在拉力和排斥力范围内，开始让自己的下一个节点随机漂移
         if self.repel_radius < distance < self.pull_radius:
             if distance - self.repel_radius < self.pull_radius - distance:
                 # 如果距离斥力半径更近，获取斥力方向 单位向量
