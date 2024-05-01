@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
 import psutil
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
@@ -12,6 +12,8 @@ from life.plant import LifePlant
 from life.tank import LIFE_TANK
 from life.bubble_flow import LifeBubbleFlow
 from life.fish import LifeFish
+
+from gui.settings_dialog import SettingsDialog
 
 
 class MainWindow(QWidget):
@@ -51,7 +53,34 @@ class MainWindow(QWidget):
             "bubble_flows": [LifeBubbleFlow(LIFE_TANK.width / 2)],
             "fish": [LifeFish()]
         }
+        self.settingsButton = QPushButton("settings", self)
+        self.settingsButton.setStyleSheet("""
+            QPushButton {
+                background-color: #333333; /* 按钮的背景颜色 */
+                color: #FFFFFF;            /* 按钮的字体颜色 */
+                border-radius: 10px;       /* 按钮边角的圆滑度 */
+                border: 1px solid lime;  /* 按钮边框 */
+            }
+            QPushButton:hover {
+                background-color: #555555; /* 鼠标悬浮时按钮的背景颜色 */
+            }
+        """)
+        self.settingsButton.setGeometry(10, 10, 100, 40)
+        self.settingsButton.clicked.connect(self.showSettingsDialog)
+        self.settingsButton.hide()  # 默认隐藏设置按钮
         pass
+
+    def enterEvent(self, event):
+        self.settingsButton.show()  # 鼠标进入窗口时显示设置按钮
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.settingsButton.hide()  # 鼠标离开窗口时隐藏设置按钮
+        super().leaveEvent(event)
+
+    def showSettingsDialog(self):
+        dialog = SettingsDialog()
+        dialog.exec_()
 
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""

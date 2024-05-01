@@ -2,6 +2,7 @@ from tools.vector import Vector
 from PyQt5.QtGui import QPainter, QPixmap, QTransform
 from .tank import LIFE_TANK
 from random import randint, uniform
+from service.settings import SETTINGS
 
 
 class LifeFish:
@@ -70,6 +71,8 @@ class LifeFish:
         return speed_vector.x < 0
 
     def paint(self, painter: QPainter):
+        if not SETTINGS.is_fish_visible:
+            return
         # 判断鱼是否面向左边
         is_facing_left = self.is_face_to_left()
         if is_facing_left:
