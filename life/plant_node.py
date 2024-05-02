@@ -24,7 +24,7 @@ class LifePlantNode:
         # 节点间拉力生效范围半径
         self.pull_radius = 20
         # 节点间排斥力生效范围半径
-        self.repel_radius = 10
+        self.repel_radius = 5
 
         self.status_out_range = False
         self.status_in_range = False
@@ -94,11 +94,11 @@ class LifePlantNode:
             self.next_node.velocity = v * 5
             self.next_node.acceleration = Vector(0, 0)
 
-        # 过近，排斥
+        # 过近，排斥，但是只模拟相邻节点的排斥，不计算与周围其它节点的排斥，是粗糙的模拟
         if distance <= self.repel_radius:
-            # v = (self.next_node.location - self.location).normalize() * 0.1
+            v = (self.next_node.location - self.location).normalize() * 0.1
             self.next_node.acceleration = Vector(0, 0)
-            # self.next_node.velocity = v * 5
+            self.next_node.velocity = v * 5
 
         # 恰好在拉力和排斥力范围内，开始让自己的下一个节点随机漂移
         if self.repel_radius < distance < self.pull_radius:
