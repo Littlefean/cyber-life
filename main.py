@@ -3,15 +3,11 @@ import sys
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
-import psutil
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
 
-from life.ball import LifeBall
-from life.plant import LifePlant
+from life.life_manager import LifeManager
 from life.tank import LIFE_TANK
-from life.bubble_flow import LifeBubbleFlow
-from life.fish import LifeFish
 
 from gui.settings_dialog import SettingsDialog
 
@@ -46,13 +42,8 @@ class MainWindow(QWidget):
         self.m_drag = False
         # 窗口被拖动的位置
         self.m_drag_position = None
-        # 有待集成在一个 life_manager 单例中
-        self.life_data = {
-            "balls": [LifeBall() for _ in range(psutil.cpu_count())],
-            "plants": [LifePlant()],
-            "bubble_flows": [LifeBubbleFlow(LIFE_TANK.width / 2)],
-            "fish": [LifeFish()]
-        }
+        self.life_manager = LifeManager()
+
         self.settingsButton = QPushButton("settings", self)
         self.settingsButton.setStyleSheet("""
             QPushButton {
@@ -106,40 +97,11 @@ class MainWindow(QWidget):
         painter = QPainter(self)
         # 背景颜色
         painter.fillRect(event.rect(), QColor(20, 20, 20, 200))
-
-        # 绘制气泡流
-        for bubble_flow in self.life_data["bubble_flows"]:
-            bubble_flow.paint(painter)
-        # 绘制生物球
-        for ball in self.life_data["balls"]:
-            ball.paint(painter)
-        # 绘制鱼
-        for fish in self.life_data["fish"]:
-            fish.paint(painter)
-        # 绘制生长植物
-        for plant in self.life_data["plants"]:
-            plant.paint(painter)
-            pass
-        # 绘制小鱼缸
-        LIFE_TANK.paint(painter)
+        self.life_manager.paint(painter)
 
     def tick(self):
         """更新窗口内图像"""
-        # 更新鱼
-        for fish in self.life_data["fish"]:
-            fish.tick()
-        # 更新生物球位置
-        for i, ball in enumerate(self.life_data["balls"]):
-            ball.set_activity(SYSTEM_INFO_MANAGER.INSPECTOR_CPU.get_current_result()[i])
-            ball.tick()
-        # 更新小鱼缸
-        LIFE_TANK.tick()
-        # 更新水草
-        for plant in self.life_data["plants"]:
-            plant.tick()
-        # 更新气泡流
-        for bubble_flow in self.life_data["bubble_flows"]:
-            bubble_flow.tick()
+        self.life_manager.tick()
         self.update()
 
 
