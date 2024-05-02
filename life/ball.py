@@ -4,6 +4,8 @@ from PyQt5.QtGui import QPainter, QColor
 from tools.vector import Vector
 from tools.color import get_color_by_linear_ratio
 from random import random, randint
+
+from .gas_manager import GAS_MANAGER
 from .tank import LIFE_TANK
 
 
@@ -34,6 +36,9 @@ class LifeBall:
         self.color_default = QColor(10, 150, 10)
         self.color_active = QColor(255, 255, 0)
 
+        # 固定的碳
+        self.fixed_carbon = 0
+
     def set_activity(self, activity):
         if isinstance(activity, float):
             self.activity = activity
@@ -60,6 +65,15 @@ class LifeBall:
         if self.location.y > LIFE_TANK.sand_surface_height - self.radius:
             self.velocity.y = -abs(self.velocity.y)
             self.location.y = LIFE_TANK.sand_surface_height - self.radius
+
+        # 对氧气的改变
+        # 光合作用：CO2 --light--> O2 + C
+        c = GAS_MANAGER.photosynthesis_tick(1, LIFE_TANK.light_brightness_current)
+        self.fixed_carbon += c
+        # 呼吸作用
+        if self.fixed_carbon > 0.5:
+            energy = GAS_MANAGER.respiration_tick(0.5, 0.5)
+            self.fixed_carbon -= 0.5
 
     def paint(self, painter: QPainter):
         # 画出球

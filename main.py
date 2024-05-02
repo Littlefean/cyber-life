@@ -1,12 +1,13 @@
 import sys
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPainter, QColor, QIcon
+from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
 
 from life.life_manager import LifeManager
+from life.gas_manager import GAS_MANAGER
 from life.tank import LIFE_TANK
 
 from gui.settings_dialog import SettingsDialog
@@ -44,8 +45,8 @@ class MainWindow(QWidget):
         self.m_drag_position = None
         self.life_manager = LifeManager()
 
-        self.settingsButton = QPushButton("settings", self)
-        self.settingsButton.setStyleSheet("""
+        self.settings_button = QPushButton("settings", self)
+        self.settings_button.setStyleSheet("""
             QPushButton {
                 background-color: #333333; /* 按钮的背景颜色 */
                 color: #FFFFFF;            /* 按钮的字体颜色 */
@@ -56,25 +57,27 @@ class MainWindow(QWidget):
                 background-color: #555555; /* 鼠标悬浮时按钮的背景颜色 */
             }
         """)
-        self.settingsButton.setGeometry(self.width() - 100 - 10, 10, 100, 40)
-        self.settingsButton.clicked.connect(self.showSettingsDialog)
-        self.settingsButton.hide()  # 默认隐藏设置按钮
-
-        self.hoverTextLabel = QLabel("O₂: 0\nCO₂: 0", self)
-        self.hoverTextLabel.setStyleSheet("color: white;")
-        self.hoverTextLabel.setGeometry(10, 10, 150, self.height() - 20)
-        self.hoverTextLabel.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.hoverTextLabel.hide()
+        self.settings_button.setGeometry(self.width() - 100 - 10, 10, 100, 40)
+        self.settings_button.clicked.connect(self.showSettingsDialog)
+        self.settings_button.hide()  # 默认隐藏设置按钮
+        font = QFont()
+        font.setPointSize(6)
+        self.hover_text_label = QLabel("O₂: 0\nCO₂: 0", self)
+        self.hover_text_label.setStyleSheet("color: white;")
+        self.hover_text_label.setFont(font)
+        self.hover_text_label.setGeometry(10, 10, 150, self.height() - 20)
+        self.hover_text_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.hover_text_label.hide()
         pass
 
     def enterEvent(self, event):
-        self.settingsButton.show()  # 鼠标进入窗口时显示设置按钮
-        self.hoverTextLabel.show()
+        self.settings_button.show()  # 鼠标进入窗口时显示设置按钮
+        self.hover_text_label.show()
         super().enterEvent(event)
 
     def leaveEvent(self, event):
-        self.settingsButton.hide()  # 鼠标离开窗口时隐藏设置按钮
-        self.hoverTextLabel.hide()
+        self.settings_button.hide()  # 鼠标离开窗口时隐藏设置按钮
+        self.hover_text_label.hide()
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
@@ -111,6 +114,9 @@ class MainWindow(QWidget):
     def tick(self):
         """更新窗口内图像"""
         self.life_manager.tick()
+        self.hover_text_label.setText(
+            f"O₂: {round(GAS_MANAGER.oxygen, 2)}\nCO₂: {round(GAS_MANAGER.carbon_dioxide, 2)}"
+        )
         self.update()
 
 

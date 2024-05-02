@@ -12,20 +12,19 @@ from life.bubble_flow import LifeBubbleFlow
 from life.fish import LifeFish
 from life.plant import LifePlant
 from life.tank import LIFE_TANK
+from tools.singleton import SingletonMeta
 
 
-class LifeManager:
+class LifeManager(metaclass=SingletonMeta):
+    """
+    管理小鱼缸的一切内容，包括生物球、小鱼缸、水草、气泡流、鱼等
+    """
+
     def __init__(self):
         self.balls: List[LifeBall] = [LifeBall() for _ in range(psutil.cpu_count())]
         self.plant = LifePlant()
         self.bubble_flow = LifeBubbleFlow(LIFE_TANK.width / 2)
         self.fish_list: List[LifeFish] = [LifeFish()]
-
-        # 假设10px是1cm，300px就是30cm
-        # 水中氧气含量
-        self.oxygen = 0
-        # 水中二氧化碳含量
-        self.carbon_dioxide = 0
 
     def tick(self):
         # 更新鱼
