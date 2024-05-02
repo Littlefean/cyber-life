@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
 
@@ -39,7 +39,7 @@ class MainWindow(QWidget):
         )
 
         # 窗口是否被拖动
-        self.m_drag = False
+        self.is_window_drag = False
         # 窗口被拖动的位置
         self.m_drag_position = None
         self.life_manager = LifeManager()
@@ -49,24 +49,32 @@ class MainWindow(QWidget):
             QPushButton {
                 background-color: #333333; /* 按钮的背景颜色 */
                 color: #FFFFFF;            /* 按钮的字体颜色 */
-                border-radius: 10px;       /* 按钮边角的圆滑度 */
-                border: 1px solid lime;  /* 按钮边框 */
+                /*border-radius: 10px;*/       /* 按钮边角的圆滑度 */
+                border: 1px solid black;  /* 按钮边框 */
             }
             QPushButton:hover {
                 background-color: #555555; /* 鼠标悬浮时按钮的背景颜色 */
             }
         """)
-        self.settingsButton.setGeometry(10, 10, 100, 40)
+        self.settingsButton.setGeometry(self.width() - 100 - 10, 10, 100, 40)
         self.settingsButton.clicked.connect(self.showSettingsDialog)
         self.settingsButton.hide()  # 默认隐藏设置按钮
+
+        self.hoverTextLabel = QLabel("O₂: 0\nCO₂: 0", self)
+        self.hoverTextLabel.setStyleSheet("color: white;")
+        self.hoverTextLabel.setGeometry(10, 10, 150, self.height() - 20)
+        self.hoverTextLabel.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.hoverTextLabel.hide()
         pass
 
     def enterEvent(self, event):
         self.settingsButton.show()  # 鼠标进入窗口时显示设置按钮
+        self.hoverTextLabel.show()
         super().enterEvent(event)
 
     def leaveEvent(self, event):
         self.settingsButton.hide()  # 鼠标离开窗口时隐藏设置按钮
+        self.hoverTextLabel.hide()
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
@@ -76,25 +84,26 @@ class MainWindow(QWidget):
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""
         if event.button() == Qt.LeftButton:
-            self.m_drag = True
+            self.is_window_drag = True
             self.m_drag_position = event.globalPos() - self.pos()
             print(self.m_drag_position)
             event.accept()
 
     def mouseMoveEvent(self, event):
         """重写mouseMoveEvent方法，用于拖动窗口"""
-        if Qt.LeftButton and self.m_drag:
+        if Qt.LeftButton and self.is_window_drag:
             self.move(event.globalPos() - self.m_drag_position)
             event.accept()
 
     def mouseReleaseEvent(self, event):
         """重写mouseReleaseEvent方法，用于拖动窗口"""
-        self.m_drag = False
+        self.is_window_drag = False
 
     def paintEvent(self, event):
         """重写paintEvent方法，用于绘制窗口内图像"""
         # 在这里使用 QPainter 进行像素颗粒度的绘制
         painter = QPainter(self)
+
         # 背景颜色
         painter.fillRect(event.rect(), QColor(20, 20, 20, 200))
         self.life_manager.paint(painter)

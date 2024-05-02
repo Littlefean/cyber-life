@@ -21,6 +21,12 @@ class LifeManager:
         self.bubble_flow = LifeBubbleFlow(LIFE_TANK.width / 2)
         self.fish_list: List[LifeFish] = [LifeFish()]
 
+        # 假设10px是1cm，300px就是30cm
+        # 水中氧气含量
+        self.oxygen = 0
+        # 水中二氧化碳含量
+        self.carbon_dioxide = 0
+
     def tick(self):
         # 更新鱼
         for fish in self.fish_list:
