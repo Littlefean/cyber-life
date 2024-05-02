@@ -35,6 +35,6 @@ class SettingsObject(metaclass=SingletonMeta):
             print(f"An error occurred: {e}")
             raise e
 
-
+# 在被其它文件导入时执行
 SETTINGS = SettingsObject()
-SETTINGS.load_from_json()
+SETTINGS.load_from_json()  # 导入设置

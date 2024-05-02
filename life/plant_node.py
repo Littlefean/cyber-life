@@ -24,7 +24,7 @@ class LifePlantNode:
         # 节点间拉力生效范围半径
         self.pull_radius = 20
         # 节点间排斥力生效范围半径
-        self.repel_radius = 10
+        self.repel_radius = 5
 
         self.status_out_range = False
         self.status_in_range = False
@@ -58,12 +58,6 @@ class LifePlantNode:
         :return:
         """
         if self.can_move:
-            # 迭代位置
-            self.velocity += self.acceleration
-            self.location += self.velocity
-            # 限制速度
-            self.velocity.limit(10)
-
             # 遇到墙壁反弹
             # 左右边界检测
             if self.location.x < 0:
@@ -74,11 +68,16 @@ class LifePlantNode:
             # 高出水位线，必须让球掉入水中
             if self.location.y < LIFE_TANK.water_level_height:
                 self.velocity.y = abs(self.velocity.y)
-                return
+                # return  # 不能return，否则不能更新下一个节点
             # 低于缸底，必须让球回到缸底
             if self.location.y > LIFE_TANK.sand_surface_height:
                 self.velocity.y = -abs(self.velocity.y)
-                return
+                # return
+            # 迭代位置，放在检测边界之后执行，否则检测边界后velocity值的更改会在下一轮引力、斥力生效时覆盖
+            self.velocity += self.acceleration
+            self.location += self.velocity
+            # 限制速度
+            self.velocity.limit(10)
         else:
             # 当前节点是根节点，可能要根据动态的surface_height来调整位置
             self.location.y = LIFE_TANK.sand_surface_height
@@ -95,11 +94,11 @@ class LifePlantNode:
             self.next_node.velocity = v * 5
             self.next_node.acceleration = Vector(0, 0)
 
-        # 过近，排斥
+        # 过近，排斥，但是只模拟相邻节点的排斥，不计算与周围其它节点的排斥，是粗糙的模拟
         if distance <= self.repel_radius:
-            # v = (self.next_node.location - self.location).normalize() * 0.1
+            v = (self.next_node.location - self.location).normalize() * 0.1
             self.next_node.acceleration = Vector(0, 0)
-            # self.next_node.velocity = v * 5
+            self.next_node.velocity = v * 5
 
         # 恰好在拉力和排斥力范围内，开始让自己的下一个节点随机漂移
         if self.repel_radius < distance < self.pull_radius:

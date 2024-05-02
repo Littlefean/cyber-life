@@ -79,7 +79,7 @@ class MainWindow(QWidget):
 
     def showSettingsDialog(self):
         dialog = SettingsDialog()
-        dialog.exec_()
+        dialog.exec_()  # 显示对话框（为模式对话框，锁住程序直到用户关闭该对话框为止）
 
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""

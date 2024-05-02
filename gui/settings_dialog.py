@@ -71,5 +71,5 @@ class SettingsDialog(QDialog):
     # 滑动条的槽函数
     @staticmethod
     def change_memory_height(value):
-        SETTINGS.swap_memory_height_rate = value / 100
+        SETTINGS.swap_memory_height_rate = value / 100  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
         print(f"""交换内存高度比率：{SETTINGS.swap_memory_height_rate}""")
