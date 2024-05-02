@@ -25,7 +25,7 @@ class LifeBall:
         self.location = Vector(x, y)
         self.radius = 4
         # 随机速度
-        self.velocity = Vector(random() * 2 - 1, random() * 2 - 1).normalize() * 0.2
+        self.velocity = Vector(random() * 2 - 1, random() * 2 - 1).normalize() * 0.1
         self.acceleration = Vector(0, 0)
 
         # 活跃程度，越大越活跃 0 ~ 1.0
@@ -37,6 +37,8 @@ class LifeBall:
     def set_activity(self, activity):
         if isinstance(activity, float):
             self.activity = activity
+            # 让速度方向向垂直向上的方向旋转一定程度
+            self.velocity = self.velocity.rotate(activity * 15)
         else:
             print("Error: activity must be a float number.")
             raise TypeError
@@ -53,9 +55,11 @@ class LifeBall:
         # 高出水位线，必须让球掉入水中
         if self.location.y < LIFE_TANK.water_level_height:
             self.velocity.y = abs(self.velocity.y)
+            self.location.y = LIFE_TANK.water_level_height
         # 低于缸底，必须让球回到缸底
         if self.location.y > LIFE_TANK.sand_surface_height - self.radius:
             self.velocity.y = -abs(self.velocity.y)
+            self.location.y = LIFE_TANK.sand_surface_height - self.radius
 
     def paint(self, painter: QPainter):
         # 画出球
