@@ -1,12 +1,15 @@
 from tools.vector import Vector
 from PyQt5.QtGui import QPainter, QPixmap, QTransform
+
+from .life_mixin.breathable_mixin import BreathableMixin
 from .tank import LIFE_TANK
 from random import randint, uniform
 from service.settings import SETTINGS
 
 
-class LifeFish:
+class LifeFish(BreathableMixin):
     def __init__(self):
+        super().__init__()
         # 鱼的位置坐标，其位置是贴图的中心点
         self.location = Vector(
             randint(30, LIFE_TANK.width - 30),
@@ -34,6 +37,9 @@ class LifeFish:
         self.location_goal = self.get_random_location()
         # 移动速度
         self.speed = 0.1
+
+        self.fixed_carbon = 100_0000
+        self.o2_pre_request = 0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
         pass
 
     def tick(self):
@@ -51,6 +57,8 @@ class LifeFish:
             self.location_goal.y = new_goal.y
             print(f"""鱼{self.location}重新寻找目标""")
         self.location += (self.location_goal - self.location).normalize() * self.speed
+
+        self.breath()
 
     @staticmethod
     def get_random_location():

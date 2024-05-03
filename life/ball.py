@@ -1,15 +1,16 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtGui import QPainter, QColor, QPen
 
 from tools.vector import Vector
 from tools.color import get_color_by_linear_ratio
 from random import random, randint
 
-from .gas_manager import GAS_MANAGER
+from .life_mixin.breathable_mixin import BreathableMixin
+from .life_mixin.organism_mixin import OrganismMixin
 from .tank import LIFE_TANK
 
 
-class LifeBall:
+class LifeBall(BreathableMixin, OrganismMixin):
     """
     生物球，用于反应CPU每个核的使用状态
     可以看作生物球是一个绿色植物细胞
@@ -18,6 +19,7 @@ class LifeBall:
     """
 
     def __init__(self):
+        super().__init__()
         x = randint(0, LIFE_TANK.width)
         y = randint(
             round(LIFE_TANK.water_level_height),
@@ -37,13 +39,17 @@ class LifeBall:
         self.color_active = QColor(255, 255, 0)
 
         # 固定的碳
-        self.fixed_carbon = 0
+        self.fixed_carbon = 100
+        self.o2_pre_request = 0
+        self.co2_pre_request = 0.1
 
     def set_activity(self, activity):
         if isinstance(activity, float):
             self.activity = activity
             # 让速度方向向垂直向上的方向旋转一定程度
             self.velocity = self.velocity.rotate(activity * 15)
+            # 让活跃度和呼吸作用相关联
+            self.o2_pre_request = self.activity * 2
         else:
             print("Error: activity must be a float number.")
             raise TypeError
@@ -66,18 +72,18 @@ class LifeBall:
             self.velocity.y = -abs(self.velocity.y)
             self.location.y = LIFE_TANK.sand_surface_height - self.radius
 
-        # 对氧气的改变
-        # 光合作用：CO2 --light--> O2 + C
-        c = GAS_MANAGER.photosynthesis_tick(1, LIFE_TANK.light_brightness_current)
-        self.fixed_carbon += c
-        # 呼吸作用
-        if self.fixed_carbon > 0.5:
-            energy = GAS_MANAGER.respiration_tick(0.5, 0.5)
-            self.fixed_carbon -= 0.5
+        # 光合优先于呼吸
+        self.photosynthesis()
+        self.breath()
+        pass
 
     def paint(self, painter: QPainter):
-        # 画出球
-        painter.setPen(Qt.NoPen)
+        # 设置画笔颜色和线条宽度
+        pen = QPen(QColor(23, 76, 23))
+        pen.setWidth(2)  # 设置线条宽度为2像素
+        painter.setPen(pen)
+
+        # 设置画刷颜色和样式
         painter.setBrush(
             get_color_by_linear_ratio(
                 self.color_default,

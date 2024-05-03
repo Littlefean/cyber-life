@@ -9,8 +9,8 @@ from life.tank import LIFE_TANK
 class LifePlant:
     def __init__(self):
         """
-        代码有待完善，目前是直接在main中实现了水草节点的生成。
-        这个类还没有实现，打算封装水草节点类，一束草具有很多节点。
+        表示一束水草
+        目前整个鱼缸里只有一个水草，至于后续是否会有多个，还需要考虑
         """
 
         self.x = random.randint(0, LIFE_TANK.width)

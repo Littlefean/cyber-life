@@ -2,18 +2,21 @@ from random import random
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtCore import Qt
 from tools.vector import Vector
+from .life_mixin.breathable_mixin import BreathableMixin
+from .life_mixin.organism_mixin import OrganismMixin
 
 from .tank import LIFE_TANK
 
 
-class LifePlantNode:
+class LifePlantNode(BreathableMixin, OrganismMixin):
     """
-    水草节点类，由main控制
+    水草节点类，由plant控制
     每个节点都类似 “V” 的样子，一节一节，构成链条状结构
     当前水草生长过高，会超越水面，飘到天空上，后续可能考虑优化
     """
 
     def __init__(self, x, y, can_move):
+        super().__init__()
         self.location = Vector(x, y)
         self.velocity = Vector.random() * 0.1
         self.acceleration = Vector(0, 0)
@@ -30,6 +33,11 @@ class LifePlantNode:
         self.status_in_range = False
 
         self.radius = 2
+
+        self.o2_pre_request = 0.1
+        self.co2_pre_request = 0.1
+        self.fixed_carbon = 100  # todo：考虑该固定碳的量能反应在叶子数量和颜色上。
+
         # 调试用，显示节点的拉力、斥力范围
         self._show_range = False
         self._show_velocity = False
