@@ -1,6 +1,7 @@
 """
 存放关于小鱼缸的数据
 """
+from datetime import datetime, timedelta
 from math import sin
 
 from PyQt5.QtCore import Qt
@@ -11,6 +12,7 @@ from computer_info.manager import SYSTEM_INFO_MANAGER
 from life.sand_wave_flow import SandWaveFlow
 from service.settings import SETTINGS
 from tools.color import get_color_by_linear_ratio
+from tools.compute import number_to_number
 from tools.singleton import SingletonMeta
 
 
@@ -217,11 +219,110 @@ class _LifeTank(metaclass=SingletonMeta):
         self.sand_wave_outer.paint(painter)
         self.sand_wave_inner.paint(painter)
         # 绘制小鱼缸边框
-        painter.setPen(Qt.green)
+        painter.setPen(Qt.black)
         painter.setBrush(Qt.NoBrush)
         painter.drawRect(0, 0, self.width - 1, self.height)
-        painter.end()
+
+        # 绘制贪吃蛇风格的边框
+        draw_snake_style_border(painter, self.width, self.height)
         pass
+
+
+def draw_snake_style_border(painter: QPainter, width: int, height: int):
+    """
+    绘制贪吃蛇风格的边框
+    这个函数可以考虑移动到其他地方
+    :param painter:
+    :param width:
+    :param height:
+    :return:
+    """
+    # 绘制贪吃蛇风格的边框
+    snake_length = min(width, height)
+    perimeter = (width + height) * 2  # 周长
+    # 这里时从 left top 开始计算的，为了让起点从 top center 开始，需要将时间向后推移一点
+    now = datetime.now()
+    delay_seconds = (width / 2) / perimeter * 60
+    now += timedelta(seconds=delay_seconds)
+    progression = (now.second + now.microsecond / 1000000) / 60  # 进度, 0-1
+
+    # debug 用
+    # progression = (self.time % 777) / 777  # 进度, 0-1
+
+    stage_1_head_x = number_to_number(0, perimeter, progression)
+    stage_1_tail_x = stage_1_head_x - snake_length
+    stage_2_head_y = number_to_number(-width, perimeter - width, progression)
+    stage_2_tail_y = stage_2_head_y - snake_length
+    stage_3_head_x = number_to_number(perimeter - height, -height, progression)
+    stage_3_tail_x = stage_3_head_x + snake_length
+    stage_4_head_y = number_to_number(perimeter, 0, progression)
+    stage_4_tail_y = stage_4_head_y + snake_length
+    # 第五段是防止第四段结束时突然消失
+    stage_5_tail_y = number_to_number(snake_length, -perimeter + snake_length, progression)
+    stage_5_head_y = stage_5_tail_y - snake_length
+
+    painter.setPen(get_stroke_color())
+    painter.setBrush(Qt.NoBrush)
+    painter.drawLine(
+        round(stage_1_tail_x),
+        0,
+        round(stage_1_head_x),
+        0
+    )
+    painter.drawLine(
+        round(width - 1),
+        round(stage_2_tail_y),
+        round(width - 1),
+        round(stage_2_head_y)
+    )
+    painter.drawLine(
+        round(stage_3_tail_x),
+        round(height),
+        round(stage_3_head_x),
+        round(height)
+    )
+    painter.drawLine(
+        0,
+        round(stage_4_tail_y),
+        0,
+        round(stage_4_head_y)
+    )
+    painter.drawLine(
+        0,
+        round(stage_5_tail_y),
+        0,
+        round(stage_5_head_y)
+    )
+    pass
+
+
+def get_stroke_color() -> QColor:
+    """
+    根据当前的时间来获取颜色
+    :return: QColor
+    """
+    current_hour = datetime.now().hour
+
+    if 5 <= current_hour < 7 or 18 <= current_hour < 19:
+        # 早晨5点到6点以及傍晚6点到7点，返回深紫到石灰色
+        return QColor('purple')
+    elif 19 <= current_hour < 22:
+        # 晚上7点到晚上10点，返回深蓝色
+        return QColor('darkblue')
+    elif 22 <= current_hour or current_hour < 5:
+        # 晚上10点到早晨5点，接近纯黑色，但不完全黑色
+        return QColor('gray')
+    elif 7 <= current_hour < 10:
+        # 早上7点到上午10点，清晨色
+        return QColor('skyblue')
+    elif 10 <= current_hour < 16:
+        # 上午10点到下午4点，明亮的日光色
+        return QColor('yellow')
+    elif 16 <= current_hour < 18:
+        # 下午4点到下午6点，夕阳色
+        return QColor('orange')
+
+    return QColor('gray')
 
 
 LIFE_TANK = _LifeTank(300)
