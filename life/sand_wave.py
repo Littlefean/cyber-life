@@ -3,6 +3,9 @@ from PyQt5.QtCore import Qt
 
 
 class SandWave:
+    """
+    一个地震环形 波
+    """
     MAX_RADIUS = 300 / 2
 
     def __init__(self, x, radius, radius_variation):

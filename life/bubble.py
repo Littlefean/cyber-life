@@ -3,6 +3,7 @@ from random import random
 from .tank import LIFE_TANK
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt
+from .gas_manager import GAS_MANAGER
 
 
 class LifeBubble:
@@ -30,7 +31,7 @@ class LifeBubble:
         """
         # 气泡到达水面的进度 0~1
         rate = (LIFE_TANK.sand_surface_height - self.location.y) / (
-                    LIFE_TANK.sand_surface_height - LIFE_TANK.water_level_height)
+                LIFE_TANK.sand_surface_height - LIFE_TANK.water_level_height)
         return self.radius_min + (self.radius_max - self.radius_min) * rate
 
     def tick(self):
@@ -40,6 +41,10 @@ class LifeBubble:
         self.location += self.velocity
         # 增加气泡左右随机移动的效果
         self.location.x += (random() - 0.5) * 0.5
+
+        # 气泡在和水的接触中会增加气体
+        GAS_MANAGER.add_oxygen(0.1)
+        GAS_MANAGER.add_carbon_dioxide(0.1)
 
     def paint(self, painter: QPainter):
         painter.setPen(Qt.cyan)
