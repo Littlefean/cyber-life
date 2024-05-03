@@ -117,7 +117,7 @@ class MainWindow(QWidget):
         self.hover_text_label.setText(
             f"O₂: {round(GAS_MANAGER.oxygen, 2)}\nCO₂: {round(GAS_MANAGER.carbon_dioxide, 2)}"
         )
-        self.update()
+        self.update()  # 会调用paintEvent
 
 
 def main():

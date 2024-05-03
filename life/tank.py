@@ -242,14 +242,22 @@ def draw_snake_style_border(painter: QPainter, width: int, height: int):
     perimeter = (width + height) * 2  # 周长
     # 这里时从 left top 开始计算的，为了让起点从 top center 开始，需要将时间向后推移一点
     now = datetime.now()
-    delay_seconds = (width / 2) / perimeter * 60
+    delay_seconds = (width / 2) / perimeter * 60  # 计算运动到上边框一半所需要秒数
     now += timedelta(seconds=delay_seconds)
+    # 加上上面计算运动到上边框一半需要的时间，从而将蛇头平移到上边框的中央
     progression = (now.second + now.microsecond / 1000000) / 60  # 进度, 0-1
+    # microsecond显示秒的六位小数，但是以整数的形式，上一行代码的作用是获得更精确的时间，从而使动画连贯
+    # 秒本身0-59循环，所以上一行代码的结果是0-1，例如当0秒时进度为0
 
     # debug 用
     # progression = (self.time % 777) / 777  # 进度, 0-1
 
-    stage_1_head_x = number_to_number(0, perimeter, progression)
+    # 设计思想：有四条蛇，同时从不同位置出发，分别沿着四条边运动，当运动到边缘时，蛇头与另一边的蛇头刚好相遇
+    # 运动出界不会显示，从而好像一条蛇在绕圈
+    # 四条蛇的运动周期都是60s，运动长度相同，从而速度相同
+    # 但是第四条蛇与第一条蛇相遇时，第四条蛇的运动长度刚好用完，导致第四条蛇重新循环，从视野中消失
+    # 所以添加第五条蛇，与第一条蛇直接在开始的时候蛇头在坐标原点相遇
+    stage_1_head_x = number_to_number(0, perimeter, progression)  # 蛇头从0出发
     stage_1_tail_x = stage_1_head_x - snake_length
     stage_2_head_y = number_to_number(-width, perimeter - width, progression)
     stage_2_tail_y = stage_2_head_y - snake_length
