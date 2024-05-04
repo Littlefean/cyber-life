@@ -94,3 +94,25 @@ def tick_sleep(fish: GuppyFish):
         pass
     fish.breath()
 
+
+def tick_death(fish: GuppyFish):
+    """
+    鱼死亡状态
+    :param fish:
+    :return:
+    """
+    fish.speed = 0
+    fish.o2_pre_request = 0
+    fish.animation_interval = 10
+
+    # 尸体开始漂浮在水面上
+    if fish.location.y > LIFE_TANK.water_level_height:
+        # 在水里
+        fish.velocity += Vector(0, -0.001)
+    elif fish.location.y < LIFE_TANK.water_level_height:
+        # 在水面以上
+        fish.velocity += Vector(0, 0.01)
+    else:
+        # 已经浮到水面上，开始死亡动画
+        pass
+    fish.location += fish.velocity
