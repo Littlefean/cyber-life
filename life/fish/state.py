@@ -3,10 +3,11 @@
 状态包括：
 
 空闲状态
-繁殖状态
-睡眠状态
 水面呼吸状态
+睡眠状态
 死亡状态
+
+繁殖状态
 寻找饲料状态
 啃食水草状态
 吞食幼崽状态
@@ -27,6 +28,7 @@ def tick_idle(fish: GuppyFish):
     """
     fish.speed = 0.1
     fish.o2_pre_request = 0.1
+    fish.animation_interval = 10
 
     # 鱼游泳
     if fish.location_goal is None:
@@ -48,6 +50,8 @@ def tick_surface(fish: GuppyFish):
     """
     fish.speed = 0.1
     fish.o2_pre_request = 0  # 因为呼吸的是水以外的氧气，所以这里是0
+    fish.animation_interval = 5
+
     margin = 5  # 实际上是让鱼的中心与水面对齐，但再往下压一段距离，让鱼的头部与水面对齐
     head_y = fish.location.y - margin
 
@@ -61,7 +65,32 @@ def tick_surface(fish: GuppyFish):
     else:
         # 鱼已经在水面上了，在水面上随机一个目标移动过去
         if fish.location.distance(fish.location_goal) < 50:
-
             fish.location_goal = Vector(random.randint(0, LIFE_TANK.width), fish.location.y)
         # 向水面上的目标移动
         fish.location += (fish.location_goal - fish.location).normalize() * fish.speed
+
+
+def tick_sleep(fish: GuppyFish):
+    """
+    鱼睡眠状态，进入低功耗，增加精力的状态
+    :param fish:
+    :return:
+    """
+    # fish.speed = 0.1
+    fish.o2_pre_request = 0.01
+    fish.animation_interval = 20
+
+    drag_down_distance = fish.height / 2 - 5  # 让鱼与地面接触
+
+    # 判断当前是否沉底
+    if fish.location.y + drag_down_distance < LIFE_TANK.sand_surface_height:
+        # 还在水中，向下走
+        fish.location.y += 0.5
+    elif fish.location.y + drag_down_distance > LIFE_TANK.sand_surface_height:
+        # 被埋了，回到陆地上
+        fish.location.y = LIFE_TANK.sand_surface_height - drag_down_distance
+    else:
+        # 已经沉底，开始睡觉
+        pass
+    fish.breath()
+

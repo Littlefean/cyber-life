@@ -25,6 +25,7 @@ class GuppyFish(BreathableMixin):
         )
 
         self.time = 0
+        self.animation_interval = 10  # 动画间隔（帧），越小越快
 
         # 动画序列图
         self.animate_swim_left = [QPixmap(f"assert/fish_{i}.png") for i in range(10)]
@@ -52,20 +53,22 @@ class GuppyFish(BreathableMixin):
         self.fixed_carbon = 100_0000
         self.o2_pre_request = 0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
 
-        self.state = State.SURFACE  # 有待写一个自动决策状态功能
+        self.state = State.SLEEP  # 有待写一个自动决策状态功能
         pass
 
     def tick(self):
-        from life.fish.state import tick_surface, tick_idle
+        from life.fish.state import tick_surface, tick_idle, tick_sleep
         self.time += 1
         # 更新动画
-        if self.time % 10 == 0:
+        if self.time % self.animation_interval == 0:
             self.img_index_swim = (self.img_index_swim + 1) % 10
 
         if self.state == State.IDLE:
             tick_idle(self)
         elif self.state == State.SURFACE:
             tick_surface(self)
+        elif self.state == State.SLEEP:
+            tick_sleep(self)
         else:
             raise ValueError(f"未知的鱼状态 {self.state}")
 
@@ -113,5 +116,11 @@ class GuppyFish(BreathableMixin):
                 return self.animate_surface_left[self.img_index_swim]
             else:
                 return self.animate_surface_right[self.img_index_swim]
+        elif self.state == State.SLEEP:
+            if self.is_face_to_left():
+                return self.animate_swim_left[self.img_index_swim]
+            else:
+                return self.animate_swim_right[self.img_index_swim]
         else:
+            print(f"select_pixmap: 未知的鱼状态 {self.state}")
             raise ValueError(f"未知的鱼状态 {self.state}")
