@@ -62,7 +62,7 @@ class MainWindow(QWidget):
         self.settings_button.hide()  # 默认隐藏设置按钮
         font = QFont()
         font.setPointSize(6)
-        self.hover_text_label = QLabel("O₂: 0\nCO₂: 0", self)
+        self.hover_text_label = QLabel("...", self)
         self.hover_text_label.setStyleSheet("color: white;")
         self.hover_text_label.setFont(font)
         self.hover_text_label.setGeometry(10, 10, 150, self.height() - 20)
@@ -114,8 +114,11 @@ class MainWindow(QWidget):
     def tick(self):
         """更新窗口内图像"""
         self.life_manager.tick()
+        o2 = round(GAS_MANAGER.oxygen, 2)
+        co2 = round(GAS_MANAGER.carbon_dioxide, 2)
+        brightness = round(SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result(), 2)
         self.hover_text_label.setText(
-            f"O₂: {round(GAS_MANAGER.oxygen, 2)}\nCO₂: {round(GAS_MANAGER.carbon_dioxide, 2)}"
+            f"O₂: {o2}\nCO₂: {co2}\nbright: {brightness}"
         )
         self.update()  # 会调用paintEvent
 

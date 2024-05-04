@@ -43,8 +43,8 @@ class LifeBubble:
         self.location.x += (random() - 0.5) * 0.5
 
         # 气泡在和水的接触中会增加气体
-        GAS_MANAGER.add_oxygen(0.1)
-        GAS_MANAGER.add_carbon_dioxide(0.1)
+        GAS_MANAGER.add_oxygen(0.01)
+        GAS_MANAGER.add_carbon_dioxide(0.01)
 
     def paint(self, painter: QPainter):
         painter.setPen(Qt.cyan)

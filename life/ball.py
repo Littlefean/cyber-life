@@ -40,8 +40,8 @@ class LifeBall(BreathableMixin, OrganismMixin):
 
         # 固定的碳
         self.fixed_carbon = 100
-        self.o2_pre_request = 0
-        self.co2_pre_request = 0.1
+        self.o2_pre_request = 0.01
+        self.co2_pre_request = 0.04
 
     def set_activity(self, activity):
         if isinstance(activity, float):
@@ -49,7 +49,7 @@ class LifeBall(BreathableMixin, OrganismMixin):
             # 让速度方向向垂直向上的方向旋转一定程度
             self.velocity = self.velocity.rotate(activity * 15)
             # 让活跃度和呼吸作用相关联
-            self.o2_pre_request = self.activity * 2
+            self.o2_pre_request = 0.01 + self.activity
         else:
             print("Error: activity must be a float number.")
             raise TypeError
