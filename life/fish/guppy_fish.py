@@ -92,6 +92,9 @@ class GuppyFish(BreathableMixin):
         # 缺氧
         if GAS_MANAGER.oxygen < self.o2_pre_request:
             self.state = State.DEAD
+        # 物质耗尽
+        if self.fixed_carbon <= 0:
+            self.state = State.DEAD
 
         return self.state
 
@@ -119,7 +122,7 @@ class GuppyFish(BreathableMixin):
         # 判断鱼是否面向左边
         pixmap = self.select_pixmap()
         if self.state == State.DEAD:
-            painter.setOpacity(0.5)
+            painter.setOpacity(0.8)
         painter.drawPixmap(
             round(self.location.x - self.width / 2),
             round(self.location.y - self.height / 2),
