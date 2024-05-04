@@ -9,7 +9,7 @@ import psutil
 from computer_info.manager import SYSTEM_INFO_MANAGER
 from life.ball import LifeBall
 from life.bubble_flow import LifeBubbleFlow
-from life.fish import LifeFish
+from life.fish.guppy_fish import GuppyFish
 from life.plant import LifePlant
 from life.tank import LIFE_TANK
 from tools.singleton import SingletonMeta
@@ -24,7 +24,7 @@ class LifeManager(metaclass=SingletonMeta):
         self.balls: List[LifeBall] = [LifeBall() for _ in range(psutil.cpu_count())]
         self.plant = LifePlant()
         self.bubble_flow = LifeBubbleFlow(LIFE_TANK.width / 2)
-        self.fish_list: List[LifeFish] = [LifeFish()]
+        self.fish_list: List[GuppyFish] = [GuppyFish()]
 
     def tick(self):
         # 更新鱼
