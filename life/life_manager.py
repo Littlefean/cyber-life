@@ -10,6 +10,7 @@ from computer_info.manager import SYSTEM_INFO_MANAGER
 from life.ball import LifeBall
 from life.bubble_flow import LifeBubbleFlow
 from life.fish.guppy_fish import GuppyFish
+from life.food import Food
 from life.plant import LifePlant
 from life.tank import LIFE_TANK
 from tools.singleton import SingletonMeta
@@ -25,6 +26,7 @@ class LifeManager(metaclass=SingletonMeta):
         self.plant = LifePlant()
         self.bubble_flow = LifeBubbleFlow(LIFE_TANK.width / 2)
         self.fish_list: List[GuppyFish] = [GuppyFish()]
+        self.food_list: List[Food] = []
 
     def tick(self):
         # 更新鱼
@@ -40,7 +42,15 @@ class LifeManager(metaclass=SingletonMeta):
         self.plant.tick()
         # 更新气泡流
         self.bubble_flow.tick()
+        # 更新食物
+        for food in self.food_list:
+            food.tick()
+        # 清理食物
+        self.food_list = [food for food in self.food_list if not food.is_deleted]
         pass
+
+    def add_food(self, x: float):
+        self.food_list.append(Food(x))
 
     def paint(self, painter):
         # 绘制气泡流
@@ -53,5 +63,8 @@ class LifeManager(metaclass=SingletonMeta):
             fish.paint(painter)
         # 绘制生长植物
         self.plant.paint(painter)
+        # 绘制食物
+        for food in self.food_list:
+            food.paint(painter)
         # 绘制小鱼缸
         LIFE_TANK.paint(painter)

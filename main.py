@@ -3,6 +3,7 @@ import sys
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
+from computer_hook.manager import SYSTEM_HOOK_MANAGER
 
 from computer_info.manager import SYSTEM_INFO_MANAGER
 
@@ -124,19 +125,26 @@ class MainWindow(QWidget):
 
 
 def main():
-    # 启动系统信息管理器
-    SYSTEM_INFO_MANAGER.start()
+    try:
+        # 启动系统信息管理器
+        SYSTEM_INFO_MANAGER.start()
+        # 启动钩子管理器
+        SYSTEM_HOOK_MANAGER.start()
 
-    app = QApplication(sys.argv)
+        app = QApplication(sys.argv)
 
-    main_window = MainWindow()
-    main_window.show()
+        main_window = MainWindow()
+        main_window.show()
 
-    # interval 设置为 10 表示每 10ms 刷新一次窗口
-    timer = QTimer(interval=10, timeout=main_window.tick)  # FPS
-    timer.start()
+        # interval 设置为 10 表示每 10ms 刷新一次窗口
+        timer = QTimer(interval=10, timeout=main_window.tick)  # FPS
+        timer.start()
 
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())
+
+    except Exception as e:
+        # 实际上可能很难捕获到异常，Qt有点奇怪，有待深入研究
+        print(e)
 
 
 if __name__ == "__main__":

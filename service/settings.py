@@ -9,6 +9,7 @@ class SettingsObject(metaclass=SingletonMeta):
         self.is_fish_visible = True
         self.is_swap_memory_fixed = False
         self.swap_memory_height_rate = 0.125  # 1 / 8
+        self.put_food_rate = 0.1  # 鼠标点击放置食物概率
 
     def save_to_json(self):
         with open('user_settings.json', 'w') as f:
@@ -34,6 +35,7 @@ class SettingsObject(metaclass=SingletonMeta):
             # Handle other exceptions
             print(f"An error occurred: {e}")
             raise e
+
 
 # 在被其它文件导入时执行
 SETTINGS = SettingsObject()

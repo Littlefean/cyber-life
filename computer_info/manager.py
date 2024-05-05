@@ -38,7 +38,7 @@ class _SystemInfoManager(metaclass=SingletonMeta):
                 instance = getattr(self, attr)  # 得到实例'INSPECTOR_'开头的属性和方法（对象形式）
                 if isinstance(instance, Inspector):  # 进一步确认是所需对象，即各个监控类的实例
                     self.interval_functions.append(
-                        self.get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
+                        self._get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
                             instance.inspect,
                             instance.INSPECTION_INTERVAL,
                         )
@@ -48,7 +48,7 @@ class _SystemInfoManager(metaclass=SingletonMeta):
             Thread(target=function, daemon=True).start()
 
     @staticmethod
-    def get_interval_function(inspect_function: Callable, interval=1):
+    def _get_interval_function(inspect_function: Callable, interval=1):
         """获取定时器函数"""
 
         def timer_function():

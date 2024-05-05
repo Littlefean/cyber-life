@@ -87,6 +87,7 @@ class GuppyFish(BreathableMixin):
         设计鱼的AI行为状态目的切换需要放在其他地方。
         :return:
         """
+        # 能量耗尽
         if self.energy <= 0:
             self.state = State.DEAD
         # 缺氧
