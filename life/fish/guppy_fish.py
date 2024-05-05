@@ -68,11 +68,11 @@ class GuppyFish(BreathableMixin):
 
         # idea: 可能将呼吸光合作用以组合的方式实现，比继承好一点
 
-        self.fixed_carbon = 100_0000
+        self.fixed_carbon = 1000
         self.o2_pre_request = (
             0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
         )
-        self.energy = 100  # 鱼的能量，鱼死亡时会变为0
+        self.energy = 1000  # 鱼的能量，鱼死亡时会变为0
 
         self.energy_pre_cost = 0.1
         self.state = State.FIND_FOOD  # 有待写一个自动决策状态功能
@@ -89,7 +89,27 @@ class GuppyFish(BreathableMixin):
         鱼呼吸
         :return:
         """
-        super().breath()
+        carbon_request = self.o2_pre_request
+        if carbon_request > self.fixed_carbon:
+            # 呼吸不了了，没有足够的碳，或许只能死了
+            self.state = State.DEAD
+            return
+        if GAS_MANAGER.oxygen < self.o2_pre_request:
+            # 没有足够的氧气
+            self.state = State.SLEEP
+            return
+        self.fixed_carbon -= carbon_request
+        self.energy += self.o2_pre_request * 20
+        GAS_MANAGER.reduce_oxygen(self.o2_pre_request)
+        GAS_MANAGER.add_carbon_dioxide(self.o2_pre_request)
+        pass
+
+    def cost_energy(self):
+        """
+        鱼消耗能量
+        :return:
+        """
+        self.energy -= self.energy_pre_cost
 
     def tick(self):
         from life.fish.state import (
@@ -105,6 +125,7 @@ class GuppyFish(BreathableMixin):
         # 更新动画
         if self.time % self.animation_interval == 0:
             self.img_index_swim = (self.img_index_swim + 1) % 10
+        self.cost_energy()
 
         # idea: 应该写一个功能，根据状态来获取对应的函数
         if self.state == State.IDLE:
@@ -196,9 +217,9 @@ class GuppyFish(BreathableMixin):
         :return:
         """
         if (
-            self.state == State.IDLE
-            or self.state == State.FIND_FOOD
-            or self.state == State.SLEEP
+                self.state == State.IDLE
+                or self.state == State.FIND_FOOD
+                or self.state == State.SLEEP
         ):
             if self.is_face_to_left():
                 return self.animate_swim_left[self.img_index_swim]
