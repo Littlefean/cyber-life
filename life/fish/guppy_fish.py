@@ -1,4 +1,5 @@
 from life.fish.state_enum import State
+from life.food import Food
 from life.gas_manager import GAS_MANAGER
 from tools.vector import Vector
 from PyQt5.QtGui import QPainter, QPixmap, QTransform
@@ -49,20 +50,25 @@ class GuppyFish(BreathableMixin):
         # 大小就是图片的宽高
         self.width = 33
         self.height = 33
-        # 移动的目标位置
+        # 移动的目标位置，用于IDLE状态
         self.location_goal: Vector = self.get_random_location()
         # 移动速度
         self.speed = 0.1
+
+        # idea: 可能将呼吸光合作用以组合的方式实现，比继承好一点
 
         self.fixed_carbon = 100_0000
         self.o2_pre_request = 0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
         self.energy = 100  # 鱼的能量，鱼死亡时会变为0
 
-        self.state = State.IDLE  # 有待写一个自动决策状态功能
+        self.state = State.FIND_FOOD  # 有待写一个自动决策状态功能
+
+        self.have_food_goal = False
+        self.target_food: Food | None = None
         pass
 
     def tick(self):
-        from life.fish.state import tick_surface, tick_idle, tick_sleep, tick_death
+        from life.fish.state import tick_surface, tick_idle, tick_sleep, tick_death, tick_find_food
         self.time += 1
         self.update_state()
         # 更新动画
@@ -77,6 +83,8 @@ class GuppyFish(BreathableMixin):
             tick_sleep(self)
         elif self.state == State.DEAD:
             tick_death(self)
+        elif self.state == State.FIND_FOOD:
+            tick_find_food(self)
         else:
             print(f"tick: 未知的鱼状态 {self.state}")
             raise ValueError(f"未知的鱼状态 {self.state}")
@@ -136,7 +144,7 @@ class GuppyFish(BreathableMixin):
         选择当前鱼的动画序列图
         :return:
         """
-        if self.state == State.IDLE:
+        if self.state == State.IDLE or self.state == State.FIND_FOOD or self.state == State.SLEEP:
             if self.is_face_to_left():
                 return self.animate_swim_left[self.img_index_swim]
             else:
@@ -146,11 +154,6 @@ class GuppyFish(BreathableMixin):
                 return self.animate_surface_left[self.img_index_swim]
             else:
                 return self.animate_surface_right[self.img_index_swim]
-        elif self.state == State.SLEEP:
-            if self.is_face_to_left():
-                return self.animate_swim_left[self.img_index_swim]
-            else:
-                return self.animate_swim_right[self.img_index_swim]
         elif self.state == State.DEAD:
             if self.is_face_to_left():
                 return self.animate_die_left

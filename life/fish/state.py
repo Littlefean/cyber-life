@@ -14,9 +14,10 @@
 吞食幼崽状态
 
 """
-import random
+from random import choice, randint
 
 from life.fish.guppy_fish import GuppyFish
+
 from life.tank import LIFE_TANK
 from tools.vector import Vector
 
@@ -66,7 +67,7 @@ def tick_surface(fish: GuppyFish):
     else:
         # 鱼已经在水面上了，在水面上随机一个目标移动过去
         if fish.location.distance(fish.location_goal) < 50:
-            fish.location_goal = Vector(random.randint(0, LIFE_TANK.width), fish.location.y)
+            fish.location_goal = Vector(randint(0, LIFE_TANK.width), fish.location.y)
         # 向水面上的目标移动
         fish.location += (fish.location_goal - fish.location).normalize() * fish.speed
 
@@ -94,6 +95,51 @@ def tick_sleep(fish: GuppyFish):
         # 已经沉底，开始睡觉
         pass
     fish.breath()
+
+
+def tick_find_food(fish: GuppyFish):
+    """
+    鱼寻找食物状态
+    :param fish:
+    :return:
+    """
+    fish.speed = 0.4
+    fish.o2_pre_request = 0.2
+    fish.animation_interval = 5
+
+    from life.life_manager import LifeManager
+    from life.food import Food
+    # idea: 单例模式的用法没有很好的统一，food的封装性可能有待改进
+    life_manager = LifeManager()
+
+    # 找到食物目标
+
+    if fish.target_food is not None and not fish.target_food.is_deleted:
+        # 向着目标前进
+        if fish.location.distance(fish.target_food.location) > 10:
+            fish.location += (fish.target_food.location - fish.location).normalize() * fish.speed
+        else:
+            # 已经到达目标，开始吃食物
+            fish.fixed_carbon += fish.target_food.carbon
+            fish.target_food.is_deleted = True
+            fish.target_food = None
+            pass
+    else:
+        # 没有目标，开始寻找目标
+        if life_manager.food_list:
+            food: Food = choice(life_manager.food_list)
+            fish.location_goal = food.location
+            fish.target_food = food
+        else:
+            # 无法找到食物，开始焦虑，随机设置一个目标并前进
+            if fish.location_goal is None:
+                fish.location_goal = fish.get_random_location()
+            else:
+                if fish.location.distance(fish.location_goal) > 10:
+                    fish.location += (fish.location_goal - fish.location).normalize() * fish.speed
+                else:
+                    fish.location_goal = fish.get_random_location()
+    pass
 
 
 def tick_death(fish: GuppyFish):

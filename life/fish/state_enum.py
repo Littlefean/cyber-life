@@ -8,3 +8,4 @@ class State(Enum):
     IDLE = 1
     SURFACE = 2
     SLEEP = 3
+    FIND_FOOD = 4
