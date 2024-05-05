@@ -4,11 +4,22 @@
 
 ## 运行代码
 
+linux 下运行：
+
 ```bash
 $ virtualenv venv
 $ source venv/Scripts/activate
 (venv) $ pip install -r requirements.txt
 (venv) $ python main.py
+```
+
+windows 下运行：
+
+```commandline
+pip install virtualenv
+venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
 ```
 
 ## 推荐的 git 提交规范
