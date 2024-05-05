@@ -51,7 +51,7 @@ class Food:
                 self.location.y -= 0.1
             elif self.location.y < LIFE_TANK.sand_surface_height:
                 # 在空中，落到水面上
-                self.location.y += 0.5
+                self.location.y += 2
             # 目前随机漂移效果还不太好做，先不动了
             # else:
             #     # 恰好在水面上，随机漂移

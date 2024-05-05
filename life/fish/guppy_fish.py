@@ -1,8 +1,10 @@
+from PyQt5.QtCore import QRect, Qt
+
 from life.fish.state_enum import State
 from life.food import Food
 from life.gas_manager import GAS_MANAGER
 from tools.vector import Vector
-from PyQt5.QtGui import QPainter, QPixmap, QTransform
+from PyQt5.QtGui import QPainter, QPixmap, QTransform, QColor, QFont
 
 from life.life_mixin.breathable_mixin import BreathableMixin
 from life.tank import LIFE_TANK
@@ -61,11 +63,22 @@ class GuppyFish(BreathableMixin):
         self.o2_pre_request = 0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
         self.energy = 100  # 鱼的能量，鱼死亡时会变为0
 
+        self.energy_pre_cost = 0.1
         self.state = State.FIND_FOOD  # 有待写一个自动决策状态功能
 
         self.have_food_goal = False
         self.target_food: Food | None = None
+
+        # debug
+        self._is_show_debug_info = True
         pass
+
+    def breath(self):
+        """
+        鱼呼吸
+        :return:
+        """
+        super().breath()
 
     def tick(self):
         from life.fish.state import tick_surface, tick_idle, tick_sleep, tick_death, tick_find_food
@@ -75,6 +88,7 @@ class GuppyFish(BreathableMixin):
         if self.time % self.animation_interval == 0:
             self.img_index_swim = (self.img_index_swim + 1) % 10
 
+        # idea: 应该写一个功能，根据状态来获取对应的函数
         if self.state == State.IDLE:
             tick_idle(self)
         elif self.state == State.SURFACE:
@@ -138,6 +152,23 @@ class GuppyFish(BreathableMixin):
             pixmap
         )
         painter.setOpacity(1)
+        if self._is_show_debug_info:
+            # 设置字体颜色
+            painter.setPen(QColor(255, 255, 255))
+            # 设置字体大小和字体类型
+            font = QFont('Arial', 6)  # Arial字体，大小为12
+            painter.setFont(font)
+            rect = QRect(
+                round(self.location.x),
+                round(self.location.y),
+                200,
+                100
+            )  # 宽度为200，高度为100的矩形区域
+            painter.drawText(
+                rect,
+                Qt.AlignLeft | Qt.TextWordWrap,
+                f"E:{self.energy}\nC:{self.fixed_carbon}"
+            )
 
     def select_pixmap(self):
         """
