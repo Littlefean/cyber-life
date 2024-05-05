@@ -24,12 +24,13 @@ class MainWindow(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(
             # 无边框
-            Qt.FramelessWindowHint |
+            Qt.FramelessWindowHint
+            |
             # 始终置顶
             Qt.WindowStaysOnTopHint
         )
         # 设置icon
-        self.setWindowIcon(QIcon('assert/icon.ico'))
+        self.setWindowIcon(QIcon("assets/icon.ico"))
         # 设置大小
         self.resize(300, LIFE_TANK.height + 1)
 
@@ -37,7 +38,7 @@ class MainWindow(QWidget):
         self.setGeometry(10, 10, 300, LIFE_TANK.height + 1)
         self.move(
             QApplication.desktop().screenGeometry().width() - self.width() - 100,
-            QApplication.desktop().screenGeometry().height() - self.height() - 200
+            QApplication.desktop().screenGeometry().height() - self.height() - 200,
         )
 
         # 窗口是否被拖动
@@ -47,7 +48,8 @@ class MainWindow(QWidget):
         self.life_manager = LifeManager()
 
         self.settings_button = QPushButton("settings", self)
-        self.settings_button.setStyleSheet("""
+        self.settings_button.setStyleSheet(
+            """
             QPushButton {
                 background-color: #333333; /* 按钮的背景颜色 */
                 color: #FFFFFF;            /* 按钮的字体颜色 */
@@ -57,7 +59,8 @@ class MainWindow(QWidget):
             QPushButton:hover {
                 background-color: #555555; /* 鼠标悬浮时按钮的背景颜色 */
             }
-        """)
+        """
+        )
         self.settings_button.setGeometry(self.width() - 100 - 10, 10, 100, 40)
         self.settings_button.clicked.connect(self.showSettingsDialog)
         self.settings_button.hide()  # 默认隐藏设置按钮
@@ -118,9 +121,7 @@ class MainWindow(QWidget):
         o2 = round(GAS_MANAGER.oxygen, 2)
         co2 = round(GAS_MANAGER.carbon_dioxide, 2)
         brightness = round(SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result(), 2)
-        self.hover_text_label.setText(
-            f"O₂: {o2}\nCO₂: {co2}\nbright: {brightness}"
-        )
+        self.hover_text_label.setText(f"O₂: {o2}\nCO₂: {co2}\nbright: {brightness}")
         self.update()  # 会调用paintEvent
 
 

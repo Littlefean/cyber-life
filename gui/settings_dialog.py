@@ -10,7 +10,7 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("设置")
         self.setGeometry(400, 400, 400, 400)
         # 设置icon
-        self.setWindowIcon(QIcon('assert/icon.ico'))
+        self.setWindowIcon(QIcon("assets/icon.ico"))
         # 小鱼
         self.check_box_fish = QCheckBox("显示小鱼", self)
         self.check_box_fish.move(10, 10)
@@ -25,7 +25,9 @@ class SettingsDialog(QDialog):
         self.slider_memory = QSlider(Qt.Horizontal, self)
         self.slider_memory.setGeometry(10, 70, 380, 30)
         self.slider_memory.setMinimum(0)
-        self.slider_memory.setMaximum(99)  # 最大值不要调100，顶部剩余距离为0导致程序崩溃
+        self.slider_memory.setMaximum(
+            99
+        )  # 最大值不要调100，顶部剩余距离为0导致程序崩溃
         self.slider_memory.setValue(int(SETTINGS.swap_memory_height_rate * 100))
         self.slider_memory.valueChanged.connect(self.change_memory_height)
         # 一个滑动调组件，从0到100，设置投喂食物的概率
@@ -48,7 +50,7 @@ class SettingsDialog(QDialog):
         # 弹出保存成功的消息框
         msg_box = QMessageBox()
         msg_box.setWindowTitle("保存成功")
-        msg_box.setWindowIcon(QIcon('assert/icon.ico'))
+        msg_box.setWindowIcon(QIcon("assets/icon.ico"))
         msg_box.setText("设置已成功保存。")
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setStandardButtons(QMessageBox.Ok)
@@ -83,5 +85,7 @@ class SettingsDialog(QDialog):
     # 滑动条的槽函数
     @staticmethod
     def change_memory_height(value):
-        SETTINGS.swap_memory_height_rate = value / 100  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
+        SETTINGS.swap_memory_height_rate = (
+            value / 100
+        )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
         print(f"""交换内存高度比率：{SETTINGS.swap_memory_height_rate}""")
