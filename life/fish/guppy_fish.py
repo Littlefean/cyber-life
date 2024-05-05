@@ -22,8 +22,8 @@ class GuppyFish(BreathableMixin):
             randint(30, LIFE_TANK.width - 30),
             randint(
                 round(LIFE_TANK.water_level_height),
-                round(LIFE_TANK.sand_surface_height)
-            )
+                round(LIFE_TANK.sand_surface_height),
+            ),
         )
         self.velocity = Vector(0, 0)
 
@@ -31,19 +31,28 @@ class GuppyFish(BreathableMixin):
         self.animation_interval = 10  # 动画间隔（帧），越小越快
 
         # 动画序列图
-        self.animate_swim_left = [QPixmap(f"assert/fish_{i}.png") for i in range(10)]
+        self.animate_swim_left = [QPixmap(f"assets/fish_{i}.png") for i in range(10)]
 
         self.animate_swim_right = [
-            QPixmap(f"assert/fish_{i}.png").transformed(QTransform().scale(-1, 1)) for i in range(10)
+            QPixmap(f"assets/fish_{i}.png").transformed(QTransform().scale(-1, 1))
+            for i in range(10)
         ]
         self.animate_surface_left = [
-            QPixmap(f"assert/fish_{i}.png").transformed(QTransform().rotate(45)) for i in range(10)
+            QPixmap(f"assets/fish_{i}.png").transformed(QTransform().rotate(45))
+            for i in range(10)
         ]
         self.animate_surface_right = [
-            QPixmap(f"assert/fish_{i}.png").transformed(QTransform().scale(-1, 1).rotate(45)) for i in range(10)
+            QPixmap(f"assets/fish_{i}.png").transformed(
+                QTransform().scale(-1, 1).rotate(45)
+            )
+            for i in range(10)
         ]
-        self.animate_die_left = QPixmap(f"assert/die.png")  # 目前懒得搞动画，直接用一张死鱼图代替
-        self.animate_die_right = QPixmap(f"assert/die.png").transformed(QTransform().scale(-1, 1))
+        self.animate_die_left = QPixmap(
+            f"assets/die.png"
+        )  # 目前懒得搞动画，直接用一张死鱼图代替
+        self.animate_die_right = QPixmap(f"assets/die.png").transformed(
+            QTransform().scale(-1, 1)
+        )
 
         # 当前游泳状态的动画 帧索引
         self.img_index_swim = 0
@@ -58,7 +67,9 @@ class GuppyFish(BreathableMixin):
         # idea: 可能将呼吸光合作用以组合的方式实现，比继承好一点
 
         self.fixed_carbon = 100_0000
-        self.o2_pre_request = 0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
+        self.o2_pre_request = (
+            0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
+        )
         self.energy = 100  # 鱼的能量，鱼死亡时会变为0
 
         self.state = State.FIND_FOOD  # 有待写一个自动决策状态功能
@@ -68,7 +79,14 @@ class GuppyFish(BreathableMixin):
         pass
 
     def tick(self):
-        from life.fish.state import tick_surface, tick_idle, tick_sleep, tick_death, tick_find_food
+        from life.fish.state import (
+            tick_surface,
+            tick_idle,
+            tick_sleep,
+            tick_death,
+            tick_find_food,
+        )
+
         self.time += 1
         self.update_state()
         # 更新动画
@@ -111,7 +129,9 @@ class GuppyFish(BreathableMixin):
     def get_random_location():
         try:
             x = uniform(30, LIFE_TANK.width - 30)
-            y = uniform(LIFE_TANK.water_level_height + 30, LIFE_TANK.sand_surface_height - 30)
+            y = uniform(
+                LIFE_TANK.water_level_height + 30, LIFE_TANK.sand_surface_height - 30
+            )
         except Exception as e:
             print(f"鱼无法找到合适的位置 {e}")
             return None
@@ -135,7 +155,7 @@ class GuppyFish(BreathableMixin):
         painter.drawPixmap(
             round(self.location.x - self.width / 2),
             round(self.location.y - self.height / 2),
-            pixmap
+            pixmap,
         )
         painter.setOpacity(1)
 
@@ -144,7 +164,11 @@ class GuppyFish(BreathableMixin):
         选择当前鱼的动画序列图
         :return:
         """
-        if self.state == State.IDLE or self.state == State.FIND_FOOD or self.state == State.SLEEP:
+        if (
+            self.state == State.IDLE
+            or self.state == State.FIND_FOOD
+            or self.state == State.SLEEP
+        ):
             if self.is_face_to_left():
                 return self.animate_swim_left[self.img_index_swim]
             else:
