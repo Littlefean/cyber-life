@@ -125,6 +125,12 @@ class MainWindow(QWidget):
         painter.fillRect(event.rect(), QColor(20, 20, 20, 200))
         self.life_manager.paint(painter)
 
+    def closeEvent(self, event):
+        """重写closeEvent方法，用于关闭窗口时释放资源"""
+        SYSTEM_INFO_MANAGER.stop()
+        SYSTEM_HOOK_MANAGER.stop()
+        super().closeEvent(event)
+
     def tick(self):
         """更新窗口内图像"""
         self.life_manager.tick()

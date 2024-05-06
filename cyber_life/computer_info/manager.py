@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Event
 
 import time
 from typing import List, Callable
@@ -24,7 +24,25 @@ class _SystemInfoManager(metaclass=SingletonMeta):
     INSPECTOR_DISK_IO = InspectorDiskIO()
 
     def __init__(self):
-        self.interval_functions: List[Callable] = []
+        self._interval_functions: List[Callable] = []
+        self._is_running = False
+        self._threads: List[Thread] = []
+        self._event: Event = Event()
+
+        # 先初始化所有监测者的线程调用函数
+        for attr in dir(self):  # 获取实例的属性、方法列表（字符串形式）
+            if attr.startswith('INSPECTOR_'):  # 找到'INSPECTOR_'开头的属性和方法
+                instance = getattr(self, attr)  # 得到实例'INSPECTOR_'开头的属性和方法（对象形式）
+                if isinstance(instance, Inspector):  # 进一步确认是所需对象，即各个监控类的实例
+                    self._interval_functions.append(
+                        self._get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
+                            instance.inspect,
+                            instance.INSPECTION_INTERVAL,
+                        )
+                    )
+        # 初始化线程列表
+        for function in self._interval_functions:
+            self._threads.append(Thread(target=function, daemon=True))
         pass
 
     def start(self):
@@ -32,20 +50,13 @@ class _SystemInfoManager(metaclass=SingletonMeta):
         让自身的每一个监测者开始监测
         :return:
         """
-        # 先初始化所有监测者的线程调用函数
-        for attr in dir(self):  # 获取实例的属性、方法列表（字符串形式）
-            if attr.startswith('INSPECTOR_'):  # 找到'INSPECTOR_'开头的属性和方法
-                instance = getattr(self, attr)  # 得到实例'INSPECTOR_'开头的属性和方法（对象形式）
-                if isinstance(instance, Inspector):  # 进一步确认是所需对象，即各个监控类的实例
-                    self.interval_functions.append(
-                        self._get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
-                            instance.inspect,
-                            instance.INSPECTION_INTERVAL,
-                        )
-                    )
+        if self._is_running:
+            return
+
         # 启动所有监测者的线程
-        for function in self.interval_functions:
-            Thread(target=function, daemon=True).start()
+        for thread in self._threads:
+            thread.start()
+        self._is_running = True
 
     @staticmethod
     def _get_interval_function(inspect_function: Callable, interval=1):
@@ -59,7 +70,9 @@ class _SystemInfoManager(metaclass=SingletonMeta):
         return timer_function
 
     def stop(self):
-        # 暂时不做停止操作，因为没有必要
+        if not self._is_running:
+            return
+        # 暂不需要，因为 daemon=True 的线程会自动结束
         pass
 
 

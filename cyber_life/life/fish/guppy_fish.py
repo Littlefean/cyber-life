@@ -3,7 +3,6 @@ from PyQt5.QtCore import QRect, Qt
 from cyber_life.life.fish.state_enum import State
 from cyber_life.life.food import Food
 from cyber_life.life.gas_manager import GAS_MANAGER
-from cyber_life.static import PROJECT_DIR
 from cyber_life.tools.progress_bar import ProgressFloat
 from cyber_life.tools.vector import Vector
 from PyQt5.QtGui import QPainter, QPixmap, QTransform, QColor, QFont
@@ -91,10 +90,6 @@ class GuppyFish(BreathableMixin):
 
     @staticmethod
     def _get_assert_path(file_name):
-        from os.path import join
-
-
-        # return join(PROJECT_DIR, "assets", file_name)
         return f":/{file_name}"
 
     def breath(self):

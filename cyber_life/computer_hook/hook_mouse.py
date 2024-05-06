@@ -11,10 +11,8 @@ from random import random
 
 class MouseHook(metaclass=SingletonMeta):
     def __init__(self):
-        print("MouseHook init")
         self.is_hooked = False
         self._life_manager = None
-        print("MouseHook init end")
 
         pass
 
@@ -22,7 +20,6 @@ class MouseHook(metaclass=SingletonMeta):
     @lru_cache(1)
     def screen_width(self):
         im = ImageGrab.grab()
-        print('截屏获取了一次宽度')
         width, _ = im.size
         return width
 
