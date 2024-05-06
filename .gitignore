@@ -1,12 +1,18 @@
+# pycharm相关的设置
+.idea/
+
+# 缓存
 __pycache__/
 *.py[cod]
 *$py.class
 
-.idea/
-_test.py
-
+# 虚拟环境
 venv/
 
+# 打包
+dist/
+build/
+*.spec
 
 # 一些特殊文件的设置
 user_settings.json

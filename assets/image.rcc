@@ -1,0 +1,16 @@
+<RCC>
+ <qresource>
+	 <file>die.png</file>
+	 <file>fish_0.png</file>
+	 <file>fish_1.png</file>
+	 <file>fish_2.png</file>
+	 <file>fish_3.png</file>
+	 <file>fish_4.png</file>
+	 <file>fish_5.png</file>
+	 <file>fish_6.png</file>
+	 <file>fish_7.png</file>
+	 <file>fish_8.png</file>
+	 <file>fish_9.png</file>
+	 <file>icon.ico</file>
+ </qresource>
+</RCC>

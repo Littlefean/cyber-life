@@ -38,4 +38,4 @@
 
 https://www.figma.com/file/AJAs3WzQTwpwTTEZR5hjdu/%E8%B5%9B%E5%8D%9A%E7%94%9F%E6%80%81%E7%BC%B8
 
-## [贡献指南](CONTRIBUTING.md)
+## [贡献指南](doc/CONTRIBUTING.md)

@@ -1,17 +1,27 @@
+"""
+赛博小鱼缸
+"""
+
 import sys
+
+from assets import assets
+# 是为了引入assets文件夹中的资源文件，看似是灰色的没有用，但实际不能删掉
+# 只是为了让pyinstaller打包时能打包到exe文件中。
+# 需要进入assets文件夹后在命令行输入指令 `pyrcc5 image.rcc -o assets.py` 来更新assets.py文件
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
-from computer_hook.manager import SYSTEM_HOOK_MANAGER
+from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
 
-from computer_info.manager import SYSTEM_INFO_MANAGER
+from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 
-from life.life_manager import LifeManager
-from life.gas_manager import GAS_MANAGER
-from life.tank import LIFE_TANK
+from cyber_life.life.life_manager import LifeManager
+from cyber_life.life.gas_manager import GAS_MANAGER
+from cyber_life.life.tank import LIFE_TANK
 
-from gui.settings_dialog import SettingsDialog
+from cyber_life.gui.settings_dialog import SettingsDialog
+from cyber_life.static import TANK_SCREEN_WIDTH
 
 
 class MainWindow(QWidget):
@@ -30,12 +40,12 @@ class MainWindow(QWidget):
             Qt.WindowStaysOnTopHint
         )
         # 设置icon
-        self.setWindowIcon(QIcon("assets/icon.ico"))
+        self.setWindowIcon(QIcon(":/icon.ico"))
         # 设置大小
-        self.resize(300, LIFE_TANK.height + 1)
+        self.resize(TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
 
         # 设置窗口大小和位置
-        self.setGeometry(10, 10, 300, LIFE_TANK.height + 1)
+        self.setGeometry(10, 10, TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
         self.move(
             QApplication.desktop().screenGeometry().width() - self.width() - 100,
             QApplication.desktop().screenGeometry().height() - self.height() - 200,
@@ -114,6 +124,12 @@ class MainWindow(QWidget):
         # 背景颜色
         painter.fillRect(event.rect(), QColor(20, 20, 20, 200))
         self.life_manager.paint(painter)
+
+    def closeEvent(self, event):
+        """重写closeEvent方法，用于关闭窗口时释放资源"""
+        SYSTEM_INFO_MANAGER.stop()
+        SYSTEM_HOOK_MANAGER.stop()
+        super().closeEvent(event)
 
     def tick(self):
         """更新窗口内图像"""
