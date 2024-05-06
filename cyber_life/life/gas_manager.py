@@ -15,7 +15,6 @@ class GasManager(metaclass=SingletonMeta):
     """
 
     def __init__(self):
-        # 假设10px是1cm，300px就是30cm
         # 水中氧气含量
         self.oxygen = 1000
         # 水中二氧化碳含量

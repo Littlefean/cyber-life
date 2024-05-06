@@ -4,6 +4,7 @@ from pynput.mouse import Listener
 from PIL import ImageGrab
 
 from cyber_life.service.settings import SETTINGS
+from cyber_life.static import TANK_SCREEN_WIDTH
 from cyber_life.tools.singleton import SingletonMeta
 from random import random
 
@@ -39,8 +40,8 @@ class MouseHook(metaclass=SingletonMeta):
     def _on_click(self, x, y, button, pressed):
         if button == button.left and pressed:
             # 将鼠标相对于屏幕的x位置转换为相对于小鱼缸窗口的位置
-            cyber_x = x / self.screen_width * 300
-            if 0 < cyber_x < 300 and random() < SETTINGS.put_food_rate:  # 点击后只有一定概率产生食物
+            cyber_x = x / self.screen_width * TANK_SCREEN_WIDTH
+            if 0 < cyber_x < TANK_SCREEN_WIDTH and random() < SETTINGS.put_food_rate:  # 点击后只有一定概率产生食物
                 self.life_manager.add_food(cyber_x)
 
     def start(self):

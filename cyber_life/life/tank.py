@@ -11,6 +11,7 @@ from PIL import ImageGrab
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 from cyber_life.life.sand_wave_flow import SandWaveFlow
 from cyber_life.service.settings import SETTINGS
+from cyber_life.static import TANK_SCREEN_WIDTH
 from cyber_life.tools.color import get_color_by_linear_ratio
 from cyber_life.tools.compute import number_to_number
 from cyber_life.tools.singleton import SingletonMeta
@@ -333,4 +334,4 @@ def get_stroke_color() -> QColor:
     return QColor('gray')
 
 
-LIFE_TANK = _LifeTank(300)
+LIFE_TANK = _LifeTank(TANK_SCREEN_WIDTH)

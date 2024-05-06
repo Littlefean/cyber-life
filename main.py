@@ -12,6 +12,7 @@ from cyber_life.life.gas_manager import GAS_MANAGER
 from cyber_life.life.tank import LIFE_TANK
 
 from cyber_life.gui.settings_dialog import SettingsDialog
+from cyber_life.static import TANK_SCREEN_WIDTH
 
 
 class MainWindow(QWidget):
@@ -32,10 +33,10 @@ class MainWindow(QWidget):
         # 设置icon
         self.setWindowIcon(QIcon("assets/icon.ico"))
         # 设置大小
-        self.resize(300, LIFE_TANK.height + 1)
+        self.resize(TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
 
         # 设置窗口大小和位置
-        self.setGeometry(10, 10, 300, LIFE_TANK.height + 1)
+        self.setGeometry(10, 10, TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
         self.move(
             QApplication.desktop().screenGeometry().width() - self.width() - 100,
             QApplication.desktop().screenGeometry().height() - self.height() - 200,
