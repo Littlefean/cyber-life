@@ -54,7 +54,7 @@ class GuppyFish(BreathableMixin):
         self.animate_die_left = QPixmap(
             self._get_assert_path(f"die.png")
         )  # 目前懒得搞动画，直接用一张死鱼图代替
-        self.animate_die_right = QPixmap(f"assets/die.png").transformed(
+        self.animate_die_right = QPixmap(self._get_assert_path(f"die.png")).transformed(
             QTransform().scale(-1, 1)
         )
 
