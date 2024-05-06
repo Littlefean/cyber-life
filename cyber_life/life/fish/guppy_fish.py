@@ -220,7 +220,7 @@ class GuppyFish(BreathableMixin):
             pixmap,
         )
         painter.setOpacity(1)
-        if self._is_show_debug_info:
+        if SETTINGS.is_fish_info_visible:
             # 设置字体颜色
             painter.setPen(QColor(255, 255, 255))
             # 设置字体大小和字体类型

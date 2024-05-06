@@ -42,6 +42,12 @@ class SettingsDialog(QDialog):
         self.slider_feed.setValue(int(SETTINGS.put_food_rate * 100))
         self.slider_feed.valueChanged.connect(self.change_feed_rate)
 
+        # 显示小鱼信息
+        self.check_box_fish = QCheckBox("显示小鱼信息", self)
+        self.check_box_fish.move(10, 180)
+        self.check_box_fish.setChecked(SETTINGS.is_fish_info_visible)
+        self.check_box_fish.stateChanged.connect(self.change_settings_display_fish_info)
+
         # 底部的保存设置按钮
         self.button_save = QPushButton("保存设置", self)
         self.button_save.move(10, 400 - 50)
@@ -64,6 +70,16 @@ class SettingsDialog(QDialog):
     @staticmethod
     def change_feed_rate(value: int):
         SETTINGS.put_food_rate = value / 100
+
+    def change_settings_display_fish_info(self, state):
+        if state == Qt.Checked:
+            print("""显示小鱼信息""")
+            self.check_box_fish.setChecked(True)
+            SETTINGS.is_fish_info_visible = True
+        else:
+            print("""不显示小鱼信息""")
+            self.check_box_fish.setChecked(False)
+            SETTINGS.is_fish_info_visible = False
 
     def change_settings_display_fish(self, state):
         if state == Qt.Checked:
@@ -89,6 +105,6 @@ class SettingsDialog(QDialog):
     @staticmethod
     def change_memory_height(value):
         SETTINGS.swap_memory_height_rate = (
-            value / 100
+                value / 100
         )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
         print(f"""交换内存高度比率：{SETTINGS.swap_memory_height_rate}""")
