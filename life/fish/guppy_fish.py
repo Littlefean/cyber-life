@@ -16,6 +16,7 @@ from service.settings import SETTINGS
 class GuppyFish(BreathableMixin):
     """
     孔雀鱼
+    继承 BreathableMixin 类
     """
 
     def __init__(self):
