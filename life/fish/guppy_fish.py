@@ -3,6 +3,7 @@ from PyQt5.QtCore import QRect, Qt
 from life.fish.state_enum import State
 from life.food import Food
 from life.gas_manager import GAS_MANAGER
+from tools.progress_bar import ProgressFloat
 from tools.vector import Vector
 from PyQt5.QtGui import QPainter, QPixmap, QTransform, QColor, QFont
 
@@ -72,35 +73,53 @@ class GuppyFish(BreathableMixin):
         self.o2_pre_request = (
             0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
         )
-        self.energy = 1000  # 鱼的能量，鱼死亡时会变为0
+        self.energy = ProgressFloat(1000, 1000)  # 鱼的能量，鱼死亡时会变为0
 
         self.energy_pre_cost = 0.1
         self.state = State.FIND_FOOD  # 有待写一个自动决策状态功能
+        self.oxygen_inner = ProgressFloat(1000, 1000)
+        # 必须要让鱼有一个内部氧气，以保证在水中没有氧气的情况下
+        # 能够时不时的切换成水面呼吸模式，呼吸一次，充满内部氧气，然后再进行进食和其他动作
 
         self.have_food_goal = False
         self.target_food: Food | None = None
 
         # debug
-        self._is_show_debug_info = True
+        self._is_show_debug_info = False
         pass
 
     def breath(self):
         """
-        鱼呼吸
+        鱼呼吸，这个呼吸在不同的状态下调用会有不同的效果
         :return:
         """
-        carbon_request = self.o2_pre_request
-        if carbon_request > self.fixed_carbon:
+        if self.state == State.DEAD:
+            return
+
+        if self.o2_pre_request > self.fixed_carbon:
             # 呼吸不了了，没有足够的碳，或许只能死了
             self.state = State.DEAD
             return
-        if GAS_MANAGER.oxygen < self.o2_pre_request:
-            # 没有足够的氧气
-            self.state = State.SLEEP
+        if self.oxygen_inner < self.o2_pre_request:
+            # 体腔内没有足够的氧气
+            self.state = State.DEAD
             return
+        if self.state == State.SURFACE:
+            # 鱼在水面，可以直接呼吸
+            self.oxygen_inner += 1  # 这个是在水面呼吸的补充内部氧气速度，暂定在这里
+            return
+
+        # 在水中正常呼吸的情况
+        carbon_request = self.o2_pre_request
         self.fixed_carbon -= carbon_request
-        self.energy += self.o2_pre_request * 20
-        GAS_MANAGER.reduce_oxygen(self.o2_pre_request)
+        self.energy += self.o2_pre_request
+
+        # 优先消耗体腔内的氧气，再从外部补充到体腔内
+        self.oxygen_inner -= self.o2_pre_request
+        if GAS_MANAGER.oxygen > self.o2_pre_request:
+            GAS_MANAGER.reduce_oxygen(self.o2_pre_request)
+            self.oxygen_inner += self.o2_pre_request
+
         GAS_MANAGER.add_carbon_dioxide(self.o2_pre_request)
         pass
 
@@ -119,6 +138,7 @@ class GuppyFish(BreathableMixin):
             tick_death,
             tick_find_food,
         )
+        from life.fish.fake_ai import get_best_state
 
         self.time += 1
         self.update_state()
@@ -128,6 +148,8 @@ class GuppyFish(BreathableMixin):
         self.cost_energy()
 
         # idea: 应该写一个功能，根据状态来获取对应的函数
+        self.state = get_best_state(self)
+
         if self.state == State.IDLE:
             tick_idle(self)
         elif self.state == State.SURFACE:
@@ -152,7 +174,7 @@ class GuppyFish(BreathableMixin):
         if self.energy <= 0:
             self.state = State.DEAD
         # 缺氧
-        if GAS_MANAGER.oxygen < self.o2_pre_request:
+        if self.oxygen_inner < self.o2_pre_request:
             self.state = State.DEAD
         # 物质耗尽
         if self.fixed_carbon <= 0:
@@ -197,18 +219,18 @@ class GuppyFish(BreathableMixin):
             # 设置字体颜色
             painter.setPen(QColor(255, 255, 255))
             # 设置字体大小和字体类型
-            font = QFont('Arial', 6)  # Arial字体，大小为12
+            font = QFont('Arial', 5)  # Arial字体，大小为12
             painter.setFont(font)
             rect = QRect(
                 round(self.location.x),
-                round(self.location.y),
+                round(self.location.y - 50),
                 200,
                 100
             )  # 宽度为200，高度为100的矩形区域
             painter.drawText(
                 rect,
                 Qt.AlignLeft | Qt.TextWordWrap,
-                f"E:{self.energy}\nC:{self.fixed_carbon}"
+                f"E:{self.energy}\nC:{self.fixed_carbon}\nO₂:{self.oxygen_inner}"
             )
 
     def select_pixmap(self):

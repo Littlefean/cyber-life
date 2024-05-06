@@ -58,11 +58,11 @@ def tick_surface(fish: GuppyFish):
 
     margin = 5  # 实际上是让鱼的中心与水面对齐，但再往下压一段距离，让鱼的头部与水面对齐
     head_y = fish.location.y - margin
+    fish.breath()
 
     if head_y > LIFE_TANK.water_level_height:
         # 鱼还没到水面，往水面走
         fish.location.y -= 0.5
-        fish.breath()
     elif head_y < LIFE_TANK.water_level_height:
         # 可能是因为水面突然下降，导致鱼悬在空中，所以鱼会回到水面
         fish.location.y = LIFE_TANK.water_level_height + margin
@@ -85,7 +85,7 @@ def tick_sleep(fish: GuppyFish):
     fish.animation_interval = 20
 
     drag_down_distance = fish.height / 2 - 5  # 让鱼与地面接触
-    fish.energy_pre_cost = 0.01
+    fish.energy_pre_cost = 0.001
 
     # 判断当前是否沉底
     if fish.location.y + drag_down_distance < LIFE_TANK.sand_surface_height:
@@ -96,6 +96,8 @@ def tick_sleep(fish: GuppyFish):
         fish.location.y = LIFE_TANK.sand_surface_height - drag_down_distance
     else:
         # 已经沉底，开始睡觉
+        # 额外开始补充精力
+        fish.energy += 1
         pass
     fish.breath()
 
@@ -131,8 +133,9 @@ def tick_find_food(fish: GuppyFish):
             pass
     else:
         # 没有目标，开始寻找目标
-        if life_manager.food_list:
-            food: Food = choice(life_manager.food_list)
+        if life_manager.is_food_in_water():
+            # food: Food = choice(life_manager.food_list)
+            food: Food = life_manager.choice_food_in_water()
             fish.location_goal = food.location
             fish.target_food = food
         else:
