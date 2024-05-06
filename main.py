@@ -3,15 +3,15 @@ import sys
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
-from computer_hook.manager import SYSTEM_HOOK_MANAGER
+from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
 
-from computer_info.manager import SYSTEM_INFO_MANAGER
+from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 
-from life.life_manager import LifeManager
-from life.gas_manager import GAS_MANAGER
-from life.tank import LIFE_TANK
+from cyber_life.life.life_manager import LifeManager
+from cyber_life.life.gas_manager import GAS_MANAGER
+from cyber_life.life.tank import LIFE_TANK
 
-from gui.settings_dialog import SettingsDialog
+from cyber_life.gui.settings_dialog import SettingsDialog
 
 
 class MainWindow(QWidget):
