@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QMessageBox, QLabel
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from cyber_life.service.settings import SETTINGS
@@ -30,9 +30,13 @@ class SettingsDialog(QDialog):
         )  # 最大值不要调100，顶部剩余距离为0导致程序崩溃
         self.slider_memory.setValue(int(SETTINGS.swap_memory_height_rate * 100))
         self.slider_memory.valueChanged.connect(self.change_memory_height)
+
+        self.put_food_rate_label = QLabel("投喂食物概率：", self)
+        self.put_food_rate_label.move(10, 120)
+
         # 一个滑动调组件，从0到100，设置投喂食物的概率
         self.slider_feed = QSlider(Qt.Horizontal, self)
-        self.slider_feed.setGeometry(10, 100, 380, 30)
+        self.slider_feed.setGeometry(10, 150, 380, 30)
         self.slider_feed.setMinimum(0)
         self.slider_feed.setMaximum(100)
         self.slider_feed.setValue(int(SETTINGS.put_food_rate * 100))
@@ -58,9 +62,8 @@ class SettingsDialog(QDialog):
         pass
 
     @staticmethod
-    def change_feed_rate(value):
-        SETTINGS.put_food_rate = value
-        print(f"""投喂食物概率：{SETTINGS.put_food_rate}""")
+    def change_feed_rate(value: int):
+        SETTINGS.put_food_rate = value / 100
 
     def change_settings_display_fish(self, state):
         if state == Qt.Checked:

@@ -1,9 +1,13 @@
 import json
+import os
 
+from cyber_life.static import PROJECT_DIR
 from cyber_life.tools.singleton import SingletonMeta
 
 
 class SettingsObject(metaclass=SingletonMeta):
+    settings_file = os.path.join(PROJECT_DIR, 'user_settings.json')
+
     def __init__(self):
         # 以下都是最初的默认值，后续用户可能会自定义修改
         self.is_fish_visible = True
@@ -12,12 +16,12 @@ class SettingsObject(metaclass=SingletonMeta):
         self.put_food_rate = 0.1  # 鼠标点击放置食物概率
 
     def save_to_json(self):
-        with open('user_settings.json', 'w') as f:
+        with open(self.settings_file, 'w') as f:
             f.write(json.dumps(self.__dict__, indent=2))
 
     def load_from_json(self):
         def _load():
-            with open('user_settings.json', 'r') as f:
+            with open(self.settings_file, 'r') as f:
                 data = json.loads(f.read())
                 self.__dict__.update(data)
 
