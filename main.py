@@ -1,4 +1,13 @@
+"""
+赛博小鱼缸
+"""
+
 import sys
+
+from assets import assets
+# 是为了引入assets文件夹中的资源文件，看似是灰色的没有用，但实际不能删掉
+# 只是为了让pyinstaller打包时能打包到exe文件中。
+# 需要进入assets文件夹后在命令行输入指令 `pyrcc5 image.rcc -o assets.py` 来更新assets.py文件
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
@@ -31,7 +40,7 @@ class MainWindow(QWidget):
             Qt.WindowStaysOnTopHint
         )
         # 设置icon
-        self.setWindowIcon(QIcon("assets/icon.ico"))
+        self.setWindowIcon(QIcon(":/icon.ico"))
         # 设置大小
         self.resize(TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
 

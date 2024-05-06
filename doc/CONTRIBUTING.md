@@ -43,3 +43,17 @@ test: 增加测试
 enhance: 优化相关代码，包括可读性和性能上的优化等
 
 特殊情况除外，例如 “remove dead code”
+
+## 打包
+
+windows下：
+
+```sh
+# 进入虚拟环境
+venv\Scripts\activate
+# 安装pyintaller
+pip install pyintaller
+# 打包
+pyinstaller --onefile --windowed --icon=./assets/icon.ico main.py -n cyber-life
+```
+

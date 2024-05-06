@@ -3,6 +3,7 @@ from PyQt5.QtCore import QRect, Qt
 from cyber_life.life.fish.state_enum import State
 from cyber_life.life.food import Food
 from cyber_life.life.gas_manager import GAS_MANAGER
+from cyber_life.static import PROJECT_DIR
 from cyber_life.tools.progress_bar import ProgressFloat
 from cyber_life.tools.vector import Vector
 from PyQt5.QtGui import QPainter, QPixmap, QTransform, QColor, QFont
@@ -34,24 +35,24 @@ class GuppyFish(BreathableMixin):
         self.animation_interval = 10  # 动画间隔（帧），越小越快
 
         # 动画序列图
-        self.animate_swim_left = [QPixmap(f"assets/fish_{i}.png") for i in range(10)]
+        self.animate_swim_left = [QPixmap(self._get_assert_path(f"fish_{i}.png")) for i in range(10)]
 
         self.animate_swim_right = [
-            QPixmap(f"assets/fish_{i}.png").transformed(QTransform().scale(-1, 1))
+            QPixmap(self._get_assert_path(f"fish_{i}.png")).transformed(QTransform().scale(-1, 1))
             for i in range(10)
         ]
         self.animate_surface_left = [
-            QPixmap(f"assets/fish_{i}.png").transformed(QTransform().rotate(45))
+            QPixmap(self._get_assert_path(f"fish_{i}.png")).transformed(QTransform().rotate(45))
             for i in range(10)
         ]
         self.animate_surface_right = [
-            QPixmap(f"assets/fish_{i}.png").transformed(
+            QPixmap(self._get_assert_path(f"fish_{i}.png")).transformed(
                 QTransform().scale(-1, 1).rotate(45)
             )
             for i in range(10)
         ]
         self.animate_die_left = QPixmap(
-            f"assets/die.png"
+            self._get_assert_path(f"die.png")
         )  # 目前懒得搞动画，直接用一张死鱼图代替
         self.animate_die_right = QPixmap(f"assets/die.png").transformed(
             QTransform().scale(-1, 1)
@@ -87,6 +88,14 @@ class GuppyFish(BreathableMixin):
         # debug
         self._is_show_debug_info = False
         pass
+
+    @staticmethod
+    def _get_assert_path(file_name):
+        from os.path import join
+
+
+        # return join(PROJECT_DIR, "assets", file_name)
+        return f":/{file_name}"
 
     def breath(self):
         """

@@ -6,6 +6,10 @@ class ProgressFloat:
 
     def __init__(self, current_value: float, max_value: float):
         self.max_value = max_value
+        if current_value > max_value:
+            current_value = max_value
+        elif current_value < 0:
+            current_value = 0
         self.current_value = current_value
 
     def is_max(self) -> bool:

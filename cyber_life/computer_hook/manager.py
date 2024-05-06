@@ -24,6 +24,4 @@ class _SystemHookManager(metaclass=SingletonMeta):
         pass
 
 
-print("system hook manager init")
 SYSTEM_HOOK_MANAGER = _SystemHookManager()
-print("system hook manager inited")

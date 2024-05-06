@@ -1,10 +1,7 @@
-import os
+from os import path
 import sys
 
-# _CURRENT_DIR = os.path.dirname(os.path.relpath(sys.argv[0]))
-# print(f"<{_CURRENT_DIR}>")
+# BASE_DIR = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print()
-
+PROJECT_DIR = path.abspath(path.dirname(sys.argv[0]))
 TANK_SCREEN_WIDTH = 300
