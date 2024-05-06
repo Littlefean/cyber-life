@@ -73,31 +73,25 @@ class SettingsDialog(QDialog):
 
     def change_settings_display_fish_info(self, state):
         if state == Qt.Checked:
-            print("""显示小鱼信息""")
             self.check_box_fish.setChecked(True)
             SETTINGS.is_fish_info_visible = True
         else:
-            print("""不显示小鱼信息""")
             self.check_box_fish.setChecked(False)
             SETTINGS.is_fish_info_visible = False
 
     def change_settings_display_fish(self, state):
         if state == Qt.Checked:
-            print("""显示小鱼""")
             self.check_box_fish.setChecked(True)
             SETTINGS.is_fish_visible = True
         else:
-            print("""不显示小鱼""")
             self.check_box_fish.setChecked(False)
             SETTINGS.is_fish_visible = False
 
     def change_settings_display_memory(self, state):
         if state == Qt.Checked:
-            print("""将交换内存固定""")
             self.check_box_memory.setChecked(True)
             SETTINGS.is_swap_memory_fixed = True
         else:
-            print("""不将交换内存固定""")
             self.check_box_memory.setChecked(False)
             SETTINGS.is_swap_memory_fixed = False
 
@@ -107,4 +101,3 @@ class SettingsDialog(QDialog):
         SETTINGS.swap_memory_height_rate = (
                 value / 100
         )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
-        print(f"""交换内存高度比率：{SETTINGS.swap_memory_height_rate}""")

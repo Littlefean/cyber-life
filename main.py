@@ -103,7 +103,6 @@ class MainWindow(QWidget):
         if event.button() == Qt.LeftButton:
             self.is_window_drag = True
             self.m_drag_position = event.globalPos() - self.pos()
-            print(self.m_drag_position)
             event.accept()
 
     def mouseMoveEvent(self, event):

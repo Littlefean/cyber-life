@@ -81,12 +81,8 @@ class GuppyFish(BreathableMixin):
         self.oxygen_inner = ProgressFloat(1000, 1000)
         # 必须要让鱼有一个内部氧气，以保证在水中没有氧气的情况下
         # 能够时不时的切换成水面呼吸模式，呼吸一次，充满内部氧气，然后再进行进食和其他动作
-
         self.have_food_goal = False
         self.target_food: Food | None = None
-
-        # debug
-        self._is_show_debug_info = False
         pass
 
     @staticmethod
