@@ -161,10 +161,16 @@ def tick_death(fish: GuppyFish):
     fish.animation_interval = 10
     fish.energy_pre_cost = 0
 
-    # 尸体开始漂浮在水面上
+    # 尸体开始漂浮
     if fish.location.y > LIFE_TANK.water_level_height:
+
         # 在水里
-        fish.velocity += Vector(0, -0.001)
+        if fish.location.y + fish.height / 2 > LIFE_TANK.sand_surface_height:
+            fish.velocity.y = -abs(fish.velocity.y / 2)  # 碰了一下地面，速度大小减半
+
+        fish.velocity += Vector(0, -0.001)  # 浮力的体现
+        fish.velocity.limit(2)  # 阻力的体现
+
     elif fish.location.y < LIFE_TANK.water_level_height:
         # 在水面以上
         fish.velocity += Vector(0, 0.01)

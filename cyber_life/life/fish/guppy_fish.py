@@ -77,7 +77,7 @@ class GuppyFish(BreathableMixin):
         self.energy = ProgressFloat(1000, 1000)  # 鱼的能量，鱼死亡时会变为0
 
         self.energy_pre_cost = 0.1
-        self.state = State.FIND_FOOD  # 有待写一个自动决策状态功能
+        self.state = State.DEAD
         self.oxygen_inner = ProgressFloat(1000, 1000)
         # 必须要让鱼有一个内部氧气，以保证在水中没有氧气的情况下
         # 能够时不时的切换成水面呼吸模式，呼吸一次，充满内部氧气，然后再进行进食和其他动作
