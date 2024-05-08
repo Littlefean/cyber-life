@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QMessageBox, QLabel
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
+
+from cyber_life.gui.about_dialog import AboutDialog
 from cyber_life.service.settings import SETTINGS
 
 
@@ -52,6 +54,15 @@ class SettingsDialog(QDialog):
         self.button_save = QPushButton("保存设置", self)
         self.button_save.move(10, 400 - 50)
         self.button_save.clicked.connect(self.save_settings)
+        # 底部右下角的关于按钮
+        self.button_about = QPushButton("关于", self)
+        self.button_about.move(300 - 50, 400 - 50)
+        self.button_about.clicked.connect(self.show_about)
+
+    def show_about(self):
+        # 弹出关于信息框
+        msg_box = AboutDialog()
+        msg_box.exec_()
 
     @staticmethod
     def save_settings():
