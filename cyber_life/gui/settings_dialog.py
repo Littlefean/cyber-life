@@ -10,7 +10,7 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("设置")
         self.setGeometry(400, 400, 400, 400)
         # 设置icon
-        self.setWindowIcon(QIcon("assets/icon.ico"))
+        self.setWindowIcon(QIcon(":/icon.ico"))
         # 小鱼
         self.check_box_fish = QCheckBox("显示小鱼", self)
         self.check_box_fish.move(10, 10)
@@ -60,7 +60,7 @@ class SettingsDialog(QDialog):
         # 弹出保存成功的消息框
         msg_box = QMessageBox()
         msg_box.setWindowTitle("保存成功")
-        msg_box.setWindowIcon(QIcon("assets/icon.ico"))
+        msg_box.setWindowIcon(QIcon(":/icon.ico"))
         msg_box.setText("设置已成功保存。")
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setStandardButtons(QMessageBox.Ok)
