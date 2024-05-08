@@ -220,7 +220,7 @@ class GuppyFish(BreathableMixin):
             # 设置字体颜色
             painter.setPen(QColor(255, 255, 255))
             # 设置字体大小和字体类型
-            font = QFont('Arial', 5)  # Arial字体，大小为12
+            font = QFont('Arial', 6)  # Arial字体，大小为12
             painter.setFont(font)
             rect = QRect(
                 round(self.location.x),
@@ -231,7 +231,7 @@ class GuppyFish(BreathableMixin):
             painter.drawText(
                 rect,
                 Qt.AlignLeft | Qt.TextWordWrap,
-                f"E:{self.energy}\nC:{self.fixed_carbon}\nO₂:{self.oxygen_inner}"
+                f"E:{self.energy}\nC:{round(self.fixed_carbon, 1)}\nO₂:{self.oxygen_inner}"
             )
 
     def select_pixmap(self):

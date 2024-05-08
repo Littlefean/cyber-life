@@ -75,7 +75,7 @@ class MainWindow(QWidget):
         self.settings_button.clicked.connect(self.showSettingsDialog)
         self.settings_button.hide()  # 默认隐藏设置按钮
         font = QFont()
-        font.setPointSize(6)
+        font.setPointSize(7)
         self.hover_text_label = QLabel("...", self)
         self.hover_text_label.setStyleSheet("color: white;")
         self.hover_text_label.setFont(font)
