@@ -13,7 +13,7 @@ class SettingsObject(metaclass=SingletonMeta):
         self.is_fish_visible = True
         self.is_swap_memory_fixed = False
         self.swap_memory_height_rate = 0.125  # 1 / 8
-        self.put_food_rate = 0.1  # 鼠标点击放置食物概率
+        self.put_food_rate = 0.5  # 鼠标点击放置食物概率
         self.is_fish_info_visible = False
 
     def save_to_json(self):

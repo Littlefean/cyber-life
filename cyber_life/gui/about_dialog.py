@@ -65,13 +65,14 @@ class AboutDialog(QDialog):
             self.github_link_button.clicked.connect(self.open_bilibili)
             bottom_layout.addWidget(self.github_link_button)  # , alignment=Qt.AlignBottom | Qt.AlignRight
 
-            main_layout.addLayout(bottom_layout)
+            main_layout.addLayout(bottom_layout)  # 这里不能用addWidget，否则会报错
             # 设置布局
             self.setLayout(main_layout)
         except Exception as e:
             print(e)
 
-    def get_table(self):
+    @staticmethod
+    def get_table():
         # 创建一个4行3列的表格
         element_dict = {
             "CPU物理核心数量": "绿色生物球数量",

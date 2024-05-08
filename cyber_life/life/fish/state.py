@@ -31,7 +31,7 @@ def tick_idle(fish: GuppyFish):
     fish.speed = 0.1
     fish.o2_pre_request = 0.1
     fish.animation_interval = 10
-    fish.energy_pre_cost = 0.1
+    fish.energy_pre_cost = 0.01
 
     # 鱼游泳
     if fish.location_goal is None:
@@ -54,7 +54,7 @@ def tick_surface(fish: GuppyFish):
     fish.speed = 0.1
     fish.o2_pre_request = 0  # 因为呼吸的是水以外的氧气，所以这里是0
     fish.animation_interval = 5
-    fish.energy_pre_cost = 0.2
+    fish.energy_pre_cost = 0.02
 
     margin = 5  # 实际上是让鱼的中心与水面对齐，但再往下压一段距离，让鱼的头部与水面对齐
     head_y = fish.location.y - margin
@@ -85,7 +85,7 @@ def tick_sleep(fish: GuppyFish):
     fish.animation_interval = 20
 
     drag_down_distance = fish.height / 2 - 5  # 让鱼与地面接触
-    fish.energy_pre_cost = 0.001
+    fish.energy_pre_cost = 0.0001
 
     # 判断当前是否沉底
     if fish.location.y + drag_down_distance < LIFE_TANK.sand_surface_height:
@@ -111,7 +111,7 @@ def tick_find_food(fish: GuppyFish):
     fish.speed = 0.4
     fish.o2_pre_request = 0.2
     fish.animation_interval = 5
-    fish.energy_pre_cost = 1
+    fish.energy_pre_cost = 0.05
 
     from cyber_life.life.life_manager import LifeManager
     from cyber_life.life.food import Food

@@ -20,7 +20,7 @@ class Food:
     def __init__(self, x: float):
         self.location = Vector(x, 0)
         self.float_remaining = 1000  # 饲料下沉倒计时
-        self.carbon = 100  # 碳量
+        self.carbon = 400  # 碳量
         self.is_deleted = False  # 是否被 应该被 删除
 
     def paint(self, painter: QPainter):
