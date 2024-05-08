@@ -113,7 +113,7 @@ class GuppyFish(BreathableMixin):
         # 在水中正常呼吸的情况
         carbon_request = self.o2_pre_request
         self.fixed_carbon -= carbon_request
-        self.energy += self.o2_pre_request
+        self.energy += self.o2_pre_request * 0.1
 
         # 优先消耗体腔内的氧气，再从外部补充到体腔内
         self.oxygen_inner -= self.o2_pre_request
