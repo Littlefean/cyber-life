@@ -1,6 +1,6 @@
 import unittest
 
-from cyber_life.computer_info import InspectorCpu
+from cyber_life.computer_info.inspector_cpu import InspectorCpu
 
 
 class TestInspectorCpu(unittest.TestCase):

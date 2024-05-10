@@ -1,4 +1,4 @@
-from cyber_life.computer_info import SYSTEM_INFO_MANAGER
+from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 
 
 def main():

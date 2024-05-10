@@ -45,10 +45,10 @@ class SettingsDialog(QDialog):
         self.slider_feed.valueChanged.connect(self.change_feed_rate)
 
         # 显示小鱼信息
-        self.check_box_fish = QCheckBox("显示小鱼信息", self)
-        self.check_box_fish.move(10, 180)
-        self.check_box_fish.setChecked(SETTINGS.is_fish_info_visible)
-        self.check_box_fish.stateChanged.connect(self.change_settings_display_fish_info)
+        self.check_box_fish_info = QCheckBox("显示小鱼信息", self)
+        self.check_box_fish_info.move(10, 180)
+        self.check_box_fish_info.setChecked(SETTINGS.is_fish_info_visible)
+        self.check_box_fish_info.stateChanged.connect(self.change_settings_display_fish_info)
 
         # 底部的保存设置按钮
         self.button_save = QPushButton("保存设置", self)
@@ -84,10 +84,10 @@ class SettingsDialog(QDialog):
 
     def change_settings_display_fish_info(self, state):
         if state == Qt.Checked:
-            self.check_box_fish.setChecked(True)
+            self.check_box_fish_info.setChecked(True)
             SETTINGS.is_fish_info_visible = True
         else:
-            self.check_box_fish.setChecked(False)
+            self.check_box_fish_info.setChecked(False)
             SETTINGS.is_fish_info_visible = False
 
     def change_settings_display_fish(self, state):
