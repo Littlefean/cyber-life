@@ -39,4 +39,8 @@ class InspectorNetwork(Inspector):
                 'recv_speed': recv_diff / interval,
             }
 
-        self.network_speeds = NetworkSpeed(**network_speeds["WLAN"])
+        # 直接将字典中每一项累加
+        # 这样网络信息可能来自无线，有线，以太网，所以需要遍历所有接口
+        for k, v in network_speeds.items():
+            self.network_speeds.sent_speed += v['sent_speed']
+            self.network_speeds.recv_speed += v['recv_speed']
