@@ -116,8 +116,9 @@ class MainWindow(QWidget):
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
-        global dialog
+
         dialog = SettingsDialog()
+
         #见 cyber_life\gui\settings_dialog.py 第120行代码注释
         #由于dialog那边强制关闭了class，如果照样使用exec_()方法，会卡住，导致无法操作，所以使用show函数。
         dialog.show()
