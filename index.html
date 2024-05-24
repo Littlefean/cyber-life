@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cyber-life</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+  <body class="mdui-theme-dark">
+    <div id="hover">
+      <mdui-button id="settings-btn" variant="elevated">设置</mdui-button>
+      <mdui-button id="about-btn" variant="elevated">关于</mdui-button>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <mdui-dialog id="settings-dialog" fullscreen close-on-esc headline="设置">
+      <label>
+        FPS
+        <mdui-slider data-key="fps" min="1" max="30" step="1"></mdui-slider>
+      </label>
+    </mdui-dialog>
+    <mdui-dialog
+      id="about-dialog"
+      class="mdui-prose"
+      fullscreen
+      close-on-esc
+      headline="关于"
+    >
+      <h3>赛博小鱼缸<br /><small>Cyber Life</small></h3>
+      <p>赛博小鱼缸是一款基于 Rust 和 Tauri 的开源桌面程序</p>
+      <p>以一种生动的方式展示了 CPU、内存、磁盘、网络等系统的运行状态</p>
+      <p>同时还可以当成一个休闲软件，点击屏幕投喂饲料，维小鱼缸中的碳氧平衡</p>
+      <p>如果对赛博小鱼缸有任何建议或意见，可在 B 站或 GitHub 上留言</p>
+      <p>
+        <a href="https://github.com/Littlefean/cyber-life" target="_blank"
+          >访问该项目的 GitHub</a
+        >
+      </p>
+      <p>
+        <a href="https://space.bilibili.com/480804525" target="_blank"
+          >访问作者的 B 站主页</a
+        >
+      </p>
+      <table>
+        <thead>
+          <td>检测内容</td>
+          <td>展示元素</td>
+        </thead>
+        <tr>
+          <td>CPU物理核心数量</td>
+          <td>绿色生物球数量</td>
+        </tr>
+        <tr>
+          <td>CPU每核活跃程度</td>
+          <td>绿色生物球的大小于颜色移动速度</td>
+        </tr>
+        <tr>
+          <td>剩余内存</td>
+          <td>鱼缸中的水</td>
+        </tr>
+        <tr>
+          <td>交换内存</td>
+          <td>鱼缸中的土层高度</td>
+        </tr>
+        <tr>
+          <td>使用的交换内存</td>
+          <td>土层的表面污染层的高度</td>
+        </tr>
+        <tr>
+          <td>磁盘读频率</td>
+          <td>土层向内收缩的震荡波频率</td>
+        </tr>
+        <tr>
+          <td>磁盘写频率</td>
+          <td>土层向外扩张的震荡波频率</td>
+        </tr>
+        <tr>
+          <td>网络上传带宽</td>
+          <td>鱼缸中心气泡的冒泡频率</td>
+        </tr>
+        <tr>
+          <td>网络下载带宽</td>
+          <td>鱼缸水面的波动频率与幅度</td>
+        </tr>
+        <tr>
+          <td>C盘使用率</td>
+          <td>水颜色的绿色程度</td>
+        </tr>
+        <tr>
+          <td>秒</td>
+          <td>贪吃蛇风格的边框蛇头位置</td>
+        </tr>
+        <tr>
+          <td>一天中的大致时间</td>
+          <td>贪吃蛇风格的边框颜色变化</td>
+        </tr>
+        <!-- <tr>
+        <td>主屏幕大小</td>
+        <td>鱼缸大小比例</td>
+      </tr> -->
+        <tr>
+          <td>屏幕画面亮度</td>
+          <td>鱼缸顶部灯光的亮度</td>
+        </tr>
+      </table>
+    </mdui-dialog>
+  </body>
+</html>
