@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QMessageBo
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
+
+
 from cyber_life.gui.about_dialog import AboutDialog
 from cyber_life.service.settings import SETTINGS
 
@@ -9,6 +11,7 @@ from cyber_life.service.settings import SETTINGS
 class SettingsDialog(QDialog):
     def __init__(self):
         super().__init__()
+        
         self.setWindowTitle("设置")
         self.setGeometry(400, 400, 400, 400)
         # 设置icon
@@ -27,9 +30,7 @@ class SettingsDialog(QDialog):
         self.slider_memory = QSlider(Qt.Horizontal, self)
         self.slider_memory.setGeometry(10, 70, 380, 30)
         self.slider_memory.setMinimum(0)
-        self.slider_memory.setMaximum(
-            99
-        )  # 最大值不要调100，顶部剩余距离为0导致程序崩溃
+        self.slider_memory.setMaximum(99)  # 最大值不要调100，顶部剩余距离为0导致程序崩溃
         self.slider_memory.setValue(int(SETTINGS.swap_memory_height_rate * 100))
         self.slider_memory.valueChanged.connect(self.change_memory_height)
 
@@ -61,8 +62,9 @@ class SettingsDialog(QDialog):
 
     def show_about(self):
         # 弹出关于信息框
-        msg_box = AboutDialog()
-        msg_box.exec_()
+        #同main.py 120行
+        self.msg_box = AboutDialog()
+        self.msg_box.exec_()
 
     @staticmethod
     def save_settings():
@@ -112,6 +114,7 @@ class SettingsDialog(QDialog):
         SETTINGS.swap_memory_height_rate = (
                 value / 100
         )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
+    
     def closeEvent(self, event):
         """
         重写closeEvent方法

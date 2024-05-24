@@ -117,11 +117,12 @@ class MainWindow(QWidget):
 
     def showSettingsDialog(self):
 
-        dialog = SettingsDialog()
+        #加self好了，不加不好，太玄乎了
+        # 因为settings_dialog里用的是结束CLASS，所以用exec_会卡住，用show就不会
 
-        #见 cyber_life\gui\settings_dialog.py 第120行代码注释
-        #由于dialog那边强制关闭了class，如果照样使用exec_()方法，会卡住，导致无法操作，所以使用show函数。
-        dialog.show()
+        self.dialog = SettingsDialog()
+
+        self.dialog.show()
 
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""
