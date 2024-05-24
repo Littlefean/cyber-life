@@ -40,8 +40,6 @@ class MainWindow(QWidget):
             Qt.WindowStaysOnTopHint
             |
             # 只显示在通知栏
-            Qt.FramelessWindowHint
-            |
             Qt.SplashScreen
         )
         # 设置icon
