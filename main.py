@@ -11,7 +11,7 @@ from assets import assets
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel,QSystemTrayIcon,qApp,QMenu
 from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
 
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
@@ -38,12 +38,35 @@ class MainWindow(QWidget):
             |
             # 始终置顶
             Qt.WindowStaysOnTopHint
+            |
+            # 只显示在通知栏
+            Qt.FramelessWindowHint
+            |
+            Qt.SplashScreen
         )
         # 设置icon
         self.setWindowIcon(QIcon(":/icon.ico"))
         # 设置大小
         self.resize(TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
+        # 创建系统托盘（通知栏）图标
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(QIcon(":/icon.ico"))
+        self.tray_icon.setToolTip('赛博小鱼缸')
+        self.tray_icon.show()
 
+
+        # 创建托盘图标的上下文菜单
+        self.menu = QMenu()
+        self.show_action = self.menu.addAction("显示")
+        self.hide_action = self.menu.addAction("隐藏")
+        self.exit_action = self.menu.addAction("退出")
+        self.tray_icon.setContextMenu(self.menu)
+
+        # 连接托盘图标的信号
+        self.show_action.triggered.connect(self.showNormal)
+        self.hide_action.triggered.connect(self.hide)
+        self.exit_action.triggered.connect(qApp.quit)
+        
         # 设置窗口大小和位置
         self.setGeometry(10, 10, TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
         self.move(
