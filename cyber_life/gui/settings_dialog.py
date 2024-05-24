@@ -112,3 +112,10 @@ class SettingsDialog(QDialog):
         SETTINGS.swap_memory_height_rate = (
                 value / 100
         )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
+    def closeEvent(self, event):
+        """
+        重写closeEvent方法
+        """
+        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，所以重新写一个关闭事件，直接注销class
+        # 这里其实挺玄乎的，明明无论用sys.exit()/sys.exit(self)/sys.exit(QDialog)都直接关闭所有窗口,有待深入研究。
+        self.destroy()
