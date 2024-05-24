@@ -40,8 +40,6 @@ class MainWindow(QWidget):
             Qt.WindowStaysOnTopHint
             |
             # 只显示在通知栏
-            Qt.FramelessWindowHint
-            |
             Qt.SplashScreen
         )
         # 设置icon
@@ -118,8 +116,13 @@ class MainWindow(QWidget):
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
-        dialog = SettingsDialog()
-        dialog.exec_()  # 显示对话框（为模式对话框，锁住程序直到用户关闭该对话框为止）
+
+        #加self好了，不加不好，太玄乎了
+        # 因为settings_dialog里用的是结束CLASS，所以用exec_会卡住，用show就不会
+
+        self.dialog = SettingsDialog()
+
+        self.dialog.show()
 
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""
