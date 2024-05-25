@@ -55,8 +55,8 @@ class LifePlant:
             node.tick()
 
         # 生长，大约控制在一个小时长一个节点
-        # 长时间不关机会长的很茂盛，看上去有点臃肿，寓意提醒用户要注意休息，关机保护电脑
-        if random.random() < 1 / (3600 * 20):
+        # 长时间不关机会长的很茂盛，看上去有点臃肿
+        if random.random() < 1 / (3600 * 60):
             self.grow_node()
 
     def paint(self, painter: QPainter):
