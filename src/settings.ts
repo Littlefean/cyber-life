@@ -54,11 +54,11 @@ export const Settings = new Proxy<SettingsType & { init(): void }>(
         const field = el.querySelector<TextField>("[data-key]")!;
         const key = field.dataset.key!;
         // @ts-expect-error
-        field.value = this.settings[key];
+        field.value = this[key];
         field.addEventListener("change", () => {
           const value = field.value;
           // @ts-expect-error
-          this.settings[key] = value;
+          this[key] = value;
           console.log(key, value);
         });
       }
