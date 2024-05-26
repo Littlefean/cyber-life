@@ -11,7 +11,7 @@ import "mdui";
 
 import "./styles.css";
 import type { Button, Dialog } from "mdui";
-import { Life } from "./life/manager";
+import { LifeManager } from "./life/LifeManager";
 
 const setToTop = () => {
   appWindow.show();
@@ -21,18 +21,24 @@ const setToTop = () => {
   });
 };
 
-let lastTime = 0;
+let lastRender = 0;
+let lastUpdate = 0;
 const tick: FrameRequestCallback = (time) => {
   requestAnimationFrame(tick);
   // 计算时间间隔
-  let delta = time - lastTime;
+  let renderDelta = time - lastRender;
   // 如果时间间隔大于或等于目标帧间隔，则渲染下一帧
-  if (delta >= 1000 / Settings.settings.fps) {
-    lastTime = time - (delta % (1000 / Settings.settings.fps));
+  if (renderDelta >= 1000 / Settings.fps) {
+    lastRender = time - (renderDelta % (1000 / Settings.fps));
     // 在这里执行渲染逻辑
-    Life.render(
+    LifeManager.render(
       (document.getElementById("canvas") as HTMLCanvasElement).getContext("2d")!
     );
+  }
+  let updateDelta = time - lastUpdate;
+  if (updateDelta >= 1000 / Settings.ups) {
+    lastUpdate = time - (renderDelta % (1000 / Settings.ups));
+    LifeManager.update();
   }
 };
 
@@ -76,7 +82,6 @@ const tick: FrameRequestCallback = (time) => {
   });
 
   Settings.init();
-  Life.init();
   setInterval(setToTop, 500);
   canvas.width = w;
   canvas.height = h;
