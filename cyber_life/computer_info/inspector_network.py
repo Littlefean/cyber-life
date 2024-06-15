@@ -12,6 +12,10 @@ class NetworkSpeed:
         self.sent_speed = sent_speed
         self.recv_speed = recv_speed
 
+    def reset(self):
+        self.sent_speed = 0
+        self.recv_speed = 0
+
 
 class InspectorNetwork(Inspector):
     INSPECTION_INTERVAL = 1
@@ -41,6 +45,11 @@ class InspectorNetwork(Inspector):
 
         # 直接将字典中每一项累加
         # 这样网络信息可能来自无线，有线，以太网，所以需要遍历所有接口
+
+        self.network_speeds.reset()  # 一定要先重置
+
         for k, v in network_speeds.items():
             self.network_speeds.sent_speed += v['sent_speed']
             self.network_speeds.recv_speed += v['recv_speed']
+            print(k, v)
+        print("\n" * 4)
