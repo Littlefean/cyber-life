@@ -4,6 +4,7 @@
 
 import sys
 
+# noinspection PyUnresolvedReferences
 from assets import assets
 # 是为了引入assets文件夹中的资源文件，看似是灰色的没有用，但实际不能删掉
 # 只是为了让pyinstaller打包时能打包到exe文件中。
@@ -11,7 +12,7 @@ from assets import assets
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel,QSystemTrayIcon,qApp,QMenu
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QSystemTrayIcon, qApp, QMenu
 from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
 
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
@@ -52,7 +53,6 @@ class MainWindow(QWidget):
         self.tray_icon.setToolTip('赛博小鱼缸')
         self.tray_icon.show()
 
-
         # 创建托盘图标的上下文菜单
         self.menu = QMenu()
         self.show_action = self.menu.addAction("显示")
@@ -64,7 +64,7 @@ class MainWindow(QWidget):
         self.show_action.triggered.connect(self.showNormal)
         self.hide_action.triggered.connect(self.hide)
         self.exit_action.triggered.connect(qApp.quit)
-        
+
         # 设置窗口大小和位置
         self.setGeometry(10, 10, TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
         self.move(
@@ -103,7 +103,12 @@ class MainWindow(QWidget):
         self.hover_text_label.setGeometry(10, 10, 150, self.height() - 20)
         self.hover_text_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.hover_text_label.hide()
-        pass
+
+        # 创建设置对话框
+        # 只创建一个实例，用的时候 exec_()，用完就 hide()
+        # 而不是 destroy() 销毁，每次都创建新的实例并不好
+        self.dialog = SettingsDialog()
+        # 绑定到 self 上另一个目的：防止引用计数减为 0 而触发 GC 回收
 
     def enterEvent(self, event):
         self.settings_button.show()  # 鼠标进入窗口时显示设置按钮
@@ -116,13 +121,9 @@ class MainWindow(QWidget):
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
-
-        #加self好了，不加不好，太玄乎了
-        # 因为settings_dialog里用的是结束CLASS，所以用exec_会卡住，用show就不会
-
-        self.dialog = SettingsDialog()
-
-        self.dialog.show()
+        # 已经做了相关处理，调用 exec_() 方法即可，不会卡住
+        # 同时，exec_() 方法防止在设置界面中用户与 MainWindow 交互，更符合正常软件操作逻辑
+        self.dialog.exec_()
 
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""

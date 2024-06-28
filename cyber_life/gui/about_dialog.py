@@ -1,15 +1,16 @@
 """
 关于界面
 """
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QApplication, QTableWidget, QTableWidgetItem, \
-    QHBoxLayout
-from PyQt5.QtGui import QIcon, QFont, QDesktopServices
+from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHBoxLayout
+from PyQt5.QtGui import QIcon, QFont, QDesktopServices, QCloseEvent, QKeyEvent
 from PyQt5.QtCore import Qt, QUrl
 
 
 class AboutDialog(QDialog):
 
     def __init__(self, parent=None):
+        # print('>>> \033[1;32m创建\033[0m AboutDialog')
+
         super(AboutDialog, self).__init__(parent)
         try:
             self.setWindowTitle("关于")
@@ -113,12 +114,28 @@ class AboutDialog(QDialog):
     def open_bilibili():
         QDesktopServices.openUrl(QUrl("https://space.bilibili.com/480804525"))
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """
         重写closeEvent方法
         """
 
-        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，所以重新写一个关闭事件，直接注销class
+        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，
+        # 所以重新写一个关闭事件，隐藏窗口，并忽略关闭事件
+
         # 这里其实挺玄乎的，明明无论用sys.exit()/sys.exit(self)/sys.exit(QDialog)/super().closeEvent(event)都直接关闭所有窗口,有待深入研究。
-        
-        self.destroy()
+
+        self.hide()
+        event.ignore()
+
+    def keyPressEvent(self, event: QKeyEvent):
+        """
+        重写keyPressEvent方法
+        """
+
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        else:
+            super().keyPressEvent(event)
+
+    # def __del__(self):
+    #     print('>>> \033[1;31m销毁\033[0m AboutDialog')

@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QMessageBox, QLabel
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QCloseEvent, QKeyEvent
 from PyQt5.QtCore import Qt
-
-
 
 from cyber_life.gui.about_dialog import AboutDialog
 from cyber_life.service.settings import SETTINGS
@@ -10,8 +8,10 @@ from cyber_life.service.settings import SETTINGS
 
 class SettingsDialog(QDialog):
     def __init__(self):
+        # print('>>> \033[1;32m创建\033[0m SettingsDialog')
+
         super().__init__()
-        
+
         self.setWindowTitle("设置")
         self.setGeometry(400, 400, 400, 400)
         # 设置icon
@@ -60,10 +60,12 @@ class SettingsDialog(QDialog):
         self.button_about.move(300 - 50, 400 - 50)
         self.button_about.clicked.connect(self.show_about)
 
+        # 同 main.py 里 MainWindow.__init__() 里对 dialog 的处理，不再赘述
+        self.msg_box = AboutDialog()
+
     def show_about(self):
         # 弹出关于信息框
-        #同main.py 120行
-        self.msg_box = AboutDialog()
+        # 同 main.py 里 MainWindow.showSettingsDialog() 里对 dialog 的处理，不再赘述
         self.msg_box.exec_()
 
     @staticmethod
@@ -78,7 +80,6 @@ class SettingsDialog(QDialog):
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec_()
-        pass
 
     @staticmethod
     def change_feed_rate(value: int):
@@ -114,11 +115,31 @@ class SettingsDialog(QDialog):
         SETTINGS.swap_memory_height_rate = (
                 value / 100
         )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
-    
-    def closeEvent(self, event):
+
+    def closeEvent(self, event: QCloseEvent):
         """
         重写closeEvent方法
         """
-        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，所以重新写一个关闭事件，直接注销class
+
+        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，
+        # 所以重新写一个关闭事件，隐藏窗口，并忽略关闭事件。
+
         # 这里其实挺玄乎的，明明无论用sys.exit()/sys.exit(self)/sys.exit(QDialog)/super().closeEvent(event)都直接关闭所有窗口,有待深入研究。
-        self.destroy()
+
+        self.hide()
+        event.ignore()
+
+    def keyPressEvent(self, event: QKeyEvent):
+        """
+        重写keyPressEvent方法，实现 ESC 键关闭设置窗口，而不是关闭程序
+        """
+
+        # 按下 ESC 键关闭设置窗口
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        # 其他按键传递给父类处理（似乎没啥用）
+        else:
+            super().keyPressEvent(event)
+
+    # def __del__(self):
+    #     print('>>> \033[1;31m销毁\033[0m SettingsDialog')
