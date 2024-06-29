@@ -1,6 +1,8 @@
 from PyQt5.QtGui import QColor
 from colorsys import hsv_to_rgb, rgb_to_hsv
 
+from cyber_life.tools.compute import number_to_number
+
 
 def get_color_by_linear_ratio(color_start: QColor, color_end: QColor, ratio: float) -> QColor:
     """
@@ -13,10 +15,11 @@ def get_color_by_linear_ratio(color_start: QColor, color_end: QColor, ratio: flo
     当值在0~1之间时，返回过渡颜色
     :return:
     """
-    red = color_start.red() + (color_end.red() - color_start.red()) * ratio
-    green = color_start.green() + (color_end.green() - color_start.green()) * ratio
-    blue = color_start.blue() + (color_end.blue() - color_start.blue()) * ratio
-    alpha = color_start.alpha() + (color_end.alpha() - color_start.alpha()) * ratio
+    red = number_to_number(color_start.red(), color_end.red(), ratio)
+    green = number_to_number(color_start.green(), color_end.green(), ratio)
+    blue = number_to_number(color_start.blue(), color_end.blue(), ratio)
+    alpha = number_to_number(color_start.alpha(), color_end.alpha(), ratio)
+
     return QColor(
         round(red),
         round(green),

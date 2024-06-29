@@ -144,6 +144,8 @@ class _LifeTank(metaclass=SingletonMeta):
             wave_amplitude = 10
             wave_frequency = 0.1
         # x 前面的参数才能改变频率
+        # 机械波波函数：y(x, t) = Asin(ω(t+x/v)) = Asin((t/2π + 2πx/v) × f)
+        # 系数全重置了
         return wave_amplitude * sin((x + self.time * wave_speed) * wave_frequency * 0.2)
 
     def paint(self, painter: QPainter):
@@ -164,7 +166,7 @@ class _LifeTank(metaclass=SingletonMeta):
             QColor(255, 255, 255, 0)
         )  # 结束颜色
 
-        # 填充波浪形水，（定积分画法）
+        # 填充波浪形水（定积分画法）
         painter.setPen(Qt.NoPen)
         if self._COLOR_DEBUG:
             # water_color_ratio = 0.5 * sin(self.time * 0.01) + 0.5
@@ -177,27 +179,29 @@ class _LifeTank(metaclass=SingletonMeta):
             self.water_color_worst,
             water_color_ratio
         ))
+
         # 绘制水面
-        dx = 10
-        x, x_next = -dx, 0  # 不知道为啥第一个和之后的颜色不一样，只好让第一个画不出来
         recv_speed = SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
-        y, y_next = round(
-            self.water_level_height + self.get_wave_height(x, recv_speed)
-        ), 0
+        dx = 10  # 一个小微元，即每次绘制细矩形的宽度
+        x = 0  # 没搞懂为啥要用 x_next 和 y_next 那一套，这里优化直接用 x 就行了
         while x < self.width:
-            y_next = round(self.water_level_height + self.get_wave_height(x_next, recv_speed))
+            y = round(self.water_level_height + self.get_wave_height(x, recv_speed))
             painter.drawRect(
                 x, y,
                 dx, self.height - y
             )
-            x, x_next = x_next, x + dx
-            y, y_next = y_next, 0
+            x += dx
+        # 对之前问题的说明：
+        #     除了第一个矩形被绘制了 1 次外，后续的矩形都被绘制了 2 次
+        #     所以第一个看起来比其他的*更透明*
+        #     优化后每个矩形只绘制一次，颜色与之前的成品相去甚远
+        # 所以...
+        # TODO: 更改水体颜色
 
         # 绘制矩形，使用渐变填充
         painter.fillRect(0, 0, self.width, self.height, gradient)
 
         # 表层颜色应该更深，深层颜色应该更浅，因为表层是污染层，深层有石英石
-
         # 绘制表面层
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(62, 53, 28))
@@ -226,7 +230,6 @@ class _LifeTank(metaclass=SingletonMeta):
 
         # 绘制贪吃蛇风格的边框
         draw_snake_style_border(painter, self.width, self.height)
-        pass
 
 
 def draw_snake_style_border(painter: QPainter, width: int, height: int):
@@ -302,7 +305,6 @@ def draw_snake_style_border(painter: QPainter, width: int, height: int):
         0,
         round(stage_5_head_y)
     )
-    pass
 
 
 def get_stroke_color() -> QColor:

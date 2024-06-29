@@ -34,14 +34,9 @@ class MainWindow(QWidget):
         # 将背景设置为透明
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(
-            # 无边框
-            Qt.FramelessWindowHint
-            |
-            # 始终置顶
-            Qt.WindowStaysOnTopHint
-            |
-            # 只显示在通知栏
-            Qt.SplashScreen
+            Qt.FramelessWindowHint  # 无边框
+            | Qt.WindowStaysOnTopHint  # 始终置顶
+            | Qt.SplashScreen  # 只显示在通知栏
         )
         # 设置icon
         self.setWindowIcon(QIcon(":/icon.ico"))
