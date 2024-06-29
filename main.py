@@ -57,12 +57,14 @@ class MainWindow(QWidget):
         self.menu = QMenu()
         self.show_action = self.menu.addAction("显示")
         self.hide_action = self.menu.addAction("隐藏")
+        self.settings_action = self.menu.addAction("设置")
         self.exit_action = self.menu.addAction("退出")
         self.tray_icon.setContextMenu(self.menu)
 
         # 连接托盘图标的信号
         self.show_action.triggered.connect(self.showNormal)
         self.hide_action.triggered.connect(self.hide)
+        self.settings_action.triggered.connect(self.showSettingsDialog)
         self.exit_action.triggered.connect(qApp.quit)
 
         # 设置窗口大小和位置
@@ -78,23 +80,7 @@ class MainWindow(QWidget):
         self.m_drag_position = None
         self.life_manager = LifeManager()
 
-        self.settings_button = QPushButton("settings", self)
-        self.settings_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #333333; /* 按钮的背景颜色 */
-                color: #FFFFFF;            /* 按钮的字体颜色 */
-                /*border-radius: 10px;*/       /* 按钮边角的圆滑度 */
-                border: 1px solid black;  /* 按钮边框 */
-            }
-            QPushButton:hover {
-                background-color: #555555; /* 鼠标悬浮时按钮的背景颜色 */
-            }
-        """
-        )
-        self.settings_button.setGeometry(self.width() - 100 - 10, 10, 100, 40)
-        self.settings_button.clicked.connect(self.showSettingsDialog)
-        self.settings_button.hide()  # 默认隐藏设置按钮
+        # 悬浮提示文字
         font = QFont()
         font.setPointSize(7)
         self.hover_text_label = QLabel("...", self)
@@ -111,12 +97,10 @@ class MainWindow(QWidget):
         # 绑定到 self 上另一个目的：防止引用计数减为 0 而触发 GC 回收
 
     def enterEvent(self, event):
-        self.settings_button.show()  # 鼠标进入窗口时显示设置按钮
         self.hover_text_label.show()
         super().enterEvent(event)
 
     def leaveEvent(self, event):
-        self.settings_button.hide()  # 鼠标离开窗口时隐藏设置按钮
         self.hover_text_label.hide()
         super().leaveEvent(event)
 
