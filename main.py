@@ -11,7 +11,7 @@ from assets import assets
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel,QSystemTrayIcon,qApp,QMenu
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QSystemTrayIcon, qApp, QMenu
 from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
 
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
@@ -52,7 +52,6 @@ class MainWindow(QWidget):
         self.tray_icon.setToolTip('赛博小鱼缸')
         self.tray_icon.show()
 
-
         # 创建托盘图标的上下文菜单
         self.menu = QMenu()
         self.show_action = self.menu.addAction("显示")
@@ -64,7 +63,7 @@ class MainWindow(QWidget):
         self.show_action.triggered.connect(self.showNormal)
         self.hide_action.triggered.connect(self.hide)
         self.exit_action.triggered.connect(qApp.quit)
-        
+
         # 设置窗口大小和位置
         self.setGeometry(10, 10, TANK_SCREEN_WIDTH, LIFE_TANK.height + 1)
         self.move(
@@ -117,7 +116,7 @@ class MainWindow(QWidget):
 
     def showSettingsDialog(self):
 
-        #加self好了，不加不好，太玄乎了
+        # 加self好了，不加不好，太玄乎了
         # 因为settings_dialog里用的是结束CLASS，所以用exec_会卡住，用show就不会
 
         self.dialog = SettingsDialog()
