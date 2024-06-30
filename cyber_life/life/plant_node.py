@@ -49,7 +49,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         @classmethod：类方法，不需要实例化对象即可调用
         @staticmethod：静态方法，同样不需要实例化即可调用，但不适合写与类成员变量或成员函数有关的功能
         """
-        return cls(random() * LIFE_TANK.width, LIFE_TANK.sand_surface_height, False)
+        return cls(random() * LIFE_TANK.width, LIFE_TANK.division[1], False)
 
     def add_child(self, child: 'LifePlantNode'):
         if not self.next_node and isinstance(child, LifePlantNode):
@@ -74,11 +74,11 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
                 self.velocity.x = -abs(self.velocity.x)
             # 上下边界检测
             # 高出水位线，必须让球掉入水中
-            if self.location.y < LIFE_TANK.water_level_height:
+            if self.location.y < LIFE_TANK.division[0]:
                 self.velocity.y = abs(self.velocity.y)
                 # return  # 不能return，否则不能更新下一个节点
             # 低于缸底，必须让球回到缸底
-            if self.location.y > LIFE_TANK.sand_surface_height:
+            if self.location.y > LIFE_TANK.division[1]:
                 self.velocity.y = -abs(self.velocity.y)
                 # return
             # 迭代位置，放在检测边界之后执行，否则检测边界后velocity值的更改会在下一轮引力、斥力生效时覆盖
@@ -88,7 +88,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
             self.velocity.limit(10)
         else:
             # 当前节点是根节点，可能要根据动态的surface_height来调整位置
-            self.location.y = LIFE_TANK.sand_surface_height
+            self.location.y = LIFE_TANK.division[1]
 
         # 将下一个节点拉向自己
         if not self.next_node:

@@ -4,9 +4,9 @@
 from datetime import datetime, timedelta
 from math import sin
 
+from PIL import ImageGrab
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor, QLinearGradient
-from PIL import ImageGrab
 
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 from cyber_life.life.sand_wave_flow import SandWaveFlow
@@ -24,6 +24,10 @@ class _LifeTank(metaclass=SingletonMeta):
     """
     _COLOR_DEBUG = False
 
+    # 水面和地面渐变的比例系数
+    # TODO: 调节这个系数，使得视觉效果更好
+    ALPHA = 0.02
+
     def __init__(self, width: int):
         """
         初始化小鱼缸数据
@@ -34,10 +38,16 @@ class _LifeTank(metaclass=SingletonMeta):
         w, h = ImageGrab.grab().size
         self.height = int(self.width * (h / w))
 
-        # 水位线高度线，y值
-        self.water_level_height = 0
-        # 底部沙子高度，y值，为固定值，不进行更新
-        self.sand_base_height = 0
+        # 分界线
+        # 三个数字分别是水面的、沙子表面层的、沙子底层的 y 值
+        # 这三个值都是渐变的，每帧的位移（也就是速率）与 abs(x - x_target) 成正比，比例系数设为 ALPHA
+        # 当某一个元素 x_target 突变后保持不变时，x 的变化类似指数衰减，收敛于 x_target
+        self.division: list[float] = [0., self.height, self.height]  # 水面的、沙子表面层的、沙子底层的 y 值
+        # 目标值，突变的
+        # 由内存占用率计算得到
+        self.division_target: list[float] = [0., 0., 0.]
+        # 很抱歉，用 0 1 2 当索引牺牲了可读性，但用起来方便，而且变量名相对统一
+        # 当然也可以写成字典
 
         # 小鱼缸颜色
         self.water_color_best = QColor(40, 100, 255, 40)
@@ -59,13 +69,18 @@ class _LifeTank(metaclass=SingletonMeta):
         self.time = 0
         self.tick()  # 初始化的时候就将高度信息更新好
 
-    @property
-    def sand_surface_height(self):
+    def get_sand_surface_height_target(self):
+        """
+        沙子表面层高度，y值
+        保证显示时，上层高度代表物理内存，下层高度代表交换内存
+        """
+        # 开了自定义交换内存高度，根据这个设定值返回
         if SETTINGS.is_swap_memory_fixed:
             return self.height * (1 - SETTINGS.swap_memory_height_rate)
+        # 否则根据系统内存占用率计算
         else:
             memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
-            return self.height * memory_info.physical_memory_total / (
+            return self.height * memory_info.physical_memory_total / (  # 这个算的是物理内存占总内存的比例
                     memory_info.physical_memory_total + memory_info.swap_memory_total
             )
 
@@ -76,17 +91,30 @@ class _LifeTank(metaclass=SingletonMeta):
         # 更新内存信息
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
 
-        # 水的深度表示物理内存剩余
-        self.water_level_height = self.sand_surface_height * memory_info.physical_memory_percent
+        # 更新分界线的目标值
+        # 1. 第二条分界线：物理内存和交换内存的分界线
+        self.division_target[1] = self.get_sand_surface_height_target()
+        # 2. 第一条分界线：物理内存占用率
+        self.division_target[0] = self.division_target[1] * memory_info.physical_memory_percent
+        # 3. 第三条分界线：交换内存占用率
+        self.division_target[2] = number_to_number(self.division_target[1],
+                                                   self.height,
+                                                   memory_info.swap_memory_percent)
 
-        # 沙子深层厚度表示交换内存剩余
-        self.sand_base_height = self.sand_surface_height + (
-                self.height - self.sand_surface_height
-        ) * memory_info.swap_memory_percent
+        # 更新分界线的当前值，渲染用，做成渐变的
+        self.division = [
+            number_to_number(
+                self.division[i],
+                self.division_target[i],
+                self.ALPHA
+            ) for i in range(3)
+        ]
+
         # 更新亮度
         self.light_brightness_target = SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result()
         self.light_brightness_current = self.light_brightness_target * 0.01 + self.light_brightness_current * 0.99
         self.time += 1
+
         # 更新震荡数据
         self.sand_wave_outer.set_frequency_by_disk_io(
             SYSTEM_INFO_MANAGER.INSPECTOR_DISK_IO.get_current_result().write_bytes
@@ -94,64 +122,74 @@ class _LifeTank(metaclass=SingletonMeta):
         self.sand_wave_inner.set_frequency_by_disk_io(
             SYSTEM_INFO_MANAGER.INSPECTOR_DISK_IO.get_current_result().read_bytes
         )
+
         # 更新震荡圆圈列表
         self.sand_wave_outer.tick()
         self.sand_wave_inner.tick()
 
-    def get_wave_height(self, x, recv_speed):
+    @staticmethod
+    def get_wave_info_by_recv_speed(recv_speed: float) -> dict:
         """
-        获取波浪线高度，用于绘制sin型波浪水面
-        :param x:
-        :param recv_speed:
-        :return:
+        根据接收速度获取波动信息
         """
         # 波速度10为最快速度，1为最慢速度
         # 频率0.01 最长，0.1 最短
         if recv_speed < 1:
-            wave_speed = 0
-            wave_amplitude = 0
-            wave_frequency = 0.01
+            amplitude = 0
+            frequency = 0.01
+            speed = 0
         elif recv_speed < 100:
-            wave_speed = 1
-            wave_amplitude = 2
-            wave_frequency = 0.01
+            amplitude = 2
+            frequency = 0.01
+            speed = 1
         elif recv_speed < 1000:
-            wave_speed = 1
-            wave_amplitude = 2
-            wave_frequency = 0.02
+            amplitude = 2
+            frequency = 0.02
+            speed = 1
         elif recv_speed < 5000:
-            wave_speed = 2
-            wave_amplitude = 2
-            wave_frequency = 0.04
+            amplitude = 2
+            frequency = 0.04
+            speed = 2
         elif recv_speed < 1_0000:
-            wave_speed = 6
-            wave_amplitude = 4
-            wave_frequency = 0.05
+            amplitude = 4
+            frequency = 0.05
+            speed = 6
         elif recv_speed < 10_0000:
-            wave_speed = 7
-            wave_amplitude = 6
-            wave_frequency = 0.05
+            amplitude = 6
+            frequency = 0.05
+            speed = 7
         elif recv_speed < 50_0000:
-            wave_speed = 8
-            wave_amplitude = 8
-            wave_frequency = 0.05
+            amplitude = 8
+            frequency = 0.05
+            speed = 8
         elif recv_speed < 150_0000:
-            wave_speed = 9
-            wave_amplitude = 10
-            wave_frequency = 0.06
+            amplitude = 10
+            frequency = 0.06
+            speed = 9
         else:
-            wave_speed = 10
-            wave_amplitude = 10
-            wave_frequency = 0.1
+            amplitude = 10
+            frequency = 0.1
+            speed = 10
+        return {
+            'amplitude': amplitude,
+            'frequency': frequency,
+            'speed': speed
+        }
+
+    def get_wave_height(self, x, wave_info: dict):
+        """
+        获取波浪线高度，用于绘制sin型波浪水面
+        """
         # x 前面的参数才能改变频率
         # 机械波波函数：y(x, t) = Asin(ω(t+x/v)) = Asin((t/2π + 2πx/v) × f)
         # 系数全重置了
-        return wave_amplitude * sin((x + self.time * wave_speed) * wave_frequency * 0.2)
+
+        return wave_info['amplitude'] * sin((x + self.time * wave_info['speed']) * wave_info['frequency'] * 0.2)
 
     def paint(self, painter: QPainter):
         # 绘制顶部灯光
         painter.setPen(Qt.NoPen)
-        gradient = QLinearGradient(0, 0, 0, self.water_level_height)
+        gradient = QLinearGradient(0, 0, 0, self.division[0])
         gradient.setColorAt(
             0.0,
             QColor(
@@ -181,11 +219,13 @@ class _LifeTank(metaclass=SingletonMeta):
         ))
 
         # 绘制水面
-        recv_speed = SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
+        wave_info = self.get_wave_info_by_recv_speed(
+            SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
+        )
         dx = 10  # 一个小微元，即每次绘制细矩形的宽度
         x = 0  # 没搞懂为啥要用 x_next 和 y_next 那一套，这里优化直接用 x 就行了
-        while x < self.width:
-            y = round(self.water_level_height + self.get_wave_height(x, recv_speed))
+        for _ in range(0, self.width, dx):
+            y = round(self.division[0] + self.get_wave_height(x, wave_info))
             painter.drawRect(
                 x, y,
                 dx, self.height - y
@@ -207,22 +247,24 @@ class _LifeTank(metaclass=SingletonMeta):
         painter.setBrush(QColor(62, 53, 28))
         painter.drawRect(
             0,
-            round(self.sand_surface_height),
+            round(self.division[1]),
             round(self.width),
-            round(self.height - self.sand_surface_height),
+            round(self.height - self.division[1]),
         )
         # 绘制深层
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(92, 73, 36))
         painter.drawRect(
             0,
-            round(self.sand_base_height) + 1,  # 加1是为了防止两层完全重合，表层看不到
+            round(self.division[2]) + 1,  # 加1是为了防止两层完全重合，表层看不到
             round(self.width),
-            round(self.height - self.sand_base_height),
+            round(self.height - self.division[2]),
         )
+
         # 绘制波浪圆圈
         self.sand_wave_outer.paint(painter)
         self.sand_wave_inner.paint(painter)
+
         # 绘制小鱼缸边框
         painter.setPen(Qt.black)
         painter.setBrush(Qt.NoBrush)

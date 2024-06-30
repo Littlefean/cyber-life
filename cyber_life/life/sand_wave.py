@@ -32,7 +32,7 @@ class SandWave:
 
         painter.drawArc(
             round(self.x - self.radius),
-            round(LIFE_TANK.sand_surface_height - self.radius + 4),  # 下移动4像素，防止弧线边角看起来突出地面
+            round(LIFE_TANK.division[1] - self.radius + 4),  # 下移动4像素，防止弧线边角看起来突出地面
             round(2 * self.radius),
             round(2 * self.radius),
             180 * 16,
