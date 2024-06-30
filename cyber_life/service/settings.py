@@ -11,10 +11,13 @@ class SettingsObject(metaclass=SingletonMeta):
     def __init__(self):
         # 以下都是最初的默认值，后续用户可能会自定义修改
         self.is_fish_visible = True
-        self.is_swap_memory_fixed = False
-        self.swap_memory_height_rate = 0.125  # 1 / 8
-        self.put_food_rate = 0.5  # 鼠标点击放置食物概率
         self.is_fish_info_visible = False
+
+        self.is_swap_memory_fixed = False
+
+        self.swap_memory_height_rate = 0.125  # 1 / 8
+
+        self.put_food_rate = 0.5  # 鼠标点击放置食物概率
 
     def save_to_json(self):
         with open(self.settings_file, 'w') as f:

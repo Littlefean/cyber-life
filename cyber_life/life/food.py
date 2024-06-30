@@ -46,10 +46,10 @@ class Food:
 
         if self.float_remaining > 0:
             # 目前是浮在水面上
-            if self.location.y > LIFE_TANK.water_level_height:
+            if self.location.y > LIFE_TANK.division[0]:
                 # 浮上来
                 self.location.y -= 0.1
-            elif self.location.y < LIFE_TANK.sand_surface_height:
+            elif self.location.y < LIFE_TANK.division[1]:
                 # 在空中，落到水面上
                 self.location.y += 2
             # 目前随机漂移效果还不太好做，先不动了
@@ -63,7 +63,7 @@ class Food:
             #         self.location.x = LIFE_TANK.width
         else:
             # 目前是下沉状态
-            if self.location.y > LIFE_TANK.sand_surface_height:
+            if self.location.y > LIFE_TANK.division[1]:
                 # 被淹了，挤上来
                 self.location.y -= 0.5
             else:

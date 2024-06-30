@@ -21,8 +21,8 @@ class LifeBall(BreathableMixin, OrganismMixin):
         super().__init__()
         x = randint(0, LIFE_TANK.width)
         y = randint(
-            round(LIFE_TANK.water_level_height),
-            round(LIFE_TANK.sand_surface_height)
+            round(LIFE_TANK.division[0]),
+            round(LIFE_TANK.division[1])
         )
         # 球心坐标
         self.location = Vector(x, y)
@@ -63,13 +63,13 @@ class LifeBall(BreathableMixin, OrganismMixin):
             self.velocity.x = -abs(self.velocity.x)
         # 上下边界检测
         # 高出水位线，必须让球掉入水中
-        if self.location.y < LIFE_TANK.water_level_height:
+        if self.location.y < LIFE_TANK.division[0]:
             self.velocity.y = abs(self.velocity.y)
-            self.location.y = LIFE_TANK.water_level_height
+            self.location.y = LIFE_TANK.division[0]
         # 低于缸底，必须让球回到缸底
-        if self.location.y > LIFE_TANK.sand_surface_height - self.radius:
+        if self.location.y > LIFE_TANK.division[1] - self.radius:
             self.velocity.y = -abs(self.velocity.y)
-            self.location.y = LIFE_TANK.sand_surface_height - self.radius
+            self.location.y = LIFE_TANK.division[1] - self.radius
 
         # 光合优先于呼吸
         self.photosynthesis()
