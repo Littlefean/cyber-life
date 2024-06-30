@@ -25,8 +25,8 @@ class GuppyFish(BreathableMixin):
         self.location = Vector(
             randint(30, LIFE_TANK.width - 30),
             randint(
-                round(LIFE_TANK.water_level_height),
-                round(LIFE_TANK.sand_surface_height),
+                round(LIFE_TANK.division[0]),
+                round(LIFE_TANK.division[1]),
             ),
         )
         self.velocity = Vector(0, 0)
@@ -188,7 +188,7 @@ class GuppyFish(BreathableMixin):
         try:
             x = uniform(30, LIFE_TANK.width - 30)
             y = uniform(
-                LIFE_TANK.water_level_height + 30, LIFE_TANK.sand_surface_height - 30
+                LIFE_TANK.division[0] + 30, LIFE_TANK.division[1] - 30
             )
         except Exception as e:
             print(f"鱼无法找到合适的位置 {e}")

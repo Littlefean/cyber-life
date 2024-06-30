@@ -4,6 +4,7 @@
 
 import sys
 
+# noinspection PyUnresolvedReferences
 from assets import assets
 # 是为了引入assets文件夹中的资源文件，看似是灰色的没有用，但实际不能删掉
 # 只是为了让pyinstaller打包时能打包到exe文件中。
@@ -33,14 +34,9 @@ class MainWindow(QWidget):
         # 将背景设置为透明
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(
-            # 无边框
-            Qt.FramelessWindowHint
-            |
-            # 始终置顶
-            Qt.WindowStaysOnTopHint
-            |
-            # 只显示在通知栏
-            Qt.SplashScreen
+            Qt.FramelessWindowHint  # 无边框
+            | Qt.WindowStaysOnTopHint  # 始终置顶
+            | Qt.SplashScreen  # 只显示在通知栏
         )
         # 设置icon
         self.setWindowIcon(QIcon(":/icon.ico"))
@@ -56,12 +52,14 @@ class MainWindow(QWidget):
         self.menu = QMenu()
         self.show_action = self.menu.addAction("显示")
         self.hide_action = self.menu.addAction("隐藏")
+        self.settings_action = self.menu.addAction("设置")
         self.exit_action = self.menu.addAction("退出")
         self.tray_icon.setContextMenu(self.menu)
 
         # 连接托盘图标的信号
         self.show_action.triggered.connect(self.showNormal)
         self.hide_action.triggered.connect(self.hide)
+        self.settings_action.triggered.connect(self.showSettingsDialog)
         self.exit_action.triggered.connect(qApp.quit)
 
         # 设置窗口大小和位置
@@ -77,23 +75,7 @@ class MainWindow(QWidget):
         self.m_drag_position = None
         self.life_manager = LifeManager()
 
-        self.settings_button = QPushButton("settings", self)
-        self.settings_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #333333; /* 按钮的背景颜色 */
-                color: #FFFFFF;            /* 按钮的字体颜色 */
-                /*border-radius: 10px;*/       /* 按钮边角的圆滑度 */
-                border: 1px solid black;  /* 按钮边框 */
-            }
-            QPushButton:hover {
-                background-color: #555555; /* 鼠标悬浮时按钮的背景颜色 */
-            }
-        """
-        )
-        self.settings_button.setGeometry(self.width() - 100 - 10, 10, 100, 40)
-        self.settings_button.clicked.connect(self.showSettingsDialog)
-        self.settings_button.hide()  # 默认隐藏设置按钮
+        # 悬浮提示文字
         font = QFont()
         font.setPointSize(7)
         self.hover_text_label = QLabel("...", self)
@@ -102,26 +84,25 @@ class MainWindow(QWidget):
         self.hover_text_label.setGeometry(10, 10, 150, self.height() - 20)
         self.hover_text_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.hover_text_label.hide()
-        pass
+
+        # 创建设置对话框
+        # 只创建一个实例，用的时候 exec_()，用完就 hide()
+        # 而不是 destroy() 销毁，每次都创建新的实例并不好
+        self.dialog = SettingsDialog()
+        # 绑定到 self 上另一个目的：防止引用计数减为 0 而触发 GC 回收
 
     def enterEvent(self, event):
-        self.settings_button.show()  # 鼠标进入窗口时显示设置按钮
         self.hover_text_label.show()
         super().enterEvent(event)
 
     def leaveEvent(self, event):
-        self.settings_button.hide()  # 鼠标离开窗口时隐藏设置按钮
         self.hover_text_label.hide()
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
-
-        # 加self好了，不加不好，太玄乎了
-        # 因为settings_dialog里用的是结束CLASS，所以用exec_会卡住，用show就不会
-
-        self.dialog = SettingsDialog()
-
-        self.dialog.show()
+        # 已经做了相关处理，调用 exec_() 方法即可，不会卡住
+        # 同时，exec_() 方法防止在设置界面中用户与 MainWindow 交互，更符合正常软件操作逻辑
+        self.dialog.exec_()
 
     def mousePressEvent(self, event):
         """重写mousePressEvent方法，用于拖动窗口"""

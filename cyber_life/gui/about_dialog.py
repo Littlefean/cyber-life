@@ -1,19 +1,22 @@
 """
 关于界面
 """
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QApplication, QTableWidget, QTableWidgetItem, \
-    QHBoxLayout
-from PyQt5.QtGui import QIcon, QFont, QDesktopServices
 from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QIcon, QFont, QDesktopServices, QCloseEvent, QKeyEvent
+from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHBoxLayout, QHeaderView
 
 
 class AboutDialog(QDialog):
+    WINDOW_SIZE = (420, 640)
 
     def __init__(self, parent=None):
+        # print('>>> \033[1;32m创建\033[0m AboutDialog')
+
         super(AboutDialog, self).__init__(parent)
         try:
             self.setWindowTitle("关于")
-            self.resize(500, 900)
+            self.resize(*self.WINDOW_SIZE)
+            self.setFixedSize(*self.WINDOW_SIZE)
             self.setWindowIcon(QIcon(":/icon.ico"))
 
             # 布局管理器
@@ -73,13 +76,13 @@ class AboutDialog(QDialog):
 
     @staticmethod
     def get_table():
-        # 创建一个4行3列的表格
+        # 创建一个14行3列的表格
         element_dict = {
             "CPU物理核心数量": "绿色生物球数量",
-            "CPU每核活跃程度": "绿色生物球的大小于颜色移动速度",
-            "剩余内存": "鱼缸中的水",
-            "交换内存": "鱼缸中的土层高度",
-            "使用的交换内存": "土层的表面污染层的高度",
+            "CPU每核活跃程度": "绿色生物球的大小、颜色和移动速度",
+            "剩余内存": "鱼缸中的水量",
+            "交换内存": "土层高度",
+            "使用的交换内存": "土层表面污染层的高度",
             "磁盘读频率": "土层向内收缩的震荡波频率",
             "磁盘写频率": "土层向外扩张的震荡波频率",
             "网络上传带宽": "鱼缸中心气泡的冒泡频率",
@@ -90,7 +93,7 @@ class AboutDialog(QDialog):
             "主屏幕大小": "鱼缸大小比例",
             "屏幕画面亮度": "鱼缸顶部灯光的亮度",
         }
-        table = QTableWidget(element_dict.__len__(), 2)
+        table = QTableWidget(len(element_dict), 2)
         table.setHorizontalHeaderLabels(['检测内容', '展示元素'])
 
         # 填充数据
@@ -100,6 +103,16 @@ class AboutDialog(QDialog):
         # 自适应列宽
         table.resizeColumnsToContents()
 
+        # 设置表格为只读模式
+        table.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        # 禁止调整列宽和行高
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+
+        # 禁止选择单元格
+        table.setSelectionMode(QTableWidget.NoSelection)
+
         # 添加到窗口布局
         main_layout = QVBoxLayout()
         main_layout.addWidget(table)
@@ -107,18 +120,34 @@ class AboutDialog(QDialog):
 
     @staticmethod
     def open_github():
-        QDesktopServices.openUrl(QUrl("https://github.com/Littlefean/cyber-life"))
+        QDesktopServices.openUrl(QUrl("https://github.com/Littlefean/cyber-life/"))
 
     @staticmethod
     def open_bilibili():
-        QDesktopServices.openUrl(QUrl("https://space.bilibili.com/480804525"))
+        QDesktopServices.openUrl(QUrl("https://space.bilibili.com/480804525/"))
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """
         重写closeEvent方法
         """
 
-        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，所以重新写一个关闭事件，直接注销class
+        # 在不知明原因下，通知栏在关闭 settings 窗口时会连带着所有一起关闭，
+        # 所以重新写一个关闭事件，隐藏窗口，并忽略关闭事件
+
         # 这里其实挺玄乎的，明明无论用sys.exit()/sys.exit(self)/sys.exit(QDialog)/super().closeEvent(event)都直接关闭所有窗口,有待深入研究。
-        
-        self.destroy()
+
+        self.hide()
+        event.ignore()
+
+    def keyPressEvent(self, event: QKeyEvent):
+        """
+        重写keyPressEvent方法
+        """
+
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        else:
+            super().keyPressEvent(event)
+
+    # def __del__(self):
+    #     print('>>> \033[1;31m销毁\033[0m AboutDialog')

@@ -60,12 +60,12 @@ def tick_surface(fish: GuppyFish):
     head_y = fish.location.y - margin
     fish.breath()
 
-    if head_y > LIFE_TANK.water_level_height:
+    if head_y > LIFE_TANK.division[0]:
         # 鱼还没到水面，往水面走
         fish.location.y -= 0.5
-    elif head_y < LIFE_TANK.water_level_height:
+    elif head_y < LIFE_TANK.division[0]:
         # 可能是因为水面突然下降，导致鱼悬在空中，所以鱼会回到水面
-        fish.location.y = LIFE_TANK.water_level_height + margin
+        fish.location.y = LIFE_TANK.division[0] + margin
     else:
         # 鱼已经在水面上了，在水面上随机一个目标移动过去
         if fish.location.distance(fish.location_goal) < 50:
@@ -88,12 +88,12 @@ def tick_sleep(fish: GuppyFish):
     fish.energy_pre_cost = 0.0001
 
     # 判断当前是否沉底
-    if fish.location.y + drag_down_distance < LIFE_TANK.sand_surface_height:
+    if fish.location.y + drag_down_distance < LIFE_TANK.division[1]:
         # 还在水中，向下走
         fish.location.y += 0.5
-    elif fish.location.y + drag_down_distance > LIFE_TANK.sand_surface_height:
+    elif fish.location.y + drag_down_distance > LIFE_TANK.division[1]:
         # 被埋了，回到陆地上
-        fish.location.y = LIFE_TANK.sand_surface_height - drag_down_distance
+        fish.location.y = LIFE_TANK.division[1] - drag_down_distance
     else:
         # 已经沉底，开始睡觉
         # 额外开始补充精力
@@ -162,16 +162,16 @@ def tick_death(fish: GuppyFish):
     fish.energy_pre_cost = 0
 
     # 尸体开始漂浮
-    if fish.location.y > LIFE_TANK.water_level_height:
+    if fish.location.y > LIFE_TANK.division[0]:
 
         # 在水里
-        if fish.location.y + fish.height / 2 > LIFE_TANK.sand_surface_height:
+        if fish.location.y + fish.height / 2 > LIFE_TANK.division[1]:
             fish.velocity.y = -abs(fish.velocity.y / 2)  # 碰了一下地面，速度大小减半
 
         fish.velocity += Vector(0, -0.001)  # 浮力的体现
         fish.velocity.limit(2)  # 阻力的体现
 
-    elif fish.location.y < LIFE_TANK.water_level_height:
+    elif fish.location.y < LIFE_TANK.division[0]:
         # 在水面以上
         fish.velocity += Vector(0, 0.01)
     else:
