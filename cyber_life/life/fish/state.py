@@ -33,6 +33,11 @@ def tick_idle(fish: GuppyFish):
     fish.animation_interval = 10
     fish.energy_pre_cost = 0.01
 
+    if fish.location.y < LIFE_TANK.division[0]:
+        # 可能是因为水面突然下降，导致鱼悬在空中，所以鱼会回到水面
+        fish.location.y = LIFE_TANK.division[0]
+    elif fish.location.y > LIFE_TANK.division[1]:
+        fish.location.y = LIFE_TANK.division[1]
     # 鱼游泳
     if fish.location_goal is None:
         fish.location_goal = fish.get_random_location()
