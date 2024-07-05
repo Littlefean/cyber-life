@@ -39,10 +39,10 @@ class _LifeTank(metaclass=SingletonMeta):
         self.height = int(self.width * (h / w))
 
         # 分界线
-        # 三个数字分别是水面的、沙子表面层的、沙子底层的 y 值
+        # 三个数字分别是水面的、表层沙顶部、深层沙顶部的 y 值
         # 这三个值都是渐变的，每帧的位移（也就是速率）与 abs(x - x_target) 成正比，比例系数设为 ALPHA
         # 当某一个元素 x_target 突变后保持不变时，x 的变化类似指数衰减，收敛于 x_target
-        self.division: list[float] = [0., self.height, self.height]  # 水面的、沙子表面层的、沙子底层的 y 值
+        self.division: list[float] = [0., self.height, self.height]  # 水面的、表层沙顶部、深层沙顶部的 y 值
         # 目标值，突变的
         # 由内存占用率计算得到
         self.division_target: list[float] = [0., 0., 0.]
@@ -71,8 +71,8 @@ class _LifeTank(metaclass=SingletonMeta):
 
     def get_sand_surface_height_target(self):
         """
-        沙子表面层高度，y值
-        保证显示时，上层高度代表物理内存，下层高度代表交换内存
+        沙子表面层高度，y值，坐标原点为左上角
+        保证显示时，空气和水代表总物理内存，表层沙和深层沙代表总交换内存
         """
         # 开了自定义交换内存高度，根据这个设定值返回
         if SETTINGS.is_swap_memory_fixed:
@@ -94,9 +94,9 @@ class _LifeTank(metaclass=SingletonMeta):
         # 更新分界线的目标值
         # 1. 第二条分界线：物理内存和交换内存的分界线
         self.division_target[1] = self.get_sand_surface_height_target()
-        # 2. 第一条分界线：物理内存占用率
+        # 2. 第一条分界线：物理内存占用率，空气为已使用内存，水为未使用内存
         self.division_target[0] = self.division_target[1] * memory_info.physical_memory_percent
-        # 3. 第三条分界线：交换内存占用率
+        # 3. 第三条分界线：交换内存占用率，表层沙为已使用内存，深层沙为未使用内存
         self.division_target[2] = number_to_number(self.division_target[1],
                                                    self.height,
                                                    memory_info.swap_memory_percent)
@@ -223,7 +223,7 @@ class _LifeTank(metaclass=SingletonMeta):
             SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
         )
         dx = 10  # 一个小微元，即每次绘制细矩形的宽度
-        x = 0  # 没搞懂为啥要用 x_next 和 y_next 那一套，这里优化直接用 x 就行了
+        x = 0
         for _ in range(0, self.width, dx):
             y = round(self.division[0] + self.get_wave_height(x, wave_info))
             painter.drawRect(
@@ -231,11 +231,6 @@ class _LifeTank(metaclass=SingletonMeta):
                 dx, self.height - y
             )
             x += dx
-        # 对之前问题的说明：
-        #     除了第一个矩形被绘制了 1 次外，后续的矩形都被绘制了 2 次
-        #     所以第一个看起来比其他的*更透明*
-        #     优化后每个矩形只绘制一次，颜色与之前的成品相去甚远
-        # 所以...
         # TODO: 更改水体颜色
 
         # 绘制矩形，使用渐变填充
