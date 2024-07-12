@@ -1,10 +1,11 @@
 from random import random
-from PyQt5.QtGui import QPainter, QPen, QColor
+
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QPen, QColor
+
 from cyber_life.tools.vector import Vector
 from .life_mixin.breathable_mixin import BreathableMixin
 from .life_mixin.organism_mixin import OrganismMixin
-
 from .tank import LIFE_TANK
 
 
@@ -194,5 +195,3 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
                     round(self.location.x + line_vector.x),
                     round(self.location.y + line_vector.y)
                 )
-
-    pass

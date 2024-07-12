@@ -17,7 +17,6 @@
 from random import randint
 
 from cyber_life.life.fish.guppy_fish import GuppyFish
-
 from cyber_life.life.tank import LIFE_TANK
 from cyber_life.tools.vector import Vector
 
@@ -103,7 +102,6 @@ def tick_sleep(fish: GuppyFish):
         # 已经沉底，开始睡觉
         # 额外开始补充精力
         fish.energy += 1
-        pass
     fish.breath()
 
 
@@ -152,7 +150,6 @@ def tick_find_food(fish: GuppyFish):
                     fish.location += (fish.location_goal - fish.location).normalize() * fish.speed
                 else:
                     fish.location_goal = fish.get_random_location()
-    pass
 
 
 def tick_death(fish: GuppyFish):

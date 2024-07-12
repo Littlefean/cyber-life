@@ -25,4 +25,3 @@ class OrganismMixin(Life):
         GAS_MANAGER.add_oxygen(co2_cost)  # 一份CO2产生一份氧气
 
         self.fixed_carbon += co2_cost  # 生物体内固定的碳增加
-        pass

@@ -11,6 +11,7 @@ class SandWaveFlow:
     可以实例化为两种震荡波，分别向内和向外
     向外扩散的是写入磁盘的速度，向内扩散的是读取磁盘的速度
     """
+
     def __init__(self, x, wave_radius_speed):
         self.x = x
         self.sand_waves: List[SandWave] = []

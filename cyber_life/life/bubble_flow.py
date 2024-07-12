@@ -1,8 +1,9 @@
 from typing import List
 
-from .bubble import LifeBubble
 from PyQt5.QtGui import QPainter
+
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
+from .bubble import LifeBubble
 
 
 class LifeBubbleFlow:

@@ -5,8 +5,8 @@
 """
 from threading import Thread
 
-from .hook_mouse import MouseHook
 from cyber_life.tools.singleton import SingletonMeta
+from .hook_mouse import MouseHook
 
 
 class _SystemHookManager(metaclass=SingletonMeta):
@@ -14,13 +14,11 @@ class _SystemHookManager(metaclass=SingletonMeta):
         self.mouse_hook = MouseHook()
 
         self.thread_list = [Thread(target=self.mouse_hook.start, daemon=True)]
-        pass
 
     def start(self):
         # 开启所有钩子的监听
         for thread in self.thread_list:
             thread.start()
-        pass
 
     def stop(self):
         # 暂不需要，因为 daemon=True 的线程会自动结束

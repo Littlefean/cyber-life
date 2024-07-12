@@ -1,15 +1,15 @@
-from threading import Thread, Event
-
 import time
+from threading import Thread, Event
 from typing import List, Callable
+
 from cyber_life.tools.singleton import SingletonMeta
 from .inspector_abc import Inspector
 from .inspector_cpu import InspectorCpu
-from .inspector_memory import InspectorMemory
-from .inspector_disk_usage import InspectorDiskUsage
-from .inspector_screen import InspectorScreen
-from .inspector_network import InspectorNetwork
 from .inspector_disk_io import InspectorDiskIO
+from .inspector_disk_usage import InspectorDiskUsage
+from .inspector_memory import InspectorMemory
+from .inspector_network import InspectorNetwork
+from .inspector_screen import InspectorScreen
 
 
 class _SystemInfoManager(metaclass=SingletonMeta):
@@ -31,19 +31,17 @@ class _SystemInfoManager(metaclass=SingletonMeta):
 
         # 先初始化所有监测者的线程调用函数
         for attr in dir(self):  # 获取实例的属性、方法列表（字符串形式）
-            if attr.startswith('INSPECTOR_'):  # 找到'INSPECTOR_'开头的属性和方法
-                instance = getattr(self, attr)  # 得到实例'INSPECTOR_'开头的属性和方法（对象形式）
-                if isinstance(instance, Inspector):  # 进一步确认是所需对象，即各个监控类的实例
-                    self._interval_functions.append(
-                        self._get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
-                            instance.inspect,
-                            instance.INSPECTION_INTERVAL,
-                        )
+            # 找到'INSPECTOR_'开头的属性和方法，并判断是否是Inspector类的实例
+            if attr.startswith('INSPECTOR_') and isinstance(instance := getattr(self, attr), Inspector):
+                self._interval_functions.append(
+                    self._get_interval_function(  # 创建定时器，周期执行监控类实例的inspect方法
+                        instance.inspect,
+                        instance.INSPECTION_INTERVAL,
                     )
+                )
         # 初始化线程列表
         for function in self._interval_functions:
             self._threads.append(Thread(target=function, daemon=True))
-        pass
 
     def start(self):
         """
@@ -73,7 +71,6 @@ class _SystemInfoManager(metaclass=SingletonMeta):
         if not self._is_running:
             return
         # 暂不需要，因为 daemon=True 的线程会自动结束
-        pass
 
 
 SYSTEM_INFO_MANAGER = _SystemInfoManager()

@@ -1,12 +1,12 @@
 from functools import lru_cache
+from random import random
 
-from pynput.mouse import Listener
 from PIL import ImageGrab
+from pynput.mouse import Listener
 
 from cyber_life.service.settings import SETTINGS
 from cyber_life.static import TANK_SCREEN_WIDTH
 from cyber_life.tools.singleton import SingletonMeta
-from random import random
 
 
 class MouseHook(metaclass=SingletonMeta):
@@ -14,11 +14,10 @@ class MouseHook(metaclass=SingletonMeta):
     监听鼠标行为
     鼠标点击可能会投喂食物
     """
+
     def __init__(self):
         self.is_hooked = False
         self._life_manager = None
-
-        pass
 
     @property  # 变为只读属性，调用时不加 ()
     @lru_cache(1)  # 缓存装饰器，1表示只缓存最近1次的结果，如果与已缓存参数相同，直接返回缓存结果

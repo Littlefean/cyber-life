@@ -1,5 +1,7 @@
-import psutil
 import time
+
+import psutil
+
 from .inspector_abc import Inspector
 
 

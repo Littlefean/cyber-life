@@ -3,7 +3,8 @@
 """
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon, QFont, QDesktopServices, QCloseEvent, QKeyEvent
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHBoxLayout, QHeaderView
+from PyQt5.QtWidgets import (QDialog, QLabel, QVBoxLayout, QPushButton, QTableWidget,
+                             QTableWidgetItem, QHBoxLayout, QHeaderView)
 
 
 class AboutDialog(QDialog):

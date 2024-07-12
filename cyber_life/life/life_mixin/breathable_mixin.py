@@ -27,4 +27,3 @@ class BreathableMixin(Life):
         self.energy += self.o2_pre_request * 100
         GAS_MANAGER.reduce_oxygen(self.o2_pre_request)
         GAS_MANAGER.add_carbon_dioxide(self.o2_pre_request)
-        pass

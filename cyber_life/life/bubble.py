@@ -1,9 +1,11 @@
-from cyber_life.tools.vector import Vector
 from random import random
-from .tank import LIFE_TANK
-from PyQt5.QtGui import QPainter
+
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter
+
+from cyber_life.tools.vector import Vector
 from .gas_manager import GAS_MANAGER
+from .tank import LIFE_TANK
 
 
 class LifeBubble:
@@ -55,4 +57,3 @@ class LifeBubble:
             round(2 * self.radius),
             round(2 * self.radius)
         )
-        pass

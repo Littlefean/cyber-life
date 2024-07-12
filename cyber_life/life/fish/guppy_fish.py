@@ -1,16 +1,16 @@
+from random import randint, uniform
+
 from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtGui import QPainter, QPixmap, QTransform, QColor, QFont
 
 from cyber_life.life.fish.state_enum import State
 from cyber_life.life.food import Food
 from cyber_life.life.gas_manager import GAS_MANAGER
-from cyber_life.tools.progress_bar import ProgressFloat
-from cyber_life.tools.vector import Vector
-from PyQt5.QtGui import QPainter, QPixmap, QTransform, QColor, QFont
-
 from cyber_life.life.life_mixin.breathable_mixin import BreathableMixin
 from cyber_life.life.tank import LIFE_TANK
-from random import randint, uniform
 from cyber_life.service.settings import SETTINGS
+from cyber_life.tools.progress_bar import ProgressFloat
+from cyber_life.tools.vector import Vector
 
 
 class GuppyFish(BreathableMixin):
@@ -83,7 +83,6 @@ class GuppyFish(BreathableMixin):
         # 能够时不时的切换成水面呼吸模式，呼吸一次，充满内部氧气，然后再进行进食和其他动作
         self.have_food_goal = False
         self.target_food: Food | None = None
-        pass
 
     @staticmethod
     def _get_assert_path(file_name):
@@ -122,7 +121,6 @@ class GuppyFish(BreathableMixin):
             self.oxygen_inner += self.o2_pre_request
 
         GAS_MANAGER.add_carbon_dioxide(self.o2_pre_request)
-        pass
 
     def cost_energy(self):
         """

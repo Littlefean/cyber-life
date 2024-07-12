@@ -4,24 +4,21 @@
 
 import sys
 
-# noinspection PyUnresolvedReferences
-from assets import assets
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QSystemTrayIcon, qApp, QMenu
+
 # 是为了引入assets文件夹中的资源文件，看似是灰色的没有用，但实际不能删掉
 # 只是为了让pyinstaller打包时能打包到exe文件中。
 # 需要进入assets文件夹后在命令行输入指令 `pyrcc5 image.rcc -o assets.py` 来更新assets.py文件
-
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QSystemTrayIcon, qApp, QMenu
+# noinspection PyUnresolvedReferences
+from assets import assets
 from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
-
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
-
-from cyber_life.life.life_manager import LifeManager
-from cyber_life.life.gas_manager import GAS_MANAGER
-from cyber_life.life.tank import LIFE_TANK
-
 from cyber_life.gui.settings_dialog import SettingsDialog
+from cyber_life.life.gas_manager import GAS_MANAGER
+from cyber_life.life.life_manager import LifeManager
+from cyber_life.life.tank import LIFE_TANK
 from cyber_life.static import TANK_SCREEN_WIDTH
 
 

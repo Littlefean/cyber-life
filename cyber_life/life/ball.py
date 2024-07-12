@@ -1,9 +1,9 @@
-from PyQt5.QtGui import QPainter, QColor, QPen
-
-from cyber_life.tools.vector import Vector
-from cyber_life.tools.color import get_color_by_linear_ratio
 from random import random, randint
 
+from PyQt5.QtGui import QPainter, QColor, QPen
+
+from cyber_life.tools.color import get_color_by_linear_ratio
+from cyber_life.tools.vector import Vector
 from .life_mixin.breathable_mixin import BreathableMixin
 from .life_mixin.organism_mixin import OrganismMixin
 from .tank import LIFE_TANK
@@ -74,7 +74,6 @@ class LifeBall(BreathableMixin, OrganismMixin):
         # 光合优先于呼吸
         self.photosynthesis()
         self.breath()
-        pass
 
     def paint(self, painter: QPainter):
         # 设置画笔颜色和线条宽度
@@ -96,4 +95,3 @@ class LifeBall(BreathableMixin, OrganismMixin):
             round(self.radius * 2 + (self.activity * 20)),
             round(self.radius * 2 + (self.activity * 20))
         )
-        pass

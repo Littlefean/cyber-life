@@ -1,5 +1,6 @@
-from PyQt5.QtGui import QColor
 from colorsys import hsv_to_rgb, rgb_to_hsv
+
+from PyQt5.QtGui import QColor
 
 from cyber_life.tools.compute import number_to_number
 

@@ -1,14 +1,16 @@
-import sys
-# 不建议用 * 导入。因为会导入一些不需要的模块，比如 QtCore里面的各种类 等，让IDE可能出现错误类型提示。
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QIcon, QTransform, QPainter, QPixmap
-from PyQt5.QtCore import Qt
-from math import sin, cos, pi
-
-from assets import assets
 """
 pyQt5 的 QTransform 变化不太了解，实操一下
 """
+import sys
+from math import sin, cos, pi
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QTransform, QPainter, QPixmap
+# 不建议用 * 导入。因为会导入一些不需要的模块，比如 QtCore里面的各种类 等，让IDE可能出现错误类型提示。
+from PyQt5.QtWidgets import QApplication, QWidget
+
+# noinspection PyUnresolvedReferences
+from assets import assets
 
 
 class MainWindow(QWidget):

@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QColor, QPen
 
 from cyber_life.static import TANK_SCREEN_WIDTH
 
@@ -38,4 +38,3 @@ class SandWave:
             180 * 16,
             180 * 16,
         )
-        pass
