@@ -8,10 +8,8 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QSystemTrayIcon, qApp, QMenu
 
-# 是为了引入assets文件夹中的资源文件，看似是灰色的没有用，但实际不能删掉
-# 只是为了让pyinstaller打包时能打包到exe文件中。
+# 引入assets文件夹中的资源文件
 # 需要进入assets文件夹后在命令行输入指令 `pyrcc5 image.rcc -o assets.py` 来更新assets.py文件
-# noinspection PyUnresolvedReferences
 from assets import assets
 from cyber_life.computer_hook.manager import SYSTEM_HOOK_MANAGER
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
@@ -131,6 +129,7 @@ class MainWindow(QWidget):
         """重写closeEvent方法，用于关闭窗口时释放资源"""
         SYSTEM_INFO_MANAGER.stop()
         SYSTEM_HOOK_MANAGER.stop()
+        assets.qCleanupResources()  # 释放图像资源
         super().closeEvent(event)
 
     def tick(self):
