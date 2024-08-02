@@ -12,8 +12,7 @@ from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 from cyber_life.life.sand_wave_flow import SandWaveFlow
 from cyber_life.service.settings import SETTINGS
 from cyber_life.static import TANK_SCREEN_WIDTH
-from cyber_life.tools.color import get_color_by_linear_ratio
-from cyber_life.tools.compute import number_to_number
+from cyber_life.tools.compute import lerp
 from cyber_life.tools.singleton import SingletonMeta
 
 
@@ -97,17 +96,11 @@ class _LifeTank(metaclass=SingletonMeta):
         # 2. 第一条分界线：物理内存占用率，空气为已使用内存，水为未使用内存
         self.division_target[0] = self.division_target[1] * memory_info.physical_memory_percent
         # 3. 第三条分界线：交换内存占用率，表层沙为已使用内存，深层沙为未使用内存
-        self.division_target[2] = number_to_number(self.division_target[1],
-                                                   self.height,
-                                                   memory_info.swap_memory_percent)
+        self.division_target[2] = lerp(self.division_target[1], self.height, memory_info.swap_memory_percent)
 
         # 更新分界线的当前值，渲染用，做成渐变的
         self.division = [
-            number_to_number(
-                self.division[i],
-                self.division_target[i],
-                self.ALPHA
-            ) for i in range(3)
+            lerp(self.division[i], self.division_target[i], self.ALPHA) for i in range(3)
         ]
 
         # 更新亮度
@@ -212,7 +205,7 @@ class _LifeTank(metaclass=SingletonMeta):
         else:
             water_color_ratio = SYSTEM_INFO_MANAGER.INSPECTOR_DISK_USAGE.get_current_result()
 
-        painter.setBrush(get_color_by_linear_ratio(
+        painter.setBrush(lerp(
             self.water_color_best,
             self.water_color_worst,
             water_color_ratio
@@ -298,16 +291,16 @@ def draw_snake_style_border(painter: QPainter, width: int, height: int):
     # 四条蛇的运动周期都是60s，运动长度相同，从而速度相同
     # 但是第四条蛇与第一条蛇相遇时，第四条蛇的运动长度刚好用完，导致第四条蛇重新循环，从视野中消失
     # 所以添加第五条蛇，与第一条蛇直接在开始的时候蛇头在坐标原点相遇
-    stage_1_head_x = number_to_number(0, perimeter, progression)  # 蛇头从0出发
+    stage_1_head_x = lerp(0, perimeter, progression)  # 蛇头从0出发
     stage_1_tail_x = stage_1_head_x - snake_length
-    stage_2_head_y = number_to_number(-width, perimeter - width, progression)
+    stage_2_head_y = lerp(-width, perimeter - width, progression)
     stage_2_tail_y = stage_2_head_y - snake_length
-    stage_3_head_x = number_to_number(perimeter - height, -height, progression)
+    stage_3_head_x = lerp(perimeter - height, -height, progression)
     stage_3_tail_x = stage_3_head_x + snake_length
-    stage_4_head_y = number_to_number(perimeter, 0, progression)
+    stage_4_head_y = lerp(perimeter, 0, progression)
     stage_4_tail_y = stage_4_head_y + snake_length
     # 第五段是防止第四段结束时突然消失
-    stage_5_tail_y = number_to_number(snake_length, -perimeter + snake_length, progression)
+    stage_5_tail_y = lerp(snake_length, -perimeter + snake_length, progression)
     stage_5_head_y = stage_5_tail_y - snake_length
 
     painter.setPen(get_stroke_color())

@@ -2,7 +2,7 @@ from random import random, randint
 
 from PyQt5.QtGui import QPainter, QColor, QPen
 
-from cyber_life.tools.color import get_color_by_linear_ratio
+from cyber_life.tools.compute import lerp
 from cyber_life.tools.vector import Vector
 from .life_mixin.breathable_mixin import BreathableMixin
 from .life_mixin.organism_mixin import OrganismMixin
@@ -83,7 +83,7 @@ class LifeBall(BreathableMixin, OrganismMixin):
 
         # 设置画刷颜色和样式
         painter.setBrush(
-            get_color_by_linear_ratio(
+            lerp(
                 self.color_default,
                 self.color_active,
                 self.activity
