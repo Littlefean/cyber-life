@@ -140,7 +140,7 @@ class GuppyFish(BreathableMixin):
         from cyber_life.life.fish.fake_ai import get_best_state
 
         self.time += 1
-        self.update_state()
+        self.update_state()  # 自然条件下的更新状态，某些状态下强制判定死亡
         # 更新动画
         if self.time % self.animation_interval == 0:
             self.img_index_swim = (self.img_index_swim + 1) % 10
@@ -221,15 +221,15 @@ class GuppyFish(BreathableMixin):
             font = QFont('Arial', 6)  # Arial字体，大小为12
             painter.setFont(font)
             rect = QRect(
-                round(self.location.x),
-                round(self.location.y - 50),
+                round(self.location.x - 20),
+                round(self.location.y - 30),
                 200,
                 100
             )  # 宽度为200，高度为100的矩形区域
             painter.drawText(
                 rect,
                 Qt.AlignLeft | Qt.TextWordWrap,
-                f"E:{self.energy}\nC:{round(self.fixed_carbon, 1)}\nO₂:{self.oxygen_inner}"
+                f"E:{self.energy}\nC:{round(self.fixed_carbon, 1)}\nO₂:{self.oxygen_inner}\nS:{self.state.name}"
             )
 
     def select_pixmap(self):
