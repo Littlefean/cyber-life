@@ -49,10 +49,10 @@ class _LifeTank(metaclass=SingletonMeta):
         # 当然也可以写成字典
 
         # 小鱼缸颜色
-        self.water_color_best = QColor(40, 100, 255, 40)
+        self.water_color_best = QColor(40, 80, 255, 80)
         # 将棕色作为最差颜色，不太好，容易和沙子颜色混淆
         # self.water_color_worst = QColor(200, 150, 50, 40)
-        self.water_color_worst = QColor(22, 135, 67, 40)
+        self.water_color_worst = QColor(22, 135, 67, 80)
 
         # 顶部灯光亮度 0 表示黑 1表示最亮
         self.light_brightness_target = 1
@@ -217,7 +217,6 @@ class _LifeTank(metaclass=SingletonMeta):
                 x, y,
                 dx, self.height - y
             )
-        # TODO: 更改水体颜色
 
         # ---------------------------------------- 填充沙子 ----------------------------------------
         # 表层颜色应该更深，深层颜色应该更浅，因为表层是污染层，深层有石英石
