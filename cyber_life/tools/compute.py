@@ -28,17 +28,21 @@ def lerp(
     >>> lerp(QColor(200, 0, 0, 255), QColor(0, 200, 0, 255), 0.5).getRgb()  # 这里只能 getRgb 一下，因为 QColor 不能直接显示
     (100, 100, 0, 255)
     """
+
     if isinstance(start, _SUPPORTED_NUMBER_TYPES):
         assert isinstance(end, _SUPPORTED_NUMBER_TYPES)
         return start + (end - start) * rate
+
     elif isinstance(start, (list, tuple)):
         assert (isinstance(end, (list, tuple))
                 and all(isinstance(i, _SUPPORTED_NUMBER_TYPES) for i in start)
                 and all(isinstance(i, _SUPPORTED_NUMBER_TYPES) for i in end)
                 and len(start) == len(end))
         return start.__class__(lerp(a, b, rate) for a, b in zip(start, end))
+
     elif isinstance(start, QColor):
         assert isinstance(end, QColor)
         return QColor(*map(round, lerp(start.getRgb(), end.getRgb(), rate)))
+
     else:
         raise TypeError(f'不支持的类型：{type(start)}')

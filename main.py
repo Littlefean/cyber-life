@@ -21,6 +21,8 @@ from cyber_life.static import TANK_SCREEN_WIDTH
 
 
 class MainWindow(QWidget):
+    INTERVAL = 10  # 刷新间隔（ms）
+
     def __init__(self):
         super().__init__()
 
@@ -191,7 +193,7 @@ def main():
         main_window.show()
 
         # interval 设置为 10 表示每 10ms 刷新一次窗口
-        timer = QTimer(interval=10, timeout=main_window.tick)  # FPS
+        timer = QTimer(interval=main_window.INTERVAL, timeout=main_window.tick)  # FPS
         timer.start()
 
         sys.exit(app.exec_())

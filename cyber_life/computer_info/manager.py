@@ -68,9 +68,8 @@ class _SystemInfoManager(metaclass=SingletonMeta):
         return timer_function
 
     def stop(self):
-        if not self._is_running:
-            return
         # 暂不需要，因为 daemon=True 的线程会自动结束
+        pass
 
 
 SYSTEM_INFO_MANAGER = _SystemInfoManager()

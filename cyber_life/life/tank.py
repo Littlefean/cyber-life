@@ -11,6 +11,7 @@ from PyQt5.QtGui import QPainter, QColor, QLinearGradient
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
 from cyber_life.life.sand_wave_flow import SandWaveFlow
 from cyber_life.service.settings import SETTINGS
+from cyber_life.static import COLOR_DEBUG
 from cyber_life.static import TANK_SCREEN_WIDTH
 from cyber_life.tools.compute import lerp
 from cyber_life.tools.singleton import SingletonMeta
@@ -21,7 +22,6 @@ class _LifeTank(metaclass=SingletonMeta):
     存放关于小鱼缸的数据
     绘制水面、沙子表面层和深层、沙层中的震荡波，并进行更新
     """
-    _COLOR_DEBUG = False
 
     # 水面和地面渐变的比例系数
     # TODO: 调节这个系数，使得视觉效果更好
@@ -105,7 +105,7 @@ class _LifeTank(metaclass=SingletonMeta):
 
         # 更新亮度
         self.light_brightness_target = SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result()
-        self.light_brightness_current = self.light_brightness_target * 0.01 + self.light_brightness_current * 0.99
+        self.light_brightness_current = lerp(self.light_brightness_current, self.light_brightness_target, self.ALPHA)
         self.time += 1
 
         # 更新震荡数据
@@ -180,30 +180,25 @@ class _LifeTank(metaclass=SingletonMeta):
         return wave_info['amplitude'] * sin((x + self.time * wave_info['speed']) * wave_info['frequency'] * 0.2)
 
     def paint(self, painter: QPainter):
-        # 绘制顶部灯光
         painter.setPen(Qt.NoPen)
+        painter.setBrush(Qt.NoBrush)
+        # ---------------------------------------- 绘制顶部灯光 ----------------------------------------
         gradient = QLinearGradient(0, 0, 0, self.division[0])
         gradient.setColorAt(
             0.0,
-            QColor(
-                255,
-                255,
-                255,
-                round(255 * self.light_brightness_current)
-            )
-        )  # 开始颜色
+            QColor(255, 255, 255, round(255 * self.light_brightness_current))  # 开始颜色
+        )
         gradient.setColorAt(
             1.0,
-            QColor(255, 255, 255, 0)
-        )  # 结束颜色
+            QColor(255, 255, 255, 0)  # 结束颜色
+        )
+        # 绘制矩形，使用渐变填充
+        painter.fillRect(0, 0, self.width, self.height, gradient)
 
-        # 填充波浪形水（定积分画法）
-        painter.setPen(Qt.NoPen)
-        if self._COLOR_DEBUG:
-            # water_color_ratio = 0.5 * sin(self.time * 0.01) + 0.5
+        # ---------------------------------------- 填充波浪形水（定积分画法） ----------------------------------------
+        water_color_ratio = SYSTEM_INFO_MANAGER.INSPECTOR_DISK_USAGE.get_current_result()
+        if COLOR_DEBUG:
             water_color_ratio = (0.005 * self.time) % 1
-        else:
-            water_color_ratio = SYSTEM_INFO_MANAGER.INSPECTOR_DISK_USAGE.get_current_result()
 
         painter.setBrush(lerp(
             self.water_color_best,
@@ -216,22 +211,17 @@ class _LifeTank(metaclass=SingletonMeta):
             SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
         )
         dx = 10  # 一个小微元，即每次绘制细矩形的宽度
-        x = 0
-        for _ in range(0, self.width, dx):
+        for x in range(0, self.width, dx):
             y = round(self.division[0] + self.get_wave_height(x, wave_info))
             painter.drawRect(
                 x, y,
                 dx, self.height - y
             )
-            x += dx
         # TODO: 更改水体颜色
 
-        # 绘制矩形，使用渐变填充
-        painter.fillRect(0, 0, self.width, self.height, gradient)
-
+        # ---------------------------------------- 填充沙子 ----------------------------------------
         # 表层颜色应该更深，深层颜色应该更浅，因为表层是污染层，深层有石英石
         # 绘制表面层
-        painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(62, 53, 28))
         painter.drawRect(
             0,
@@ -240,7 +230,6 @@ class _LifeTank(metaclass=SingletonMeta):
             round(self.height - self.division[1]),
         )
         # 绘制深层
-        painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(92, 73, 36))
         painter.drawRect(
             0,
@@ -249,92 +238,87 @@ class _LifeTank(metaclass=SingletonMeta):
             round(self.height - self.division[2]),
         )
 
-        # 绘制波浪圆圈
+        # ---------------------------------------- 绘制波浪圆圈 ----------------------------------------
         self.sand_wave_outer.paint(painter)
         self.sand_wave_inner.paint(painter)
 
-        # 绘制小鱼缸边框
+        # ---------------------------------------- 绘制小鱼缸边框 ----------------------------------------
         painter.setPen(Qt.black)
         painter.setBrush(Qt.NoBrush)
         painter.drawRect(0, 0, self.width - 1, self.height)
 
+        # ---------------------------------------- 绘制贪吃蛇风格的边框 ----------------------------------------
+        self.draw_snake_style_border(painter, self.width, self.height)
+
+    def draw_snake_style_border(self, painter: QPainter, width: int, height: int):
+        """
+        绘制贪吃蛇风格的边框
+        """
+
         # 绘制贪吃蛇风格的边框
-        draw_snake_style_border(painter, self.width, self.height)
+        snake_length = min(width, height)
+        perimeter = (width + height) * 2  # 周长
+        # 这里时从 left top 开始计算的，为了让起点从 top center 开始，需要将时间向后推移一点
+        now = datetime.now()
+        delay_seconds = (width / 2) / perimeter * 60  # 计算运动到上边框一半所需要秒数
+        now += timedelta(seconds=delay_seconds)
+        # 加上上面计算运动到上边框一半需要的时间，从而将蛇头平移到上边框的中央
+        progression = (now.second + now.microsecond / 1000000) / 60  # 进度, 0-1
+        # microsecond显示秒的六位小数，但是以整数的形式，上一行代码的作用是获得更精确的时间，从而使动画连贯
+        # 秒本身0-59循环，所以上一行代码的结果是0-1，例如当0秒时进度为0
 
+        # debug 用
+        if COLOR_DEBUG:
+            progression = (self.time % 500) / 500  # 进度, 0-1
 
-def draw_snake_style_border(painter: QPainter, width: int, height: int):
-    """
-    绘制贪吃蛇风格的边框
-    这个函数可以考虑移动到其他地方
-    :param painter:
-    :param width:
-    :param height:
-    :return:
-    """
-    # 绘制贪吃蛇风格的边框
-    snake_length = min(width, height)
-    perimeter = (width + height) * 2  # 周长
-    # 这里时从 left top 开始计算的，为了让起点从 top center 开始，需要将时间向后推移一点
-    now = datetime.now()
-    delay_seconds = (width / 2) / perimeter * 60  # 计算运动到上边框一半所需要秒数
-    now += timedelta(seconds=delay_seconds)
-    # 加上上面计算运动到上边框一半需要的时间，从而将蛇头平移到上边框的中央
-    progression = (now.second + now.microsecond / 1000000) / 60  # 进度, 0-1
-    # microsecond显示秒的六位小数，但是以整数的形式，上一行代码的作用是获得更精确的时间，从而使动画连贯
-    # 秒本身0-59循环，所以上一行代码的结果是0-1，例如当0秒时进度为0
+        # 设计思想：有四条蛇，同时从不同位置出发，分别沿着四条边运动，当运动到边缘时，蛇头与另一边的蛇头刚好相遇
+        # 运动出界不会显示，从而好像一条蛇在绕圈
+        # 四条蛇的运动周期都是60s，运动长度相同，从而速度相同
+        # 但是第四条蛇与第一条蛇相遇时，第四条蛇的运动长度刚好用完，导致第四条蛇重新循环，从视野中消失
+        # 所以添加第五条蛇，与第一条蛇直接在开始的时候蛇头在坐标原点相遇
+        stage_1_head_x = lerp(0, perimeter, progression)  # 蛇头从0出发
+        stage_1_tail_x = stage_1_head_x - snake_length
+        stage_2_head_y = lerp(-width, perimeter - width, progression)
+        stage_2_tail_y = stage_2_head_y - snake_length
+        stage_3_head_x = lerp(perimeter - height, -height, progression)
+        stage_3_tail_x = stage_3_head_x + snake_length
+        stage_4_head_y = lerp(perimeter, 0, progression)
+        stage_4_tail_y = stage_4_head_y + snake_length
+        # 第五段是防止第四段结束时突然消失
+        stage_5_tail_y = lerp(snake_length, -perimeter + snake_length, progression)
+        stage_5_head_y = stage_5_tail_y - snake_length
 
-    # debug 用
-    # progression = (self.time % 777) / 777  # 进度, 0-1
-
-    # 设计思想：有四条蛇，同时从不同位置出发，分别沿着四条边运动，当运动到边缘时，蛇头与另一边的蛇头刚好相遇
-    # 运动出界不会显示，从而好像一条蛇在绕圈
-    # 四条蛇的运动周期都是60s，运动长度相同，从而速度相同
-    # 但是第四条蛇与第一条蛇相遇时，第四条蛇的运动长度刚好用完，导致第四条蛇重新循环，从视野中消失
-    # 所以添加第五条蛇，与第一条蛇直接在开始的时候蛇头在坐标原点相遇
-    stage_1_head_x = lerp(0, perimeter, progression)  # 蛇头从0出发
-    stage_1_tail_x = stage_1_head_x - snake_length
-    stage_2_head_y = lerp(-width, perimeter - width, progression)
-    stage_2_tail_y = stage_2_head_y - snake_length
-    stage_3_head_x = lerp(perimeter - height, -height, progression)
-    stage_3_tail_x = stage_3_head_x + snake_length
-    stage_4_head_y = lerp(perimeter, 0, progression)
-    stage_4_tail_y = stage_4_head_y + snake_length
-    # 第五段是防止第四段结束时突然消失
-    stage_5_tail_y = lerp(snake_length, -perimeter + snake_length, progression)
-    stage_5_head_y = stage_5_tail_y - snake_length
-
-    painter.setPen(get_stroke_color())
-    painter.setBrush(Qt.NoBrush)
-    painter.drawLine(
-        round(stage_1_tail_x),
-        0,
-        round(stage_1_head_x),
-        0
-    )
-    painter.drawLine(
-        round(width - 1),
-        round(stage_2_tail_y),
-        round(width - 1),
-        round(stage_2_head_y)
-    )
-    painter.drawLine(
-        round(stage_3_tail_x),
-        round(height),
-        round(stage_3_head_x),
-        round(height)
-    )
-    painter.drawLine(
-        0,
-        round(stage_4_tail_y),
-        0,
-        round(stage_4_head_y)
-    )
-    painter.drawLine(
-        0,
-        round(stage_5_tail_y),
-        0,
-        round(stage_5_head_y)
-    )
+        painter.setPen(get_stroke_color())
+        painter.drawLine(
+            round(stage_1_tail_x),
+            0,
+            round(stage_1_head_x),
+            0
+        )
+        painter.drawLine(
+            round(width - 1),
+            round(stage_2_tail_y),
+            round(width - 1),
+            round(stage_2_head_y)
+        )
+        painter.drawLine(
+            round(stage_3_tail_x),
+            round(height),
+            round(stage_3_head_x),
+            round(height)
+        )
+        painter.drawLine(
+            0,
+            round(stage_4_tail_y),
+            0,
+            round(stage_4_head_y)
+        )
+        painter.drawLine(
+            0,
+            round(stage_5_tail_y),
+            0,
+            round(stage_5_head_y)
+        )
 
 
 def get_stroke_color() -> QColor:
