@@ -33,6 +33,7 @@ class MainWindow(QWidget):
             | Qt.WindowStaysOnTopHint  # 始终置顶
             | Qt.SplashScreen  # 只显示在通知栏
         )
+        self.setCursor(Qt.OpenHandCursor)  # 鼠标指针改为手型
         # 设置icon
         self.setWindowIcon(QIcon(":/icon.ico"))
         # 设置大小
@@ -87,37 +88,67 @@ class MainWindow(QWidget):
         # 绑定到 self 上另一个目的：防止引用计数减为 0 而触发 GC 回收
 
     def enterEvent(self, event):
+        """
+        鼠标进入窗口
+        """
+
         self.hover_text_label.show()
         super().enterEvent(event)
 
     def leaveEvent(self, event):
+        """
+        鼠标离开窗口
+        """
+
         self.hover_text_label.hide()
         super().leaveEvent(event)
 
     def showSettingsDialog(self):
+        """
+        显示设置对话框
+        """
+
         # 已经做了相关处理，调用 exec_() 方法即可，不会卡住
         # 同时，exec_() 方法防止在设置界面中用户与 MainWindow 交互，更符合正常软件操作逻辑
         self.dialog.exec_()
 
     def mousePressEvent(self, event):
-        """重写mousePressEvent方法，用于拖动窗口"""
+        """
+        鼠标按下
+        用于拖动窗口
+        """
+
         if event.button() == Qt.LeftButton:
             self.is_window_drag = True
             self.m_drag_position = event.globalPos() - self.pos()
-            event.accept()
+            self.setCursor(Qt.ClosedHandCursor)
+
+        event.accept()
 
     def mouseMoveEvent(self, event):
-        """重写mouseMoveEvent方法，用于拖动窗口"""
+        """
+        鼠标移动
+        用于拖动窗口
+        """
+
         if Qt.LeftButton and self.is_window_drag:
             self.move(event.globalPos() - self.m_drag_position)
             event.accept()
 
     def mouseReleaseEvent(self, event):
-        """重写mouseReleaseEvent方法，用于拖动窗口"""
+        """
+        鼠标释放
+        用于拖动窗口
+        """
+
         self.is_window_drag = False
+        self.setCursor(Qt.OpenHandCursor)
 
     def paintEvent(self, event):
-        """重写paintEvent方法，用于绘制窗口内图像"""
+        """
+        重写paintEvent方法，用于绘制窗口内图像
+        """
+
         # 在这里使用 QPainter 进行像素颗粒度的绘制
         painter = QPainter(self)
 
@@ -133,12 +164,17 @@ class MainWindow(QWidget):
         super().closeEvent(event)
 
     def tick(self):
-        """更新窗口内图像"""
+        """
+        更新窗口内图像
+        """
+
         self.life_manager.tick()
+
         o2 = round(GAS_MANAGER.oxygen, 2)
         co2 = round(GAS_MANAGER.carbon_dioxide, 2)
         brightness = round(SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result(), 2)
         self.hover_text_label.setText(f"O₂: {o2}\nCO₂: {co2}\nbright: {brightness}")
+
         self.update()  # 会调用paintEvent
 
 
