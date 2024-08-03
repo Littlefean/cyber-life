@@ -68,8 +68,6 @@ class GuppyFish(BreathableMixin):
         # 移动速度
         self.speed = 0.1
 
-        # idea: 可能将呼吸光合作用以组合的方式实现，比继承好一点
-
         self.fixed_carbon = 1000
         self.o2_pre_request = (
             0.1  # 有待调整，目前鱼的呼吸作用还没有什么意义，因为还没有做进食功能
@@ -91,8 +89,8 @@ class GuppyFish(BreathableMixin):
     def breath(self):
         """
         鱼呼吸，这个呼吸在不同的状态下调用会有不同的效果
-        :return:
         """
+
         if self.state == State.DEAD:
             return
 
@@ -125,8 +123,8 @@ class GuppyFish(BreathableMixin):
     def cost_energy(self):
         """
         鱼消耗能量
-        :return:
         """
+
         self.energy -= self.energy_pre_cost
 
     def tick(self):
@@ -167,8 +165,8 @@ class GuppyFish(BreathableMixin):
         """
         这里是自然条件下的更新状态，只能强制判定死亡。
         设计鱼的AI行为状态目的切换需要放在其他地方。
-        :return:
         """
+
         # 能量耗尽
         if self.energy <= 0:
             self.state = State.DEAD
@@ -190,14 +188,14 @@ class GuppyFish(BreathableMixin):
             )
         except Exception as e:
             print(f"鱼无法找到合适的位置 {e}")
-            return None
+            return
         return Vector(x, y)
 
     def is_face_to_left(self):
         """
         判断鱼面朝左边
-        :return: bool
         """
+
         speed_vector = self.location_goal - self.location
         return speed_vector.x < 0
 

@@ -30,8 +30,8 @@ class MouseHook(metaclass=SingletonMeta):
     def life_manager(self):
         """
         将life_manager作为一个懒加载调用，避免启动过慢
-        :return:
         """
+
         if not self._life_manager:
             from cyber_life.life.life_manager import LifeManager  # 避免循环导入
             self._life_manager = LifeManager()

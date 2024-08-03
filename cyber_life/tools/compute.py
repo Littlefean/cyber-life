@@ -13,7 +13,7 @@ def lerp(
         rate: float
 ) -> _SUPPORTED_TYPES:
     """
-    线行插值 (Linear Interpolation)，简称 lerp
+    线性插值 (Linear Interpolation)，简称 lerp
     支持数字、元素是数字的序列、QColor
 
     :param start: 起始值
@@ -83,6 +83,7 @@ class RangeDivider:
         :param divisions: 范围分割点
         :param tags: 标签
         """
+
         assert isinstance(divisions, (list, tuple)) and isinstance(tags, (list, tuple))
         assert all(isinstance(i, Real) for i in divisions)
 
@@ -101,6 +102,7 @@ class RangeDivider:
 
         :return: 标签
         """
+
         assert isinstance(value, Real)
 
         # 遍历查找

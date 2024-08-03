@@ -3,6 +3,7 @@
 与监测器不同，钩子是根据不确定的动作做出不同的反应，
 检测器只是以固定的时间间隔进行检测一个数值
 """
+
 from threading import Thread
 
 from cyber_life.tools.singleton import SingletonMeta

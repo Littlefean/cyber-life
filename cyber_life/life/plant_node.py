@@ -50,6 +50,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         @classmethod：类方法，不需要实例化对象即可调用
         @staticmethod：静态方法，同样不需要实例化即可调用，但不适合写与类成员变量或成员函数有关的功能
         """
+
         return cls(random() * LIFE_TANK.width, LIFE_TANK.division[1], False)
 
     def add_child(self, child: 'LifePlantNode'):
@@ -64,8 +65,8 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         首先会将自己的下一个节点拉向自己的位置，然后更新自己的位置和速度
         具体拉的原理就如同引力，但过近会有斥力
         如果在合适范围内，则随机漂浮
-        :return:
         """
+
         if self.can_move:
             # 遇到墙壁反弹
             # 左右边界检测
@@ -127,6 +128,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         """
         绘制节点
         """
+
         # 绘制速度矢量
         if self._show_velocity:
             painter.setBrush(Qt.NoBrush)

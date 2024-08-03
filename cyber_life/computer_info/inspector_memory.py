@@ -29,7 +29,6 @@ class InspectorMemory(Inspector):
             psutil.swap_memory().percent / 100,
             psutil.swap_memory().total
         )
-        pass
 
     def get_current_result(self) -> MemoryInfo:
         return self.memory_info

@@ -12,8 +12,8 @@
 繁殖状态
 啃食水草状态
 吞食幼崽状态
-
 """
+
 from random import randint
 
 from cyber_life.life.fish.guppy_fish import GuppyFish
@@ -24,9 +24,8 @@ from cyber_life.tools.vector import Vector
 def tick_idle(fish: GuppyFish):
     """
     鱼处于空闲状态，不做任何事情，较小能量消耗
-    :param fish:
-    :return:
     """
+
     fish.speed = 0.1
     fish.o2_pre_request = 0.1
     fish.animation_interval = 10
@@ -52,9 +51,8 @@ def tick_surface(fish: GuppyFish):
     """
     在水中感觉缺少氧气，鱼会进入水面呼吸状态
     但这个模式的缺点是不能去水中觅食以及其他活动，只能在水面呼吸
-    :param fish:
-    :return:
     """
+
     fish.speed = 0.1
     fish.o2_pre_request = 0  # 因为呼吸的是水以外的氧气，所以这里是0
     fish.animation_interval = 5
@@ -81,9 +79,8 @@ def tick_surface(fish: GuppyFish):
 def tick_sleep(fish: GuppyFish):
     """
     鱼睡眠状态，进入低功耗，增加精力的状态
-    :param fish:
-    :return:
     """
+
     # fish.speed = 0.1
     fish.o2_pre_request = 0.01
     fish.animation_interval = 20
@@ -108,9 +105,8 @@ def tick_sleep(fish: GuppyFish):
 def tick_find_food(fish: GuppyFish):
     """
     鱼寻找食物状态
-    :param fish:
-    :return:
     """
+
     fish.speed = 0.4
     fish.o2_pre_request = 0.2
     fish.animation_interval = 5
@@ -155,9 +151,8 @@ def tick_find_food(fish: GuppyFish):
 def tick_death(fish: GuppyFish):
     """
     鱼死亡状态
-    :param fish:
-    :return:
     """
+
     fish.speed = 0
     fish.o2_pre_request = 0
     fish.animation_interval = 10

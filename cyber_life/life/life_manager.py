@@ -46,6 +46,7 @@ class LifeManager(metaclass=SingletonMeta):
         5. 鱼
         6. 气泡流
         """
+
         # 1. 更新小鱼缸
         LIFE_TANK.tick()
 
@@ -72,15 +73,15 @@ class LifeManager(metaclass=SingletonMeta):
     def is_food_in_water(self):
         """
         专门为鱼提供，判断水中是否有食物
-        :return:
         """
+
         return any(food.location.y >= LIFE_TANK.division[0] for food in self.food_list)
 
     def choice_food_in_water(self):
         """
         专门为鱼提供，随机选择水中食物
-        :return:
         """
+
         return next(food for food in self.food_list if food.location.y >= LIFE_TANK.division[0])
 
     def add_food(self, x: float):

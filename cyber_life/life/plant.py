@@ -24,6 +24,7 @@ class LifePlant:
         """
         产生一个新的水草节点
         """
+
         if not self.nodes:
             node = LifePlantNode(self.x, LIFE_TANK.division[1], False)
             self.nodes.append(node)
@@ -49,6 +50,7 @@ class LifePlant:
         """
         实现水草的生长
         """
+
         for node in self.nodes:
             node.tick()
 

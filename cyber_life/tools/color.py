@@ -7,11 +7,8 @@ def get_color_by_hsv_ratio(color_start: QColor, color_end: QColor, ratio: float)
     """
     色彩空间过渡，获取一个颜色
     此代码由AI生成，还未经过测试
-    :param color_start:
-    :param color_end:
-    :param ratio:
-    :return:
     """
+
     hsv_start = rgb_to_hsv(color_start.red() / 255, color_start.green() / 255, color_start.blue() / 255)
     hsv_end = rgb_to_hsv(color_end.red() / 255, color_end.green() / 255, color_end.blue() / 255)
     hsv_ratio = (hsv_end[0] - hsv_start[0]) * ratio + hsv_start[0]

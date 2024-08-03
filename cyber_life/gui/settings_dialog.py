@@ -89,6 +89,7 @@ class SettingsDialog(QDialog):
         """
         改变是否显示小鱼
         """
+
         is_button_checked = state == Qt.Checked
 
         SETTINGS.is_fish_visible = is_button_checked
@@ -100,6 +101,7 @@ class SettingsDialog(QDialog):
         """
         改变是否显示小鱼 *信息*
         """
+
         is_button_checked = state == Qt.Checked
 
         SETTINGS.is_fish_info_visible = is_button_checked
@@ -110,6 +112,7 @@ class SettingsDialog(QDialog):
         """
         改变是否自定义交换内存
         """
+
         is_button_checked = state == Qt.Checked
 
         SETTINGS.is_swap_memory_fixed = is_button_checked
@@ -121,6 +124,7 @@ class SettingsDialog(QDialog):
         """
         改变交换内存的高度比例
         """
+
         SETTINGS.swap_memory_height_rate = (
                 value / 100
         )  # 写入SETTINGS，在LIFE_TANK中判断，如果不将交换内存固定，则生效
@@ -131,6 +135,7 @@ class SettingsDialog(QDialog):
         """
         改变投喂食物的概率
         """
+
         SETTINGS.put_food_rate = value / 100
 
         self.save_settings()

@@ -8,6 +8,7 @@ class SandWave:
     """
     一个地震环形 波
     """
+
     MAX_RADIUS = TANK_SCREEN_WIDTH / 2
 
     def __init__(self, x, radius, radius_variation):

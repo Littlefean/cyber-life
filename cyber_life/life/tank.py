@@ -1,6 +1,7 @@
 """
 存放关于小鱼缸的数据
 """
+
 from datetime import datetime, timedelta
 from math import sin
 
@@ -60,6 +61,7 @@ class _LifeTank(metaclass=SingletonMeta):
         初始化小鱼缸数据
         :param width: 界面大小宽度，px
         """
+
         self.width = int(width)
         # 获取屏幕的宽度和高度
         w, h = ImageGrab.grab().size
@@ -101,6 +103,7 @@ class _LifeTank(metaclass=SingletonMeta):
         沙子表面层高度，y值，坐标原点为左上角
         保证显示时，空气和水代表总物理内存，表层沙和深层沙代表总交换内存
         """
+
         # 开了自定义交换内存高度，根据这个设定值返回
         if SETTINGS.is_swap_memory_fixed:
             return self.height * (1 - SETTINGS.swap_memory_height_rate)
@@ -115,6 +118,7 @@ class _LifeTank(metaclass=SingletonMeta):
         """
         小鱼缸更新一次
         """
+
         # 更新内存信息
         memory_info = SYSTEM_INFO_MANAGER.INSPECTOR_MEMORY.get_current_result()
 
@@ -152,6 +156,7 @@ class _LifeTank(metaclass=SingletonMeta):
         """
         获取波浪线高度，用于绘制sin型波浪水面
         """
+
         # x 前面的参数才能改变频率
         # 机械波波函数：y(x, t) = Asin(ω(t+x/v)) = Asin((t/2π + 2πx/v) × f)
         # 系数全重置了

@@ -40,9 +40,8 @@ class Vector:
     def limit(self, max_length):
         """
         将向量限制在最大长度范围内
-        :param max_length:
-        :return:
         """
+
         if abs(self) > max_length:
             new_self = self.normalize() * max_length
             self.x = new_self.x
@@ -69,8 +68,8 @@ class Vector:
         """
         旋转向量
         :param angle: 单位：度
-        :return:
         """
+
         rad = angle * 3.141592653589793 / 180
         cos_val = round(cos(rad), 15)
         sin_val = round(sin(rad), 15)
@@ -85,8 +84,8 @@ class Vector:
     def normalize(self):
         """
         将长度归一化，即变成单位向量
-        :return:
         """
+
         length = abs(self)
         if length == 0:
             return Vector(0, 0)

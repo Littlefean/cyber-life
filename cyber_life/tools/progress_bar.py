@@ -16,12 +16,14 @@ class ProgressFloat:
         """
         判断当前值是否达到最大值。
         """
+
         return self.current_value >= self.max_value
 
     def is_zero(self) -> bool:
         """
         判断当前值是否为0。
         """
+
         return self.current_value == 0
 
     @property
@@ -29,12 +31,14 @@ class ProgressFloat:
         """
         计算当前值占总值的比例。
         """
+
         return self.current_value / self.max_value
 
     def __add__(self, other: float) -> 'ProgressFloat':
         """
         实现加法运算，返回一个新的ProgressFloat对象。
         """
+
         new_value = self.current_value + other
         if new_value > self.max_value:
             new_value = self.max_value
@@ -44,6 +48,7 @@ class ProgressFloat:
         """
         实现减法运算，返回一个新的ProgressFloat对象。
         """
+
         new_value = self.current_value - other
         if new_value < 0:
             new_value = 0

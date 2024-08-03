@@ -31,6 +31,7 @@ class LifeBubble:
         气泡的半径大小，由自身位置在小鱼缸中的位置决定
         因为越接近水面，压强越小，气泡的半径越大。
         """
+
         # 气泡到达水面的进度 0~1
         rate = (LIFE_TANK.division[1] - self.location.y) / (
                 LIFE_TANK.division[1] - LIFE_TANK.division[0])
