@@ -146,6 +146,20 @@ class MainWindow(QWidget):
         self.is_window_drag = False
         self.setCursor(Qt.OpenHandCursor)
 
+    def tick(self):
+        """
+        更新窗口内图像
+        """
+
+        self.life_manager.tick()
+
+        o2 = round(GAS_MANAGER.oxygen, 2)
+        co2 = round(GAS_MANAGER.carbon_dioxide, 2)
+        brightness = round(SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result(), 2)
+        self.hover_text_label.setText(f"O₂: {o2}\nCO₂: {co2}\nbright: {brightness}")
+
+        self.update()  # 会调用 paintEvent
+
     def paintEvent(self, event):
         """
         重写paintEvent方法，用于绘制窗口内图像
@@ -164,20 +178,6 @@ class MainWindow(QWidget):
         SYSTEM_HOOK_MANAGER.stop()
         assets.qCleanupResources()  # 释放图像资源
         super().closeEvent(event)
-
-    def tick(self):
-        """
-        更新窗口内图像
-        """
-
-        self.life_manager.tick()
-
-        o2 = round(GAS_MANAGER.oxygen, 2)
-        co2 = round(GAS_MANAGER.carbon_dioxide, 2)
-        brightness = round(SYSTEM_INFO_MANAGER.INSPECTOR_SCREEN.get_current_result(), 2)
-        self.hover_text_label.setText(f"O₂: {o2}\nCO₂: {co2}\nbright: {brightness}")
-
-        self.update()  # 会调用paintEvent
 
 
 def main():

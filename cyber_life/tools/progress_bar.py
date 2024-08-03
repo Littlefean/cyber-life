@@ -81,3 +81,7 @@ class ProgressFloat:
     # 实现 str()
     def __str__(self) -> str:
         return f"{round(self.current_value, 1)}/{round(self.max_value, 1)}"
+
+    # 实现 round()
+    def __round__(self, n: int) -> float:
+        return round(self.current_value, n)
