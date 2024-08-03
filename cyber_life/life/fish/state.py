@@ -134,7 +134,7 @@ def tick_find_food(fish: GuppyFish):
     if fish.target_food is None:
         # 水中有食物，确定一个作为目标
         if life_manager.is_food_in_water():
-            food: Food = life_manager.choice_food_in_water()
+            food: Food = life_manager.choice_food_in_water(fish)
             fish.location_goal = food.location
             fish.target_food = food
         # 无法找到食物，开始焦虑，随机设置一个目标并前进

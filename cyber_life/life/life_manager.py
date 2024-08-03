@@ -77,12 +77,14 @@ class LifeManager(metaclass=SingletonMeta):
 
         return any(food.location.y >= LIFE_TANK.division[0] for food in self.food_list)
 
-    def choice_food_in_water(self):
+    def choice_food_in_water(self, fish: GuppyFish):
         """
         专门为鱼提供，随机选择水中食物
         """
 
-        return next(food for food in self.food_list if food.location.y >= LIFE_TANK.division[0])
+        # 按照距离鱼的距离排序
+        return sorted((food for food in self.food_list if food.location.y >= LIFE_TANK.division[0]),
+                      key=lambda fd: fd.location.distance(fish.location))[0]
 
     def add_food(self, x: float):
         self.food_list.append(Food(x))
