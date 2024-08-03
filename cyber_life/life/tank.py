@@ -13,7 +13,7 @@ from cyber_life.life.sand_wave_flow import SandWaveFlow
 from cyber_life.service.settings import SETTINGS
 from cyber_life.static import COLOR_DEBUG
 from cyber_life.static import TANK_SCREEN_WIDTH
-from cyber_life.tools.compute import lerp
+from cyber_life.tools.compute import lerp, RangeDivider
 from cyber_life.tools.singleton import SingletonMeta
 
 
@@ -26,6 +26,34 @@ class _LifeTank(metaclass=SingletonMeta):
     # 水面和地面渐变的比例系数
     # TODO: 调节这个系数，使得视觉效果更好
     ALPHA = 0.02
+
+    # 由网络速度决定波动的大小，包括振幅、频率、周期
+    WAVE_INFO_RD = RangeDivider(
+        (1, 100, 1000, 5000, 1_0000, 10_0000, 50_0000, 150_0000),
+        (
+            (0, 0.01, 0),
+            (2, 0.01, 1),
+            (2, 0.02, 1),
+            (2, 0.04, 2),
+            (4, 0.05, 6),
+            (6, 0.05, 7),
+            (8, 0.05, 8),
+            (10, 0.06, 9),
+            (10, 0.1, 10)
+        )
+    )
+
+    # 由时间决定颜色
+    STROKE_COLOR_RD = RangeDivider(
+        # 早晨5点到6点以及傍晚6点到7点，返回深紫到石灰色
+        # 晚上7点到晚上10点，返回深蓝色
+        # 晚上10点到早晨5点，接近纯黑色，但不完全黑色
+        # 早上7点到上午10点，清晨色
+        # 上午10点到下午4点，明亮的日光色
+        # 下午4点到下午6点，夕阳色
+        (5, 7, 10, 16, 18, 19, 22),
+        ('gray', 'purple', 'skyblue', 'yellow', 'orange', 'purple', 'darkblue', 'gray')
+    )
 
     def __init__(self, width: int):
         """
@@ -120,56 +148,7 @@ class _LifeTank(metaclass=SingletonMeta):
         self.sand_wave_outer.tick()
         self.sand_wave_inner.tick()
 
-    @staticmethod
-    def get_wave_info_by_recv_speed(recv_speed: float) -> dict:
-        """
-        根据接收速度获取波动信息
-        """
-        # 波速度10为最快速度，1为最慢速度
-        # 频率0.01 最长，0.1 最短
-        if recv_speed < 1:
-            amplitude = 0
-            frequency = 0.01
-            speed = 0
-        elif recv_speed < 100:
-            amplitude = 2
-            frequency = 0.01
-            speed = 1
-        elif recv_speed < 1000:
-            amplitude = 2
-            frequency = 0.02
-            speed = 1
-        elif recv_speed < 5000:
-            amplitude = 2
-            frequency = 0.04
-            speed = 2
-        elif recv_speed < 1_0000:
-            amplitude = 4
-            frequency = 0.05
-            speed = 6
-        elif recv_speed < 10_0000:
-            amplitude = 6
-            frequency = 0.05
-            speed = 7
-        elif recv_speed < 50_0000:
-            amplitude = 8
-            frequency = 0.05
-            speed = 8
-        elif recv_speed < 150_0000:
-            amplitude = 10
-            frequency = 0.06
-            speed = 9
-        else:
-            amplitude = 10
-            frequency = 0.1
-            speed = 10
-        return {
-            'amplitude': amplitude,
-            'frequency': frequency,
-            'speed': speed
-        }
-
-    def get_wave_height(self, x, wave_info: dict):
+    def get_wave_height(self, x, wave_info: tuple[float, float, float]):
         """
         获取波浪线高度，用于绘制sin型波浪水面
         """
@@ -177,7 +156,7 @@ class _LifeTank(metaclass=SingletonMeta):
         # 机械波波函数：y(x, t) = Asin(ω(t+x/v)) = Asin((t/2π + 2πx/v) × f)
         # 系数全重置了
 
-        return wave_info['amplitude'] * sin((x + self.time * wave_info['speed']) * wave_info['frequency'] * 0.2)
+        return wave_info[0] * sin((x + self.time * wave_info[2]) * wave_info[1] * 0.2)
 
     def paint(self, painter: QPainter):
         painter.setPen(Qt.NoPen)
@@ -207,9 +186,9 @@ class _LifeTank(metaclass=SingletonMeta):
         ))
 
         # 绘制水面
-        wave_info = self.get_wave_info_by_recv_speed(
+        wave_info = self.WAVE_INFO_RD[
             SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().recv_speed
-        )
+        ]
         dx = 10  # 一个小微元，即每次绘制细矩形的宽度
         for x in range(0, self.width, dx):
             y = round(self.division[0] + self.get_wave_height(x, wave_info))
@@ -287,7 +266,7 @@ class _LifeTank(metaclass=SingletonMeta):
         stage_5_tail_y = lerp(snake_length, -perimeter + snake_length, progression)
         stage_5_head_y = stage_5_tail_y - snake_length
 
-        painter.setPen(get_stroke_color())
+        painter.setPen(self.get_stroke_color())
         painter.drawLine(
             round(stage_1_tail_x),
             0,
@@ -319,34 +298,16 @@ class _LifeTank(metaclass=SingletonMeta):
             round(stage_5_head_y)
         )
 
+    def get_stroke_color(self) -> QColor:
+        """
+        根据当前的时间来获取颜色
+        """
 
-def get_stroke_color() -> QColor:
-    """
-    根据当前的时间来获取颜色
-    :return: QColor
-    """
-    current_hour = datetime.now().hour
+        current_hour = datetime.now().hour
+        if COLOR_DEBUG:
+            current_hour = (self.time // 10 % 24)
 
-    if 5 <= current_hour < 7 or 18 <= current_hour < 19:
-        # 早晨5点到6点以及傍晚6点到7点，返回深紫到石灰色
-        return QColor('purple')
-    elif 19 <= current_hour < 22:
-        # 晚上7点到晚上10点，返回深蓝色
-        return QColor('darkblue')
-    elif 22 <= current_hour or current_hour < 5:
-        # 晚上10点到早晨5点，接近纯黑色，但不完全黑色
-        return QColor('gray')
-    elif 7 <= current_hour < 10:
-        # 早上7点到上午10点，清晨色
-        return QColor('skyblue')
-    elif 10 <= current_hour < 16:
-        # 上午10点到下午4点，明亮的日光色
-        return QColor('yellow')
-    elif 16 <= current_hour < 18:
-        # 下午4点到下午6点，夕阳色
-        return QColor('orange')
-
-    return QColor('gray')
+        return QColor(self.STROKE_COLOR_RD[current_hour])
 
 
 LIFE_TANK = _LifeTank(TANK_SCREEN_WIDTH)

@@ -1,8 +1,10 @@
+from math import inf
 from typing import List
 
 from PyQt5.QtGui import QPainter
 
 from cyber_life.life.sand_wave import SandWave
+from cyber_life.tools.compute import RangeDivider
 
 
 class SandWaveFlow:
@@ -12,13 +14,18 @@ class SandWaveFlow:
     向外扩散的是写入磁盘的速度，向内扩散的是读取磁盘的速度
     """
 
+    DISKIO_FREQ_RD = RangeDivider(
+        (1, 4, 8, 12, 16, 20, 24, 28, 32),
+        (inf, 100, 50, 40, 20, 15, 10, 6, 4, 2)
+    )
+
     def __init__(self, x, wave_radius_speed):
         self.x = x
         self.sand_waves: List[SandWave] = []
         self.wave_radius_speed = wave_radius_speed
 
-        # 波的频率，但实际代表的是每多少帧产生一个波，最小值=2，表示最密集
-        self.frequency = 10
+        # 波的周期（单位是帧），代表的是每多少帧产生一个波，最小值=2，表示最密集
+        self.period = 10
         self.time = 0
 
     def tick(self):
@@ -29,7 +36,7 @@ class SandWaveFlow:
         # 移除过期的波
         self.sand_waves = [sand_wave for sand_wave in self.sand_waves if not sand_wave.is_expired()]
         # 产生新的波
-        if self.time % self.frequency == 0:
+        if self.time % self.period == 0:
             if self.wave_radius_speed > 0:
                 init_radius = 0
             else:
@@ -38,37 +45,10 @@ class SandWaveFlow:
 
     def set_frequency_by_disk_io(self, io_bytes: int):
         """
-        根据磁盘IO的频率设置波的频率
-        :param io_bytes:
-        :return:
+        根据磁盘IO的频率设置波的周期
         """
-        if io_bytes == 0:
-            self.frequency = 999999999
-            return
 
-        # io_bytes 这个数太大了，需要获得这个数字有多少位
-
-        # 假设 io_bytes = 1000000000，则有 10 位
-        import math
-        count_of_digits = int(math.log10(io_bytes))
-        if count_of_digits <= 1:
-            self.frequency = 100
-        elif count_of_digits <= 2:
-            self.frequency = 50
-        elif count_of_digits <= 3:
-            self.frequency = 40
-        elif count_of_digits <= 4:
-            self.frequency = 20
-        elif count_of_digits <= 5:
-            self.frequency = 15
-        elif count_of_digits <= 6:
-            self.frequency = 10
-        elif count_of_digits <= 7:
-            self.frequency = 6
-        elif count_of_digits <= 8:
-            self.frequency = 4
-        else:
-            self.frequency = 2
+        self.period = self.DISKIO_FREQ_RD[io_bytes.bit_length() - 1]  # bit_length() 相当于取对数
 
     def paint(self, painter: QPainter):
         for sand_wave in self.sand_waves:
