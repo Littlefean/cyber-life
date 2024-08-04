@@ -1,5 +1,5 @@
-import random
-from math import cos, sin
+from math import cos, sin, pi, hypot, dist, radians
+from random import uniform
 
 
 class Vector:
@@ -13,80 +13,123 @@ class Vector:
     │
     ▼
     y
+
+    >>> Vector(1, 2)
+    Vector(1, 2)
+    >>> Vector(1, 2) + Vector(3, 4)
+    Vector(4, 6)
+    >>> Vector(1, 2) - Vector(3, 4)
+    Vector(-2, -2)
+    >>> Vector(1, 2) * 3
+    Vector(3, 6)
+    >>> Vector(1, 2) / 2
+    Vector(0.5, 1.0)
+    >>> Vector(1, 2) == Vector(1, 2)
+    True
+    >>> abs(Vector(3, 4))
+    5.0
+    >>> Vector(1, 2).distance(Vector(3, 4))
+    2.8284271247461903
+    >>> Vector(3, 4).limit(2)
+    Vector(0.6, 0.8)
+    >>> Vector(1, 2).rotate(90)
+    Vector(-2.0, 1.0)
+    >>> Vector(1, 1).normalize()
+    Vector(0.7071067811865475, 0.7071067811865475)
     """
 
-    def __init__(self, x, y):
-        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
-            raise TypeError("Vector components must be numerical")
+    __slots__ = ('x', 'y')
+
+    def __init__(self, x: int | float = 0, y: int | float = 0):
+        assert isinstance(x, (int, float)) and isinstance(y, (int, float))
         self.x = x
         self.y = y
 
-    def __repr__(self):
-        return f"Vector({self.x}, {self.y})"
+    def __str__(self) -> str:
+        """ Return str(self). """
+        return f'({self.x}, {self.y})'
 
-    def __add__(self, other):
-        if not isinstance(other, Vector):
-            raise TypeError("unsupported operand type(s) for +: 'Vector' and '{}'".format(type(other).__name__))
+    def __repr__(self) -> str:
+        """ Return repr(self). """
+        return f'{self.__class__.__name__}({self.x}, {self.y})'
+
+    def __add__(self, other: 'Vector') -> 'Vector':
+        """ Return self + other. """
+        assert isinstance(other, Vector)
         return Vector(self.x + other.x, self.y + other.y)
 
-    def __sub__(self, other):
-        if not isinstance(other, Vector):
-            raise TypeError("unsupported operand type(s) for -: 'Vector' and '{}'".format(type(other).__name__))
+    def __sub__(self, other: 'Vector') -> 'Vector':
+        """ Return self - other. """
+        assert isinstance(other, Vector)
         return Vector(self.x - other.x, self.y - other.y)
 
-    def distance(self, other) -> float:
-        return (self - other).__abs__()
+    def __mul__(self, other: int | float) -> 'Vector':
+        """ Return self * other. """
+        assert isinstance(other, (int, float))
+        return Vector(self.x * other, self.y * other)
 
-    def limit(self, max_length):
+    def __truediv__(self, other: int | float) -> 'Vector':
+        """ Return self / other. """
+        assert isinstance(other, (int, float))
+        return Vector(self.x / other, self.y / other)
+
+    def __eq__(self, other):
+        """ Return self == other. """
+        return isinstance(other, Vector) and (self.x, self.y) == (other.x, other.y)
+
+    def __abs__(self) -> float:
+        """ Return abs(self). """
+        return hypot(self.x, self.y)
+
+    def distance(self, other: 'Vector') -> float:
+        """
+        两个向量之间的距离
+        """
+
+        assert isinstance(other, Vector)
+        return dist((self.x, self.y), (other.x, other.y))
+
+    def limit(self, max_length: int | float) -> 'Vector':
         """
         将向量限制在最大长度范围内
         """
 
         if abs(self) > max_length:
-            new_self = self.normalize() * max_length
-            self.x = new_self.x
-            self.y = new_self.y
+            new_self = (self * max_length).normalize()
+            self.x, self.y = new_self.x, new_self.y
 
-    def __mul__(self, other):
-        if isinstance(other, Vector):
-            return self.x * other.x + self.y * other.y
-        elif isinstance(other, (int, float)):
-            return Vector(self.x * other, self.y * other)
-        else:
-            raise TypeError("unsupported operand type(s) for *: 'Vector' and '{}'".format(type(other).__name__))
-
-    def __abs__(self):
-        return (self.x ** 2 + self.y ** 2) ** 0.5
-
-    def __eq__(self, other):
-        if not isinstance(other, Vector):
-            return False
-        return self.x == other.x and self.y == other.y
+        return self
 
     # 角度偏转
     def rotate(self, angle):
         """
         旋转向量
-        :param angle: 单位：度
+        :param angle: 使用角度制
         """
 
-        rad = angle * 3.141592653589793 / 180
-        cos_val = round(cos(rad), 15)
-        sin_val = round(sin(rad), 15)
+        theta = radians(angle)  # 转化为弧度制
+
+        cos_val = round(cos(theta), 15)
+        sin_val = round(sin(theta), 15)
+
         return Vector(self.x * cos_val - self.y * sin_val, self.x * sin_val + self.y * cos_val)
 
-    @staticmethod
-    def random():
-        """获取一个随机单位长度向量"""
-        return Vector(random.uniform(-1, 1), random.uniform(-1, 1)).normalize()
+    @classmethod
+    def random(cls, length: int | float = 1):
+        """
+        一个方向随机的指定长度的向量
+        """
 
-    # 归一化
+        theta = uniform(0, pi * 2)
+        return Vector(cos(theta) * length, sin(theta) * length)
+
     def normalize(self):
         """
-        将长度归一化，即变成单位向量
+        长度归一化，变成单位向量
+        零向量保持不变
         """
 
-        length = abs(self)
-        if length == 0:
-            return Vector(0, 0)
-        return Vector(self.x / length, self.y / length)
+        try:
+            return self / abs(self)
+        except ZeroDivisionError:
+            return self

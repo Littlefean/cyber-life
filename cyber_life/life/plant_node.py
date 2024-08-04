@@ -19,7 +19,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
     def __init__(self, x, y, can_move):
         super().__init__()
         self.location = Vector(x, y)
-        self.velocity = Vector.random() * 0.1
+        self.velocity = Vector.random(0.1)
         self.acceleration = Vector(0, 0)
         # 根节点不能自由移动，其他节点会移动，模拟悬浮效果
         self.next_node = None
