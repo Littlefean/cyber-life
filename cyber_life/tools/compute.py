@@ -33,18 +33,12 @@ def lerp(
     """
 
     if isinstance(start, _SUPPORTED_NUMBER_TYPES):
-        assert isinstance(end, _SUPPORTED_NUMBER_TYPES)
         return start + (end - start) * rate
 
     elif isinstance(start, (list, tuple)):
-        assert (isinstance(end, (list, tuple))
-                and all(isinstance(i, _SUPPORTED_NUMBER_TYPES) for i in start)
-                and all(isinstance(i, _SUPPORTED_NUMBER_TYPES) for i in end)
-                and len(start) == len(end))
-        return start.__class__(lerp(a, b, rate) for a, b in zip(start, end))
+        return start.__class__(a + (b - a) * rate for a, b in zip(start, end))
 
     elif isinstance(start, QColor):
-        assert isinstance(end, QColor)
         return QColor(*map(round, lerp(start.getRgb(), end.getRgb(), rate)))
 
     else:
