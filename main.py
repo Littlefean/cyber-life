@@ -1,7 +1,7 @@
 """
 赛博小鱼缸
 """
-
+import logging
 import sys
 
 from PyQt5.QtCore import Qt, QTimer
@@ -18,13 +18,18 @@ from cyber_life.life.gas_manager import GAS_MANAGER
 from cyber_life.life.life_manager import LifeManager
 from cyber_life.life.tank import LIFE_TANK
 from cyber_life.service.settings import SETTINGS
-from cyber_life.static import TANK_SCREEN_WIDTH
+from cyber_life.static import TANK_SCREEN_WIDTH, LOG_FORMAT
+
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+lg = logging.getLogger(__name__)
 
 
 class MainWindow(QWidget):
     INTERVAL = 10  # 刷新间隔（ms）
 
     def __init__(self):
+        lg.debug('MainWindow 初始化')
+
         super().__init__()
 
         # 设置窗口的基本属性
@@ -90,6 +95,9 @@ class MainWindow(QWidget):
         # 而不是 destroy() 销毁，每次都创建新的实例并不好
         self.dialog = SettingsDialog(self)
         # 绑定到 self 上另一个目的：防止引用计数减为 0 而触发 GC 回收
+
+    def __del__(self):
+        lg.debug('MainWindow 析构')
 
     def enterEvent(self, event):
         """
@@ -183,11 +191,15 @@ class MainWindow(QWidget):
 
 
 def main():
+    lg.info('赛博小鱼缸启动')
+
     try:
         # 启动系统信息管理器
         SYSTEM_INFO_MANAGER.start()
+        lg.info('INFO_MANAGER 启动成功')
         # 启动钩子管理器
         SYSTEM_HOOK_MANAGER.start()
+        lg.info('HOOK_MANAGER 启动成功')
 
         app = QApplication(sys.argv)
 
@@ -202,7 +214,7 @@ def main():
 
     except Exception as e:
         # 实际上可能很难捕获到异常，Qt有点奇怪，有待深入研究
-        print(e)
+        lg.fatal(f'主程序异常: {e}')
 
 
 if __name__ == "__main__":

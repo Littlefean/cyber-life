@@ -11,3 +11,6 @@ TANK_SCREEN_WIDTH = 300
 # 2. 贪吃蛇移动动画加快
 # 3. 贪吃蛇颜色变化加快
 COLOR_DEBUG = False
+
+# 调试信息的格式
+LOG_FORMAT = '%(asctime)s [%(levelname)8s] [%(name)s] %(message)s'

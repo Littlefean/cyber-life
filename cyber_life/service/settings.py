@@ -1,8 +1,11 @@
 import json
+import logging
 import os
 
 from cyber_life.static import PROJECT_DIR
 from cyber_life.tools.singleton import SingletonMeta
+
+lg = logging.getLogger(__name__)
 
 
 class SettingsObject(metaclass=SingletonMeta):
@@ -43,7 +46,7 @@ class SettingsObject(metaclass=SingletonMeta):
             _load()
         except Exception as e:
             # Handle other exceptions
-            print(f"An error occurred: {e}")
+            lg.error(f'读取设置文件失败: {e}')
             raise e
 
 

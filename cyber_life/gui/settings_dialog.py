@@ -1,3 +1,5 @@
+import logging
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QLabel, QWidget
@@ -5,11 +7,15 @@ from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QLabel, QW
 from cyber_life.gui.about_dialog import AboutDialog
 from cyber_life.service.settings import SETTINGS
 
+lg = logging.getLogger(__name__)
+
 
 class SettingsDialog(QDialog):
     WINDOW_SIZE = (400, 320)
 
     def __init__(self, master: QWidget):
+        lg.debug('SettingsDialog 初始化')
+
         super().__init__()
 
         self.master = master
@@ -77,6 +83,9 @@ class SettingsDialog(QDialog):
 
         # 同 main.py 里 MainWindow.__init__() 里对 dialog 的处理，不再赘述
         self.msg_box = AboutDialog()
+
+    def __del__(self):
+        lg.debug('SettingsDialog 析构')
 
     def show_about(self):
         # 弹出关于信息框
@@ -185,6 +194,3 @@ class SettingsDialog(QDialog):
         # 其他按键传递给父类处理（似乎没啥用）
         else:
             super().keyPressEvent(event)
-
-    # def __del__(self):
-    #     print('>>> \033[1;31m销毁\033[0m SettingsDialog')

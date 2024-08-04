@@ -1,3 +1,4 @@
+import logging
 from random import randint, uniform
 
 from PyQt5.QtCore import QRect, Qt
@@ -11,6 +12,8 @@ from cyber_life.life.tank import LIFE_TANK
 from cyber_life.service.settings import SETTINGS
 from cyber_life.tools.progress_bar import ProgressFloat
 from cyber_life.tools.vector import Vector
+
+lg = logging.getLogger(__name__)
 
 
 class GuppyFish(BreathableMixin):
@@ -161,11 +164,9 @@ class GuppyFish(BreathableMixin):
     def get_random_location():
         try:
             x = uniform(30, LIFE_TANK.width - 30)
-            y = uniform(
-                LIFE_TANK.division[0] + 30, LIFE_TANK.division[1] - 30
-            )
+            y = uniform(LIFE_TANK.division[0] + 30, LIFE_TANK.division[1] - 30)
         except Exception as e:
-            print(f"鱼无法找到合适的位置 {e}")
+            lg.error(f'鱼无法获取随机位置：{e}')
             return
         return Vector(x, y)
 
@@ -233,5 +234,5 @@ class GuppyFish(BreathableMixin):
             else:
                 return self.animate_die_right
         else:
-            print(f"select_pixmap: 未知的鱼状态 {self.state}")
+            lg.error(f'select_pixmap: 未知的鱼状态 {self.state}')
             raise ValueError(f"未知的鱼状态 {self.state}")

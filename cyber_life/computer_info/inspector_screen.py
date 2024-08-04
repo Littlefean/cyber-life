@@ -1,8 +1,11 @@
+import logging
 from random import randint
 
 from PIL import ImageGrab
 
 from .inspector_abc import Inspector
+
+lg = logging.getLogger(__name__)
 
 
 class InspectorScreen(Inspector):
@@ -30,5 +33,5 @@ class InspectorScreen(Inspector):
             self.screen_brightness = screen_brightness
         except OSError:
             # 捕捉不到屏幕，屏幕亮度为0
-            print("捕捉不到屏幕")
+            lg.warning('无法捕捉到屏幕，可能是因为系统休眠')
             self.screen_brightness = 0.0
