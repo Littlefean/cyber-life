@@ -1,18 +1,18 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QCloseEvent, QKeyEvent
-from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QLabel
+from PyQt5.QtWidgets import QDialog, QCheckBox, QSlider, QPushButton, QLabel, QWidget
 
 from cyber_life.gui.about_dialog import AboutDialog
 from cyber_life.service.settings import SETTINGS
 
 
 class SettingsDialog(QDialog):
-    WINDOW_SIZE = (400, 240)
+    WINDOW_SIZE = (400, 320)
 
-    def __init__(self):
-        # print('>>> \033[1;32m创建\033[0m SettingsDialog')
-
+    def __init__(self, master: QWidget):
         super().__init__()
+
+        self.master = master
 
         self.setWindowTitle("设置")
         self.setGeometry(400, 400, *self.WINDOW_SIZE)
@@ -49,8 +49,8 @@ class SettingsDialog(QDialog):
         self.slider_memory.valueChanged.connect(self.change_custom_memory_height)
 
         # 投喂食物概率
-        self.label_put_food_rate = QLabel("投喂食物概率：", self)
-        self.label_put_food_rate.move(10, 120)
+        self.label_feed = QLabel("投喂食物概率：", self)
+        self.label_feed.move(10, 120)
         # 一个滑动调组件，从0到100，设置投喂食物的概率
         self.slider_feed = QSlider(Qt.Horizontal, self)
         self.slider_feed.setGeometry(10, 150, 380, 30)
@@ -59,9 +59,20 @@ class SettingsDialog(QDialog):
         self.slider_feed.setValue(int(SETTINGS.put_food_rate * 100))
         self.slider_feed.valueChanged.connect(self.change_feed_probability)
 
+        # 窗口不透明度
+        self.label_opacity = QLabel("窗口不透明度：", self)
+        self.label_opacity.move(10, 200)
+        # 一个滑动调组件，从 1 到 100，设置窗口的不透明度
+        self.slider_opacity = QSlider(Qt.Horizontal, self)
+        self.slider_opacity.setGeometry(10, 230, 380, 30)
+        self.slider_opacity.setMinimum(1)
+        self.slider_opacity.setMaximum(100)
+        self.slider_opacity.setValue(int(SETTINGS.window_opacity * 100))
+        self.slider_opacity.valueChanged.connect(self.change_window_opacity)
+
         # 底部右下角的关于按钮
         self.button_about = QPushButton("关于", self)
-        self.button_about.move(10, 200)
+        self.button_about.move(10, 280)
         self.button_about.clicked.connect(self.show_about)
 
         # 同 main.py 里 MainWindow.__init__() 里对 dialog 的处理，不再赘述
@@ -137,6 +148,16 @@ class SettingsDialog(QDialog):
         """
 
         SETTINGS.put_food_rate = value / 100
+
+        self.save_settings()
+
+    def change_window_opacity(self, value: int):
+        """
+        改变窗口的不透明度
+        """
+
+        SETTINGS.window_opacity = value / 100
+        self.master.setWindowOpacity(SETTINGS.window_opacity)
 
         self.save_settings()
 

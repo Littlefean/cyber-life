@@ -19,6 +19,8 @@ class SettingsObject(metaclass=SingletonMeta):
 
         self.put_food_rate = 0.5  # 鼠标点击放置食物概率
 
+        self.window_opacity = 0.8  # 窗口不透明度
+
     def save_to_json(self):
         with open(self.settings_file, 'w') as f:
             f.write(json.dumps(self.__dict__, indent=2))

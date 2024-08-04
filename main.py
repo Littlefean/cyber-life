@@ -17,6 +17,7 @@ from cyber_life.gui.settings_dialog import SettingsDialog
 from cyber_life.life.gas_manager import GAS_MANAGER
 from cyber_life.life.life_manager import LifeManager
 from cyber_life.life.tank import LIFE_TANK
+from cyber_life.service.settings import SETTINGS
 from cyber_life.static import TANK_SCREEN_WIDTH
 
 
@@ -35,6 +36,7 @@ class MainWindow(QWidget):
             | Qt.WindowStaysOnTopHint  # 始终置顶
             | Qt.SplashScreen  # 只显示在通知栏
         )
+        self.setWindowOpacity(SETTINGS.window_opacity)
         self.setCursor(Qt.OpenHandCursor)  # 鼠标指针改为手型
         # 设置icon
         self.setWindowIcon(QIcon(":/icon.ico"))
@@ -86,7 +88,7 @@ class MainWindow(QWidget):
         # 创建设置对话框
         # 只创建一个实例，用的时候 exec_()，用完就 hide()
         # 而不是 destroy() 销毁，每次都创建新的实例并不好
-        self.dialog = SettingsDialog()
+        self.dialog = SettingsDialog(self)
         # 绑定到 self 上另一个目的：防止引用计数减为 0 而触发 GC 回收
 
     def enterEvent(self, event):
@@ -169,7 +171,7 @@ class MainWindow(QWidget):
         painter = QPainter(self)
 
         # 背景颜色
-        painter.fillRect(event.rect(), QColor(20, 20, 20, 200))
+        painter.fillRect(event.rect(), QColor(20, 20, 20, 255))
         self.life_manager.paint(painter)
 
     def closeEvent(self, event):
