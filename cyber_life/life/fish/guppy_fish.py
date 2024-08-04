@@ -73,7 +73,7 @@ class GuppyFish(BreathableMixin):
         # 鱼的能量
         self.energy = ProgressFloat(1000, 1000)
         # 鱼的固定碳量
-        self.carbon = ProgressFloat(1000, 1000)
+        self.carbon = 1000.
         # 鱼的体内氧气
         self.oxygen = ProgressFloat(1000, 1000)
 
@@ -205,7 +205,7 @@ class GuppyFish(BreathableMixin):
             painter.drawText(
                 rect,
                 Qt.AlignLeft | Qt.TextWordWrap,
-                f"E:{self.energy}\nC:{self.carbon}\nO₂:{self.oxygen}\nS:{self.state.name}"
+                f"E:{self.energy}\nC:{round(self.carbon, 1)}\nO₂:{self.oxygen}\nS:{self.state.name}"
             )
 
     def select_pixmap(self):

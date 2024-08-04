@@ -20,7 +20,7 @@ def get_best_state(fish: GuppyFish) -> State:
         return State.SURFACE
 
     # 如果饿了，进食状态
-    if fish.carbon.rate < 0.5:
+    if fish.carbon < 500:
         return State.FIND_FOOD
 
     # 如果能量不足，进入睡眠状态，但需要保证能量相对充足之后再醒来。
