@@ -54,7 +54,7 @@ windows下：
 # 进入虚拟环境
 venv\Scripts\activate
 # 安装pyintaller
-pip install pyintaller
+pip install pyinstaller
 # 打包
 pyinstaller --onefile --windowed --icon=./assets/icon.ico main.py -n cyber-life
 ```
@@ -64,8 +64,8 @@ windows通过配置文件进行打包：
 ```sh
 # 进入虚拟环境
 venv\Scripts\activate
-# 安装pyintaller
-pip install pyintaller
+# 安装pyinstaller
+pip install pyinstaller
 # 打包
 pyinstaller main.spec
 ```
