@@ -4,7 +4,7 @@
 """
 
 
-def consume_memory(plan_size: int = 128, block: int = 16):
+def memory_burn(plan_size: int = 128, block: int = 16):
     """
     测试内存消耗
     :param plan_size: 预计分配的内存大小，单位为 MB
@@ -41,4 +41,4 @@ def consume_memory(plan_size: int = 128, block: int = 16):
 
 
 if __name__ == '__main__':
-    consume_memory(1024 * 16, 1024)
+    memory_burn(1024 * 16, 1024)

@@ -36,10 +36,12 @@ class GasManager(metaclass=SingletonMeta):
         """
         在一帧内光合作用，CO2 --light_intensity--> O2 + C
         实际上光合作用有水的参与，这里就简化公式了。
+
         :param light_intensity: 光照强度，实际上可以代表转换率
         :param carbon_request_amount: 一帧内的消耗二氧化碳的请求使用量
         :return: 这个光合作用中固定了多少碳元素
         """
+
         carbon_cost = carbon_request_amount * light_intensity
         if self.carbon_dioxide < carbon_cost:
             return 0
@@ -51,10 +53,12 @@ class GasManager(metaclass=SingletonMeta):
     def respiration_tick(self, oxygen_request_amount: float, carbon_request_amount: float) -> float:
         """
         呼吸作用，O2 + C --> CO2 + 100能量
+
         :param carbon_request_amount: 一帧内的自身碳的消耗量请求
         :param oxygen_request_amount: 一帧内的消耗氧气的请求使用量
         :return: 这个呼吸作用中固定了多少氧气
         """
+
         if oxygen_request_amount != carbon_request_amount:
             # 暂时不考虑无氧呼吸情况
             raise ValueError("Oxygen and carbon request amount must be equal.")

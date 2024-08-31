@@ -1,10 +1,11 @@
 from random import random
-from PyQt5.QtGui import QPainter, QPen, QColor
+
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QPen, QColor
+
 from cyber_life.tools.vector import Vector
 from .life_mixin.breathable_mixin import BreathableMixin
 from .life_mixin.organism_mixin import OrganismMixin
-
 from .tank import LIFE_TANK
 
 
@@ -18,7 +19,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
     def __init__(self, x, y, can_move):
         super().__init__()
         self.location = Vector(x, y)
-        self.velocity = Vector.random() * 0.1
+        self.velocity = Vector.random(0.1)
         self.acceleration = Vector(0, 0)
         # 根节点不能自由移动，其他节点会移动，模拟悬浮效果
         self.next_node = None
@@ -49,6 +50,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         @classmethod：类方法，不需要实例化对象即可调用
         @staticmethod：静态方法，同样不需要实例化即可调用，但不适合写与类成员变量或成员函数有关的功能
         """
+
         return cls(random() * LIFE_TANK.width, LIFE_TANK.division[1], False)
 
     def add_child(self, child: 'LifePlantNode'):
@@ -63,8 +65,8 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         首先会将自己的下一个节点拉向自己的位置，然后更新自己的位置和速度
         具体拉的原理就如同引力，但过近会有斥力
         如果在合适范围内，则随机漂浮
-        :return:
         """
+
         if self.can_move:
             # 遇到墙壁反弹
             # 左右边界检测
@@ -126,6 +128,7 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
         """
         绘制节点
         """
+
         # 绘制速度矢量
         if self._show_velocity:
             painter.setBrush(Qt.NoBrush)
@@ -194,5 +197,3 @@ class LifePlantNode(BreathableMixin, OrganismMixin):
                     round(self.location.x + line_vector.x),
                     round(self.location.y + line_vector.y)
                 )
-
-    pass

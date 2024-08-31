@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QColor, QPen
 
 from cyber_life.static import TANK_SCREEN_WIDTH
 
@@ -8,6 +8,7 @@ class SandWave:
     """
     一个地震环形 波
     """
+
     MAX_RADIUS = TANK_SCREEN_WIDTH / 2
 
     def __init__(self, x, radius, radius_variation):
@@ -38,4 +39,3 @@ class SandWave:
             180 * 16,
             180 * 16,
         )
-        pass

@@ -5,22 +5,22 @@ from cyber_life.life.life_manager import LifeManager
 
 def get_best_state(fish: GuppyFish) -> State:
     """
-    一个假的AI，手动写一些逻辑，不用复杂的算法实现
-    :param fish:
-    :return:
+    一个假的 AI，手动写一些逻辑，不用复杂的算法实现
     """
+
+    # 死了，那就是死了
     if fish.state == State.DEAD:
         return State.DEAD
 
-    # 如果当前不是水面呼吸状态并且体内氧气少，进入水面呼吸状态
-    if fish.oxygen_inner.rate < 0.2 and fish.state != State.SURFACE:
+    # 如果当前不是水面呼吸状态，且体内氧气少，进入水面呼吸状态
+    if fish.oxygen.rate < 0.2 and fish.state != State.SURFACE:
         return State.SURFACE
     # 如果当前是水面呼吸状态并且还没补充满体内氧气，则继续呼吸
-    if fish.state == State.SURFACE and not fish.oxygen_inner.is_max():
+    if fish.state == State.SURFACE and not fish.oxygen.is_max():
         return State.SURFACE
 
     # 如果饿了，进食状态
-    if fish.fixed_carbon < 500:
+    if fish.carbon < 500:
         return State.FIND_FOOD
 
     # 如果能量不足，进入睡眠状态，但需要保证能量相对充足之后再醒来。

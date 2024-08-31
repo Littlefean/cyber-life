@@ -1,4 +1,5 @@
 from unittest import TestCase, main
+
 from cyber_life.tools.singleton import SingletonMeta
 
 

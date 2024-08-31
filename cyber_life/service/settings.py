@@ -1,8 +1,11 @@
 import json
+import logging
 import os
 
 from cyber_life.static import PROJECT_DIR
 from cyber_life.tools.singleton import SingletonMeta
+
+lg = logging.getLogger(__name__)
 
 
 class SettingsObject(metaclass=SingletonMeta):
@@ -18,6 +21,8 @@ class SettingsObject(metaclass=SingletonMeta):
         self.swap_memory_height_rate = 0.125  # 1 / 8
 
         self.put_food_rate = 0.5  # 鼠标点击放置食物概率
+
+        self.window_opacity = 0.8  # 窗口不透明度
 
     def save_to_json(self):
         with open(self.settings_file, 'w') as f:
@@ -41,7 +46,7 @@ class SettingsObject(metaclass=SingletonMeta):
             _load()
         except Exception as e:
             # Handle other exceptions
-            print(f"An error occurred: {e}")
+            lg.error(f'读取设置文件失败: {e}')
             raise e
 
 

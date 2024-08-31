@@ -1,8 +1,9 @@
 from typing import List
 
-from .bubble import LifeBubble
 from PyQt5.QtGui import QPainter
+
 from cyber_life.computer_info.manager import SYSTEM_INFO_MANAGER
+from .bubble import LifeBubble
 
 
 class LifeBubbleFlow:
@@ -22,8 +23,8 @@ class LifeBubbleFlow:
         """
         每隔多少帧生成一个新的气泡
         根据当前上传的网速来决定
-        :return:
         """
+
         sent_speed = SYSTEM_INFO_MANAGER.INSPECTOR_NETWORK.get_current_result().sent_speed
         if sent_speed < 1:
             return 999999
@@ -43,6 +44,7 @@ class LifeBubbleFlow:
         """
         时间流逝
         """
+
         # 每隔一段时间，生成一个新的气泡
         if self.time % self.bubble_interval == 0:
             self.bubbles.append(LifeBubble(self.x))
@@ -57,5 +59,6 @@ class LifeBubbleFlow:
         """
         绘制
         """
+
         for bubble in self.bubbles:
             bubble.paint(painter)

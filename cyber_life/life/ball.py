@@ -1,9 +1,9 @@
-from PyQt5.QtGui import QPainter, QColor, QPen
-
-from cyber_life.tools.vector import Vector
-from cyber_life.tools.color import get_color_by_linear_ratio
 from random import random, randint
 
+from PyQt5.QtGui import QPainter, QColor, QPen
+
+from cyber_life.tools.compute import lerp
+from cyber_life.tools.vector import Vector
 from .life_mixin.breathable_mixin import BreathableMixin
 from .life_mixin.organism_mixin import OrganismMixin
 from .tank import LIFE_TANK
@@ -43,15 +43,13 @@ class LifeBall(BreathableMixin, OrganismMixin):
         self.co2_pre_request = 0.04
 
     def set_activity(self, activity):
-        if isinstance(activity, float):
-            self.activity = activity
-            # 让速度方向向垂直向上的方向旋转一定程度
-            self.velocity = self.velocity.rotate(activity * 15)
-            # 让活跃度和呼吸作用相关联
-            self.o2_pre_request = 0.01 + self.activity
-        else:
-            print("Error: activity must be a float number.")
-            raise TypeError
+        assert isinstance(activity, float)
+
+        self.activity = activity
+        # 让速度方向向垂直向上的方向旋转一定程度
+        self.velocity = self.velocity.rotate(activity * 15)
+        # 让活跃度和呼吸作用相关联
+        self.o2_pre_request = 0.01 + self.activity
 
     def tick(self):
         self.velocity += self.acceleration
@@ -74,7 +72,6 @@ class LifeBall(BreathableMixin, OrganismMixin):
         # 光合优先于呼吸
         self.photosynthesis()
         self.breath()
-        pass
 
     def paint(self, painter: QPainter):
         # 设置画笔颜色和线条宽度
@@ -84,7 +81,7 @@ class LifeBall(BreathableMixin, OrganismMixin):
 
         # 设置画刷颜色和样式
         painter.setBrush(
-            get_color_by_linear_ratio(
+            lerp(
                 self.color_default,
                 self.color_active,
                 self.activity
@@ -96,4 +93,3 @@ class LifeBall(BreathableMixin, OrganismMixin):
             round(self.radius * 2 + (self.activity * 20)),
             round(self.radius * 2 + (self.activity * 20))
         )
-        pass

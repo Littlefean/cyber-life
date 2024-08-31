@@ -1,42 +1,14 @@
-from PyQt5.QtGui import QColor
 from colorsys import hsv_to_rgb, rgb_to_hsv
 
-from cyber_life.tools.compute import number_to_number
-
-
-def get_color_by_linear_ratio(color_start: QColor, color_end: QColor, ratio: float) -> QColor:
-    """
-    线性过渡，获取一个颜色
-    :param color_start: 开始颜色
-    :param color_end: 终止颜色
-    :param ratio: 0~1之间的小数，
-    当值=0时，返回开始颜色，
-    当值=1时，返回终止颜色，
-    当值在0~1之间时，返回过渡颜色
-    :return:
-    """
-    red = number_to_number(color_start.red(), color_end.red(), ratio)
-    green = number_to_number(color_start.green(), color_end.green(), ratio)
-    blue = number_to_number(color_start.blue(), color_end.blue(), ratio)
-    alpha = number_to_number(color_start.alpha(), color_end.alpha(), ratio)
-
-    return QColor(
-        round(red),
-        round(green),
-        round(blue),
-        round(alpha),
-    )
+from PyQt5.QtGui import QColor
 
 
 def get_color_by_hsv_ratio(color_start: QColor, color_end: QColor, ratio: float) -> QColor:
     """
     色彩空间过渡，获取一个颜色
     此代码由AI生成，还未经过测试
-    :param color_start:
-    :param color_end:
-    :param ratio:
-    :return:
     """
+
     hsv_start = rgb_to_hsv(color_start.red() / 255, color_start.green() / 255, color_start.blue() / 255)
     hsv_end = rgb_to_hsv(color_end.red() / 255, color_end.green() / 255, color_end.blue() / 255)
     hsv_ratio = (hsv_end[0] - hsv_start[0]) * ratio + hsv_start[0]

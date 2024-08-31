@@ -29,6 +29,27 @@ class InspectorNetwork(Inspector):
         return self.network_speeds
 
     def inspect(self):
+        # 这是新的 inspect 方法
+        # 旧的改名为 _old_inspect
+        # 不确定新的是否在所有电脑上都能正常工作，所以保留旧的
+        # TODO: 移除 _old_inspect 方法
+
+        interval = 0.5  # 采样间隔
+
+        # 采样网络信息
+
+        # psutil.net_io_counters() 函数 pernic=False 表示获取所有网络接口的统计信息
+        # 已经求和，无需遍历
+
+        first_stats = psutil.net_io_counters()
+        time.sleep(interval)  # 等待指定时间间隔
+        second_stats = psutil.net_io_counters()
+
+        # 更新网络速度
+        self.network_speeds.sent_speed = (second_stats.bytes_sent - first_stats.bytes_sent) / interval
+        self.network_speeds.recv_speed = (second_stats.bytes_recv - first_stats.bytes_recv) / interval
+
+    def _old_inspect(self):
         interval = 0.5  # 采样间隔
         first_stats = psutil.net_io_counters(pernic=True)
         time.sleep(interval)  # 等待指定时间间隔

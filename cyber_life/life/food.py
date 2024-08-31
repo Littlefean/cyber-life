@@ -13,6 +13,7 @@ class Food:
     当下沉到底部时，含碳量会逐渐减少，直到碳量为0。
     当为0时，饲料就相当于被微生物消耗完了。
     """
+
     # 微生物的分解速度 单位：碳/帧
     microbe_decompose_speed = 0.01
     radius = 2  # 半径
@@ -44,14 +45,20 @@ class Food:
             self.is_deleted = True
             return
 
+        # 当前是悬浮状态
         if self.float_remaining > 0:
-            # 目前是浮在水面上
-            if self.location.y > LIFE_TANK.division[0]:
-                # 浮上来
-                self.location.y -= 0.1
+
+            # 在水面以上，向下落
+            if self.location.y < LIFE_TANK.division[0]:
+                self.location.y = min(self.location.y + 2, LIFE_TANK.division[0])
+            # 在水面以下，向上飘
             elif self.location.y < LIFE_TANK.division[1]:
-                # 在空中，落到水面上
-                self.location.y += 2
+                self.location.y = max(self.location.y - 0.1, LIFE_TANK.division[0])
+            # 被沙子埋了，挤上来
+            # 虽然不太可能，但是还是要有的
+            else:
+                self.location.y = LIFE_TANK.division[1]
+
             # 目前随机漂移效果还不太好做，先不动了
             # else:
             #     # 恰好在水面上，随机漂移
@@ -61,12 +68,18 @@ class Food:
             #         self.location.x = 0
             #     elif self.location.x > LIFE_TANK.width:
             #         self.location.x = LIFE_TANK.width
+
+        # 不是悬浮状态，i.e. 开始下沉
         else:
-            # 目前是下沉状态
-            if self.location.y > LIFE_TANK.division[1]:
-                # 被淹了，挤上来
-                self.location.y -= 0.5
+
+            # 在水面以上，向下落
+            if self.location.y < LIFE_TANK.division[0]:
+                self.location.y = min(self.location.y + 2, LIFE_TANK.division[0])
+            # 正常下沉
+            elif self.location.y < LIFE_TANK.division[1]:
+                self.location.y = min(self.location.y + 0.1, LIFE_TANK.division[1])
+            # 被沙子埋了，挤上来
             else:
-                # 下沉
-                self.location.y += 0.1
+                self.location.y = LIFE_TANK.division[1]
+
             self.carbon -= self.microbe_decompose_speed

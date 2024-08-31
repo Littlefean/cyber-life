@@ -9,6 +9,7 @@ class Inspector(metaclass=ABCMeta):
     抽象类，用于检测计算机信息。
     每一个检测者都将会开启一个线程，每隔一段时间（INSPECTION_INTERVAL）检测一次。
     """
+
     INSPECTION_INTERVAL = 1  # 检测间隔，单位为秒
 
     @abstractmethod
