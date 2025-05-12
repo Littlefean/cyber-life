@@ -18,4 +18,8 @@ class InspectorDiskUsage(Inspector):
         return self._current_result
 
     def inspect(self):
-        self._current_result = psutil.disk_usage('C:').percent / 100
+        try:
+            # macos 没有C盘
+            self._current_result = psutil.disk_usage('C:').percent / 100
+        except Exception as e:
+            print(f"Failed to inspect disk usage: {e}")
